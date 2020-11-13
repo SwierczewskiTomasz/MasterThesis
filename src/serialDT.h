@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dataStructure.h"
+#include "redBlackTree.h"
 
 #ifndef NO_DIM
 #define NO_DIM 2
@@ -70,9 +71,9 @@ typedef struct DelaunayTriangulation
 } DelaunayTriangulation;
 
 void TIPP();
-void generateInitialMesh(Partition *partition);
+void generateInitialMesh(Partition *partition, int nParticles);
 double comparePositionOfTwoPoints(void *a, void *b);
-void computeDelaunayTriangulation(Partition *partition);
+void computeDelaunayTriangulation(Partition *partition, int stopAtStep);
 void insertPoint(PointId *point, Partition *partition);
 void createNewSimplex(Simplex *simplex, PointId points[NO_DIM + 1]);
 double pointInsideCircumcircle(Point point, PointId points[NO_DIM + 1]);

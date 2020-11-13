@@ -1,10 +1,14 @@
 #include <stdlib.h>
 
+long long extern insertTime;
+long long extern insertTime2;
+long long extern removeTime;
+
 typedef struct DataStructure
 {
     void* root;
     void (*insert)(void *, void *);
-    void (*get)(void *, void *);
+    void* (*get)(void *, void *);
     void (*remove)(void *, void *);
 } DataStructure;
 

@@ -1,0 +1,1 @@
+int generateNextTestNumberOfPoints(int n);

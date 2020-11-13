@@ -1,13 +1,27 @@
 // #include "serialDT.h"
 #include <math.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include "polygon.h"
 #include "myMath.h"
+#include "utilities.h"
+
+long long createPolygonTime = 0;
+long long searchingTrianglesToModifyTime = 0;
+long long searchingTrianglesToModifyTime2 = 0;
+long long createNewTrianglesTime = 0;
 
 int main(int argc, char **argv)
 {
     TIPP();
     // printf("Return 0\n");
+
+    int n = 0;
+    for(int i = 0; i < 60; i++)
+    {
+        printf("n: %d\n", n);
+        n = generateNextTestNumberOfPoints(n);
+    }
     return 0;
 }
 
@@ -24,24 +38,35 @@ void TIPP()
     partition->triangles = (DoubleLinkedList *)malloc(sizeof(DoubleLinkedList));
     partition->vertices = (DoubleLinkedList *)malloc(sizeof(DoubleLinkedList));
 
+    int k = 8192;
+    int n = k;
+
     // printf("Generowanie partycji \n");
-    generateInitialMesh(partition);
+    generateInitialMesh(partition, k);
 
     // printf("Obliczanie DT \n");
     // DelaunayTriangulation DT = computeDelaunayTriangulation(partition);
     // printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
     // printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
 
-    struct timeval te; 
+    struct timeval te;
     gettimeofday(&te, NULL);
-    long long time1 = te.tv_sec*1000000LL + te.tv_usec/1000;
-    computeDelaunayTriangulation(partition);
-    struct timeval te2; 
+    long long time1 = te.tv_sec * 1000000LL + te.tv_usec / 1000;
+    computeDelaunayTriangulation(partition, n);
+    struct timeval te2;
     gettimeofday(&te2, NULL);
-    long long time2 = te2.tv_sec*1000000LL + te2.tv_usec/1000;
+    long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
 
     printf("%lld\n", time2 - time1);
     // printf("After DT\n");
+    printf("RemoveTime: %lld\n", removeTime);
+    printf("InsertTime: %lld\n", insertTime);
+    printf("InsertTime2: %lld\n", insertTime2);
+    printf("createPolygonTime: %lld\n", createPolygonTime);
+    printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
+    printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
+    printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
+
     FILE *fp;
     fp = fopen("./out/outputVertices.txt", "w+");
 
@@ -92,11 +117,12 @@ void chooseRandomlyInitialPoints(Set *partitions, Set *points, Set *initialPoint
     sprintf(stderr, "Error in %s line %i: chooseRandomlyInitialPoints function is not implemented \n", (char *)__FILE__, __LINE__);
 }
 
-void generateInitialMesh(Partition *partition)
+void generateInitialMesh(Partition *partition, int nParticles)
 {
-    int k = 512;
-
     srand(0);
+
+    redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
+    tree->compare = comparePositionOfTwoPoints;
 
     DoubleLinkedListNode *first = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
     PointId *point1 = (PointId *)malloc(sizeof(PointId));
@@ -136,14 +162,15 @@ void generateInitialMesh(Partition *partition)
     // x = x*fabs(x)*2+50;
     // y = y*fabs(y)*2+50;
 
-    double x = (double)rand() / (double)(RAND_MAX) * 100;
-    double y = (double)rand() / (double)(RAND_MAX) * 100;
+    double x = (double)rand() / (double)(RAND_MAX)*100;
+    double y = (double)rand() / (double)(RAND_MAX)*100;
 
     pointFirst->point.x = x;
     pointFirst->point.y = y;
     partition->vertices->first = first;
     first->data = pointFirst;
-    for (int i = 0; i < k - 1; i++)
+    insertIntoRedBlackTree(tree, pointFirst);
+    for (int i = 0; i < nParticles - 1; i++)
     {
         PointId *point = (PointId *)malloc(sizeof(PointId));
 
@@ -159,12 +186,13 @@ void generateInitialMesh(Partition *partition)
         // x = x*fabs(x)*40+50;
         // y = y*fabs(y)*40+50;
 
-        x = (double)rand() / (double)(RAND_MAX) * 100;
-        y = (double)rand() / (double)(RAND_MAX) * 100;
+        x = (double)rand() / (double)(RAND_MAX)*100;
+        y = (double)rand() / (double)(RAND_MAX)*100;
 
         point->point.x = x;
         point->point.y = y;
         insertIntoDoubleLinkedList(partition->vertices, first, point, comparePositionOfTwoPoints);
+        insertIntoRedBlackTree(tree, point);
     }
 
     // Create 2 super triangles
@@ -184,6 +212,28 @@ void generateInitialMesh(Partition *partition)
 
     // printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
     // printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+
+    printf("1\n");
+    printf("%x\n", tree->first);
+
+    // printRedBlackTree(tree);
+
+    void *pointer = partition->vertices->first;
+
+    // sleep(3);
+
+    while (pointer != NULL)
+    {
+        PointId *point = (PointId *)getDataFromNode(pointer);
+        redBlackTreeNode *node = getFromRedBlackTree(tree, point);
+        if (node != NULL)
+            removeFromRedBlackTree(tree, node);
+
+        // printf("Removed point: x: %f, y: %f\n", point->point.x, point->point.y);
+        pointer = getNextNode(pointer);
+    }
+
+    // printRedBlackTree(tree);
 }
 
 double comparePositionOfTwoPoints(void *a, void *b)
@@ -194,7 +244,7 @@ double comparePositionOfTwoPoints(void *a, void *b)
     return s1->point.x - s2->point.x;
 }
 
-void computeDelaunayTriangulation(Partition *partition)
+void computeDelaunayTriangulation(Partition *partition, int stopAtStep)
 {
     int count = partition->vertices->count;
     void *pointer = partition->vertices->first;
@@ -211,8 +261,8 @@ void computeDelaunayTriangulation(Partition *partition)
         // printf("Point inserted: x: %f, y: %f\n", point->point.x, point->point.y);
         pointer = getNextNode(pointer);
         // printf("Next point\n");
-        // if(c == 39)
-        //     break;
+        if (c == stopAtStep)
+            break;
     }
 }
 
@@ -226,15 +276,24 @@ void newInsertPoint(PointId *point, Partition *partition)
     list.first = NULL;
     int c = 0;
 
+    struct timeval te1;
+    gettimeofday(&te1, NULL);
+    long long time1 = te1.tv_sec * 1000000LL + te1.tv_usec / 1000;
+
     // printf("Inserting point in newInsertPoint\n");
 
     while (pointer != NULL)
     {
+
         Simplex *data = (Simplex *)getDataFromNode(pointer);
         double squareDistance = squareOfDistanceFromPointToPoint(data->object.circumcenter, point->point);
         double squareRadius = data->object.circumradius * data->object.circumradius;
+
         if (squareDistance <= squareRadius)
         {
+            struct timeval te3;
+            gettimeofday(&te3, NULL);
+            long long time3 = te3.tv_sec * 1000000LL + te3.tv_usec / 1000;
             if (c == 0)
             {
                 current = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
@@ -255,12 +314,20 @@ void newInsertPoint(PointId *point, Partition *partition)
             c++;
             Simplex *result = data;
             // printf("Triangle founded to modify: %f, %f, %f, %f, %f, %f, %f, %f, %f \n", result->object.circumcenter.x, result->object.circumcenter.y, result->object.circumradius, result->object.vertices[0].point.x, result->object.vertices[0].point.y, result->object.vertices[1].point.x, result->object.vertices[1].point.y, result->object.vertices[2].point.x, result->object.vertices[2].point.y);
-
+            struct timeval te4;
+            gettimeofday(&te4, NULL);
+            long long time4 = te4.tv_sec * 1000000LL + te4.tv_usec / 1000;
+            searchingTrianglesToModifyTime2 += time4 - time3;
         }
 
         pointer = getNextNode(pointer);
     }
     // printf("Searched %d triangles to modify.\n", c);
+
+    struct timeval te2;
+    gettimeofday(&te2, NULL);
+    long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+    searchingTrianglesToModifyTime += time2 - time1;
 
     current = list.first;
 
@@ -303,6 +370,11 @@ void newInsertPoint(PointId *point, Partition *partition)
     }
     current = list.first;
 
+    struct timeval te3;
+    gettimeofday(&te3, NULL);
+    long long time3 = te3.tv_sec * 1000000LL + te3.tv_usec / 1000;
+    createPolygonTime += time3 - time2;
+
     PolygonLinkedListNode *currentNode = edges->first;
 
     while (currentNode != NULL)
@@ -316,6 +388,11 @@ void newInsertPoint(PointId *point, Partition *partition)
 
         currentNode = currentNode->next;
     }
+
+    struct timeval te4;
+    gettimeofday(&te4, NULL);
+    long long time4 = te4.tv_sec * 1000000LL + te4.tv_usec / 1000;
+    createNewTrianglesTime += time4 - time3;
 
     // while(current != NULL)
     // {

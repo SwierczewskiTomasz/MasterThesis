@@ -1,9 +1,18 @@
 #include "dataStructure.h"
 #include <stdio.h>
+#include <sys/time.h>
+
+long long insertTime = 0;
+long long insertTime2 = 0;
+long long removeTime = 0;
 
 void *removeFromDoubleLinkedList(DoubleLinkedList *list, DoubleLinkedListNode *node)
 {
     // This function return next node from remove or previous, if next doesn't exist
+    struct timeval te1;
+    gettimeofday(&te1, NULL);
+    long long time1 = te1.tv_sec * 1000000LL + te1.tv_usec / 1000;
+
     DoubleLinkedListNode *result;
     if (node->next != NULL)
         result = node->next;
@@ -24,9 +33,14 @@ void *removeFromDoubleLinkedList(DoubleLinkedList *list, DoubleLinkedListNode *n
     {
         node->next->prev = node->prev;
     }
-    
+
     node->prev = NULL;
     node->next = NULL;
+
+    struct timeval te2;
+    gettimeofday(&te2, NULL);
+    long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+    removeTime += time2 - time1;
 
     return result;
 }
@@ -37,15 +51,40 @@ DoubleLinkedListNode *insertIntoDoubleLinkedList(DoubleLinkedList *list, DoubleL
     // f(data, node->data);
     // printf("Mayday?\n");
 
-    if(node == NULL || list->first == NULL)
+    struct timeval te1;
+    gettimeofday(&te1, NULL);
+    long long time1 = te1.tv_sec * 1000000LL + te1.tv_usec / 1000;
+
+    if (node == NULL || list->first == NULL)
     {
         DoubleLinkedListNode *newNode = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
         newNode->data = data;
         newNode->next = NULL;
         newNode->prev = NULL;
         list->first = newNode;
+
+        struct timeval te2;
+        gettimeofday(&te2, NULL);
+        long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+        insertTime += time2 - time1;
+
         return newNode;
     }
+
+    // DoubleLinkedListNode *newNode = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
+    // newNode->data = data;
+    // newNode->next = list->first;
+    // newNode->prev = NULL;
+    // // node->next = newNode;
+    // if (newNode->next != NULL)
+    //     newNode->next->prev = newNode;
+
+    // list->first = newNode;
+
+    // struct timeval te2;
+    // gettimeofday(&te2, NULL);
+    // long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+    // insertTime += time2 - time1;
 
     if (f(data, node->data) > 0)
     {
@@ -70,6 +109,12 @@ DoubleLinkedListNode *insertIntoDoubleLinkedList(DoubleLinkedList *list, DoubleL
                     else
                         sprintf(stderr, "Error in %s line %i: insertIntoDoubleLinkedList - unexpected situation - node and list first node aren't the same when doesn't exists previous node. \n", (char *)__FILE__, __LINE__);
                 }
+
+                struct timeval te2;
+                gettimeofday(&te2, NULL);
+                long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+                insertTime += time2 - time1;
+
                 return newNode;
             }
             node = node->next;
@@ -92,6 +137,12 @@ DoubleLinkedListNode *insertIntoDoubleLinkedList(DoubleLinkedList *list, DoubleL
                 else
                     sprintf(stderr, "Error in %s line %i: insertIntoDoubleLinkedList - unexpected situation - node and list first node aren't the same when doesn't exists previous node. \n", (char *)__FILE__, __LINE__);
             }
+
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime += time2 - time1;
+
             return newNode;
         }
         else
@@ -103,6 +154,11 @@ DoubleLinkedListNode *insertIntoDoubleLinkedList(DoubleLinkedList *list, DoubleL
             node->next = newNode;
             if (newNode->next != NULL)
                 newNode->next->prev = newNode;
+
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime += time2 - time1;
             return newNode;
         }
     }
@@ -120,6 +176,11 @@ DoubleLinkedListNode *insertIntoDoubleLinkedList(DoubleLinkedList *list, DoubleL
                 node->next = newNode;
                 if (newNode->next != NULL)
                     newNode->next->prev = newNode;
+
+                struct timeval te2;
+                gettimeofday(&te2, NULL);
+                long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+                insertTime += time2 - time1;
                 return newNode;
             }
             node = node->prev;
@@ -133,6 +194,11 @@ DoubleLinkedListNode *insertIntoDoubleLinkedList(DoubleLinkedList *list, DoubleL
             node->next = newNode;
             if (newNode->next != NULL)
                 newNode->next->prev = newNode;
+
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime += time2 - time1;
             return newNode;
         }
         else
@@ -149,6 +215,11 @@ DoubleLinkedListNode *insertIntoDoubleLinkedList(DoubleLinkedList *list, DoubleL
             }
             else
                 sprintf(stderr, "Error in %s line %i: insertIntoDoubleLinkedList - unexpected situation - node and list first node aren't the same when doesn't exists previous node. \n", (char *)__FILE__, __LINE__);
+
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime += time2 - time1;
 
             return newNode;
         }
@@ -163,13 +234,59 @@ void insertIntoDoubleLinkedList2(DoubleLinkedList *list, void *data, double (*f)
 
     DoubleLinkedListNode *node = list->first;
 
-    if(list->first == NULL)
+    struct timeval te1;
+    gettimeofday(&te1, NULL);
+    long long time1 = te1.tv_sec * 1000000LL + te1.tv_usec / 1000;
+
+    // printf("1 \n");
+
+    if (node == NULL || list->first == NULL)
     {
         DoubleLinkedListNode *newNode = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
         newNode->data = data;
         newNode->next = NULL;
         newNode->prev = NULL;
         list->first = newNode;
+
+        struct timeval te2;
+        gettimeofday(&te2, NULL);
+        long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+        insertTime2 += time2 - time1;
+        return;
+    }
+
+    DoubleLinkedListNode *newNode = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
+    newNode->data = data;
+    newNode->next = node;
+    newNode->prev = NULL;
+    // node->next = newNode;
+    if (newNode->next != NULL)
+        newNode->next->prev = newNode;
+
+    list->first = newNode;
+
+    // printf("1\n");
+
+    struct timeval te2;
+    gettimeofday(&te2, NULL);
+    long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+    insertTime2 += time2 - time1;
+
+    return;
+
+    if (list->first == NULL)
+    {
+        DoubleLinkedListNode *newNode = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
+        newNode->data = data;
+        newNode->next = NULL;
+        newNode->prev = NULL;
+        list->first = newNode;
+
+        struct timeval te2;
+        gettimeofday(&te2, NULL);
+        long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+        insertTime2 += time2 - time1;
+
         return newNode;
     }
 
@@ -196,6 +313,12 @@ void insertIntoDoubleLinkedList2(DoubleLinkedList *list, void *data, double (*f)
                     else
                         sprintf(stderr, "Error in %s line %i: insertIntoDoubleLinkedList - unexpected situation - node and list first node aren't the same when doesn't exists previous node. \n", (char *)__FILE__, __LINE__);
                 }
+
+                struct timeval te2;
+                gettimeofday(&te2, NULL);
+                long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+                insertTime2 += time2 - time1;
+
                 return newNode;
             }
             node = node->next;
@@ -218,6 +341,12 @@ void insertIntoDoubleLinkedList2(DoubleLinkedList *list, void *data, double (*f)
                 else
                     sprintf(stderr, "Error in %s line %i: insertIntoDoubleLinkedList - unexpected situation - node and list first node aren't the same when doesn't exists previous node. \n", (char *)__FILE__, __LINE__);
             }
+
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime2 += time2 - time1;
+
             return newNode;
         }
         else
@@ -229,6 +358,12 @@ void insertIntoDoubleLinkedList2(DoubleLinkedList *list, void *data, double (*f)
             node->next = newNode;
             if (newNode->next != NULL)
                 newNode->next->prev = newNode;
+
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime2 += time2 - time1;
+
             return newNode;
         }
     }
@@ -246,6 +381,12 @@ void insertIntoDoubleLinkedList2(DoubleLinkedList *list, void *data, double (*f)
                 node->next = newNode;
                 if (newNode->next != NULL)
                     newNode->next->prev = newNode;
+
+                struct timeval te2;
+                gettimeofday(&te2, NULL);
+                long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+                insertTime2 += time2 - time1;
+
                 return newNode;
             }
             node = node->prev;
@@ -259,6 +400,12 @@ void insertIntoDoubleLinkedList2(DoubleLinkedList *list, void *data, double (*f)
             node->next = newNode;
             if (newNode->next != NULL)
                 newNode->next->prev = newNode;
+
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime2 += time2 - time1;
+
             return newNode;
         }
         else
@@ -276,19 +423,24 @@ void insertIntoDoubleLinkedList2(DoubleLinkedList *list, void *data, double (*f)
             else
                 sprintf(stderr, "Error in %s line %i: insertIntoDoubleLinkedList - unexpected situation - node and list first node aren't the same when doesn't exists previous node. \n", (char *)__FILE__, __LINE__);
 
+            struct timeval te2;
+            gettimeofday(&te2, NULL);
+            long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+            insertTime2 += time2 - time1;
+
             return newNode;
         }
     }
 }
 
-void* getNextNode(void *node)
+void *getNextNode(void *node)
 {
-    DoubleLinkedListNode *listNode = (DoubleLinkedListNode*)node;
-    return listNode->next; 
+    DoubleLinkedListNode *listNode = (DoubleLinkedListNode *)node;
+    return listNode->next;
 }
 
-void* getDataFromNode(void *node)
+void *getDataFromNode(void *node)
 {
-    DoubleLinkedListNode *listNode = (DoubleLinkedListNode*)node;
+    DoubleLinkedListNode *listNode = (DoubleLinkedListNode *)node;
     return listNode->data;
 }
