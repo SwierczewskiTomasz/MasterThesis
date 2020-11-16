@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "myMath.h"
 
 double determinant(double **data, int n)

@@ -1,3 +1,8 @@
+#ifndef REDBLACKTREE_H
+#define REDBLACKTREE_H
+
+#include "../utilities.h"
+
 enum Colour 
 {
     Red,
@@ -38,4 +43,5 @@ void removeCase1(redBlackTree *tree, redBlackTreeNode *node);
 
 redBlackTreeNode* getNextNodeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node);
 redBlackTreeNode *minimumInRedBlackSubTree(redBlackTreeNode *node);
-void printRedBlackTree(redBlackTree *tree);
+
+#endif

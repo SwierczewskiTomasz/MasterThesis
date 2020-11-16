@@ -1,55 +1,16 @@
+#ifndef SERIALDT_H
+#define SERIALDT_H
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "dataStructure.h"
-#include "redBlackTree.h"
+#include "polygon.h"
+#include "DataStructures/dataStructure.h"
+#include "DataStructures/redBlackTree.h"
+#include "myMath.h"
+#include "simplex.h"
 
-#ifndef NO_DIM
-#define NO_DIM 2
-#endif
-
-typedef struct Point
-{
-    double x;
-    double y;
-#if NO_DIM==3
-    double z;
-#endif
-} Point;
-
-typedef struct PointId
-{
-    unsigned long id;
-    Point point;
-} PointId;
-
-typedef struct Triangle
-{
-    unsigned long id;
-    //Center point of circumcircle
-    Point circumcenter;
-    double circumradius;
-    PointId vertices[NO_DIM + 1];
-} Triangle;
-
-typedef struct Tetrahedron
-{
-    unsigned long id;
-    //Center point of circumsphere
-    Point circumcenter;
-    double circumradius;
-    PointId vertices[NO_DIM + 1];
-} Tetrahedron;
-
-typedef struct Simplex
-{
-#if NO_DIM==2
-    Triangle object;
-#else
-    Tetrahedron object;
-#endif
-} Simplex;
 
 typedef struct Set
 {
@@ -91,3 +52,6 @@ void changePointsInSimplex(PointId *points, void *pointer);
 
 void newInsertPoint(PointId *point, Partition *partition);
 PointId** combination(PointId* data, int n);
+void printRedBlackTree(redBlackTree *tree);
+
+#endif

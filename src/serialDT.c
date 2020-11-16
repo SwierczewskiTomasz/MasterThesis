@@ -1,20 +1,34 @@
-// #include "serialDT.h"
-#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#if defined(WIND32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include <time.h>
+#include <Windows.h>
+#else
 #include <sys/time.h>
 #include <unistd.h>
-#include "polygon.h"
-#include "myMath.h"
-#include "utilities.h"
+#endif
+
+#include <math.h>
+#include "serialDT.h"
+
+long long doubleLinkedListInsertTime = 0;
+long long doubleLinkedListInsertTime2 = 0;
+long long doubleLinkedListRemoveTime = 0;
 
 long long createPolygonTime = 0;
 long long searchingTrianglesToModifyTime = 0;
 long long searchingTrianglesToModifyTime2 = 0;
 long long createNewTrianglesTime = 0;
 
+long long redBlackTreeInsertTime = 0;
+long long redBlackTreeGetTime = 0;
+long long redBlackTreeRemoveTime = 0;
+long long redBlackTreeNextNodeTime = 0;
+
 int main(int argc, char **argv)
 {
-    TIPP();
-    // printf("Return 0\n");
+    // TIPP();
 
     int n = 0;
     for(int i = 0; i < 60; i++)
@@ -22,6 +36,9 @@ int main(int argc, char **argv)
         printf("n: %d\n", n);
         n = generateNextTestNumberOfPoints(n);
     }
+
+    testRedBlackTree();
+    testDoubleLinkedList();
     return 0;
 }
 
@@ -46,8 +63,8 @@ void TIPP()
 
     // printf("Obliczanie DT \n");
     // DelaunayTriangulation DT = computeDelaunayTriangulation(partition);
-    // printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-    // printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+    // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+    // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
     struct timeval te;
     gettimeofday(&te, NULL);
@@ -59,13 +76,19 @@ void TIPP()
 
     printf("%lld\n", time2 - time1);
     // printf("After DT\n");
-    printf("RemoveTime: %lld\n", removeTime);
-    printf("InsertTime: %lld\n", insertTime);
-    printf("InsertTime2: %lld\n", insertTime2);
+    printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
+    printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
+    printf("doubleLinkedListInsertTime2: %lld\n", doubleLinkedListInsertTime2);
+
     printf("createPolygonTime: %lld\n", createPolygonTime);
     printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
     printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
     printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
+
+    printf("redBlackTreeInsertTime: %lld\n", redBlackTreeInsertTime);
+    printf("redBlackTreeGetTime: %lld\n", redBlackTreeGetTime);
+    printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
+    printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
 
     FILE *fp;
     fp = fopen("./out/outputVertices.txt", "w+");
@@ -109,20 +132,20 @@ void TIPP()
 
 void putPointsToPartitions(Set *partitions, Set *points)
 {
-    sprintf(stderr, "Error in %s line %i: putPointsToPartitions function is not implemented \n", (char *)__FILE__, __LINE__);
+    fprintf(stderr, "Error in %s line %i: putPointsToPartitions function is not implemented \n", (char *)__FILE__, __LINE__);
 }
 
 void chooseRandomlyInitialPoints(Set *partitions, Set *points, Set *initialPoints, int k)
 {
-    sprintf(stderr, "Error in %s line %i: chooseRandomlyInitialPoints function is not implemented \n", (char *)__FILE__, __LINE__);
+    fprintf(stderr, "Error in %s line %i: chooseRandomlyInitialPoints function is not implemented \n", (char *)__FILE__, __LINE__);
 }
 
 void generateInitialMesh(Partition *partition, int nParticles)
 {
     srand(0);
 
-    redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
-    tree->compare = comparePositionOfTwoPoints;
+    // redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
+    // tree->compare = comparePositionOfTwoPoints;
 
     DoubleLinkedListNode *first = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
     PointId *point1 = (PointId *)malloc(sizeof(PointId));
@@ -169,7 +192,7 @@ void generateInitialMesh(Partition *partition, int nParticles)
     pointFirst->point.y = y;
     partition->vertices->first = first;
     first->data = pointFirst;
-    insertIntoRedBlackTree(tree, pointFirst);
+    // insertIntoRedBlackTree(tree, pointFirst);
     for (int i = 0; i < nParticles - 1; i++)
     {
         PointId *point = (PointId *)malloc(sizeof(PointId));
@@ -192,7 +215,7 @@ void generateInitialMesh(Partition *partition, int nParticles)
         point->point.x = x;
         point->point.y = y;
         insertIntoDoubleLinkedList(partition->vertices, first, point, comparePositionOfTwoPoints);
-        insertIntoRedBlackTree(tree, point);
+        // insertIntoRedBlackTree(tree, point);
     }
 
     // Create 2 super triangles
@@ -210,11 +233,11 @@ void generateInitialMesh(Partition *partition, int nParticles)
     createNewSimplex(result2, newPoints);
     insertIntoDoubleLinkedList(partition->triangles, firstTriangle, result2, comparePositionOfTwoTriangles);
 
-    // printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-    // printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+    // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+    // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
     printf("1\n");
-    printf("%x\n", tree->first);
+    // printf("%p\n", tree->first);
 
     // printRedBlackTree(tree);
 
@@ -222,16 +245,16 @@ void generateInitialMesh(Partition *partition, int nParticles)
 
     // sleep(3);
 
-    while (pointer != NULL)
-    {
-        PointId *point = (PointId *)getDataFromNode(pointer);
-        redBlackTreeNode *node = getFromRedBlackTree(tree, point);
-        if (node != NULL)
-            removeFromRedBlackTree(tree, node);
+    // while (pointer != NULL)
+    // {
+    //     PointId *point = (PointId *)getDataFromNode(pointer);
+    //     redBlackTreeNode *node = getFromRedBlackTree(tree, point);
+    //     if (node != NULL)
+    //         removeFromRedBlackTree(tree, node);
 
-        // printf("Removed point: x: %f, y: %f\n", point->point.x, point->point.y);
-        pointer = getNextNode(pointer);
-    }
+    //     // printf("Removed point: x: %f, y: %f\n", point->point.x, point->point.y);
+    //     pointer = getNextNode(pointer);
+    // }
 
     // printRedBlackTree(tree);
 }
@@ -592,18 +615,18 @@ void insertPoint(PointId *point, Partition *partition)
 
                     insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
 
-                    printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                    printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                     PointId modifiedPoints[3] = {*point, data->object.vertices[0], data->object.vertices[2]};
 
-                    printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                    printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                     changePointsInSimplex(modifiedPoints, data);
 
-                    printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                    printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                     printf("Remove triangle from DoubleLinkedList\n");
 
@@ -625,18 +648,18 @@ void insertPoint(PointId *point, Partition *partition)
 
                     insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
 
-                    printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                    printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                     PointId modifiedPoints[3] = {*point, data->object.vertices[0], data->object.vertices[1]};
 
-                    printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                    printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                     changePointsInSimplex(modifiedPoints, data);
 
-                    printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                    printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                     printf("Remove triangle from DoubleLinkedList\n");
 
@@ -659,18 +682,18 @@ void insertPoint(PointId *point, Partition *partition)
 
                 insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
 
-                // printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                // printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                 PointId modifiedPoints[3] = {*point, data->object.vertices[0], data->object.vertices[1]};
 
-                // printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                // printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                 changePointsInSimplex(modifiedPoints, data);
 
-                // printf("partition->vertices->first->prev: %x\n", partition->vertices->first->prev);
-                // printf("partition->triangles->first->prev: %x\n", partition->triangles->first->prev);
+                // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
 
                 printf("Remove triangle from DoubleLinkedList\n");
 
@@ -1219,4 +1242,18 @@ void changePointsInSimplex(PointId *points, void *pointer)
     memcpy(simplex->object.vertices, points, (NO_DIM + 1) * sizeof(PointId));
 
     calculateCircumcircle(simplex);
+}
+
+void printRedBlackTree(redBlackTree *tree)
+{
+    printf("\n\nRed-Black Tree:\n");
+    redBlackTreeNode *node = minimumInRedBlackSubTree(tree->first);
+    printf("tree->first: %p\n", tree->first);
+
+    while (node != NULL)
+    {
+        PointId *point = (PointId *)node->data;
+        printf("Node: %p, Parent: %p, Left: %p, Right: %p, Colour: %s, x: %f, y: %f\n", node, node->parent, node->left, node->right, node->colour == Red ? "Red" : "Black", point->point.x, point->point.y);
+        node = getNextNodeFromRedBlackTree(tree, node);
+    }
 }

@@ -1,9 +1,4 @@
-#include "serialDT.h"
-
-typedef struct Edge
-{
-    PointId points[2];
-} Edge;
+#include "DataStructures/dataStructure.h"
 
 typedef struct PolygonLinkedListNode
 {

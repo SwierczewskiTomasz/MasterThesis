@@ -1,7 +1,14 @@
+#if defined(WIND32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include <time.h>
+#include <Windows.h>
+#else
+#include <sys/time.h>
+#include <unistd.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
-// #include "redBlackTree.h"
-#include "serialDT.h"
+#include "redBlackTree.h"
 
 redBlackTreeNode *getSibling(redBlackTreeNode *node)
 {
@@ -73,12 +80,28 @@ void rotateLeft(redBlackTree *tree, redBlackTreeNode *node)
 
 redBlackTreeNode *getFromRedBlackTree(redBlackTree *tree, void *data)
 {
+#if MEASURE_TIME == 1
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
+#endif
+
     redBlackTreeNode *current = tree->first;
 
     while (current != NULL)
     {
         if (current->data == data)
+        {
+
+#if MEASURE_TIME == 1
+            struct timeval end;
+            gettimeofday(&end, NULL);
+            long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+            redBlackTreeGetTime += endTime - startTime;
+#endif
+
             return current;
+        }
         double result = tree->compare(current->data, data);
         if (result > 0)
             current = current->left;
@@ -88,20 +111,39 @@ redBlackTreeNode *getFromRedBlackTree(redBlackTree *tree, void *data)
             printf("Error in %s line %i: getFromRedBlackTree - situation with exact the same data, but different point in tree shouldn't happen. For this implementation. \n", (char *)__FILE__, __LINE__);
     }
 
+#if MEASURE_TIME == 1
+    struct timeval end;
+    gettimeofday(&end, NULL);
+    long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+    redBlackTreeGetTime += endTime - startTime;
+#endif
+
     return NULL;
 }
 
 redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
-{   
-    // printRedBlackTree(tree);
+{
+#if MEASURE_TIME == 1
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
+#endif
+
     redBlackTreeNode *current = tree->first;
-    // printf("Insert, tree->first: %x\n", tree->first);
 
     while (current != NULL)
     {
         if (current->data == data)
-        {    
+        {
             printf("Error\n");
+
+#if MEASURE_TIME == 1
+            struct timeval end;
+            gettimeofday(&end, NULL);
+            long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+            redBlackTreeInsertTime += endTime - startTime;
+#endif
+
             return current;
         }
         double result = tree->compare(current->data, data);
@@ -121,15 +163,23 @@ redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
                 restoreColoursInRedBlackTree(tree, newNode);
                 // printf("Inserted\n");
                 // printRedBlackTree(tree);
+
+#if MEASURE_TIME == 1
+                struct timeval end;
+                gettimeofday(&end, NULL);
+                long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+                redBlackTreeInsertTime += endTime - startTime;
+#endif
+
                 return newNode;
             }
             else
-            {    
+            {
                 current = current->left;
             }
         }
         else if (result < 0)
-        {   
+        {
             // printf("Go on right\n");
             if (current->right == NULL)
             {
@@ -144,6 +194,14 @@ redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
                 restoreColoursInRedBlackTree(tree, newNode);
                 // printf("Inserted\n");
                 // printRedBlackTree(tree);
+
+#if MEASURE_TIME == 1
+                struct timeval end;
+                gettimeofday(&end, NULL);
+                long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+                redBlackTreeInsertTime += endTime - startTime;
+#endif
+
                 return newNode;
             }
             else
@@ -152,12 +210,20 @@ redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
             }
         }
         else
-        {   
-            printf("Error in %s line %i: insertIntoRedBlackTree - situation with exact the same data is in tree shouldn't happen. For this implementation. \n", (char *)__FILE__, __LINE__);
+        {
+            // printf("Error in %s line %i: insertIntoRedBlackTree - situation with exact the same data is in tree shouldn't happen. For this implementation. \n", (char *)__FILE__, __LINE__);
+
+#if MEASURE_TIME == 1
+            struct timeval end;
+            gettimeofday(&end, NULL);
+            long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+            redBlackTreeInsertTime += endTime - startTime;
+#endif
+
             return NULL;
         }
     }
-
+    
     redBlackTreeNode *newNode = (redBlackTreeNode *)malloc(sizeof(redBlackTreeNode));
     newNode->left = NULL;
     newNode->right = NULL;
@@ -168,6 +234,14 @@ redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
 
     // printf("Create new tree-first \n");
     // printRedBlackTree(tree);
+
+#if MEASURE_TIME == 1
+    struct timeval end;
+    gettimeofday(&end, NULL);
+    long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+    redBlackTreeInsertTime += endTime - startTime;
+#endif
+
     return newNode;
 }
 
@@ -212,7 +286,7 @@ void restoreColoursInRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
             {
                 // printf("Before right rotation\n");
                 // printRedBlackTree(tree);
-                
+
                 rotateRight(tree, node->parent);
                 node = node->right;
                 // printf("After right rotation\n");
@@ -240,7 +314,7 @@ void restoreColoursInRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
                 // printf("After left rotation 2\n");
                 // printRedBlackTree(tree);
             }
-            
+
             // printf("4b\n");
             p->colour = Black;
             g->colour = Red;
@@ -388,8 +462,22 @@ redBlackTreeNode *minimumInRedBlackSubTree(redBlackTreeNode *node)
 
 void removeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
 {
+#if MEASURE_TIME == 1
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
+#endif
+
     if (node == NULL)
+    {
+#if MEASURE_TIME == 1
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+        redBlackTreeRemoveTime += endTime - startTime;
+#endif
         return;
+    }
 
     if (node->left == NULL && node->right == NULL)
     {
@@ -428,39 +516,81 @@ void removeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
     }
 
     free(node);
+
+#if MEASURE_TIME == 1
+    struct timeval end;
+    gettimeofday(&end, NULL);
+    long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+    redBlackTreeRemoveTime += endTime - startTime;
+#endif
 }
 
 redBlackTreeNode *getNextNodeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
 {
-    if(minimumInRedBlackSubTree(node->right)!=NULL)
+#if MEASURE_TIME == 1
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
+#endif
+
+    if (minimumInRedBlackSubTree(node->right) != NULL)
+    {
+#if MEASURE_TIME == 1
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+        redBlackTreeNextNodeTime += endTime - startTime;
+#endif
+
         return minimumInRedBlackSubTree(node->right);
+    }
 
     if (node->parent == NULL)
+    {
+#if MEASURE_TIME == 1
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+        redBlackTreeNextNodeTime += endTime - startTime;
+#endif
+
         return NULL;
+    }
 
     redBlackTreeNode *current = node;
     while (current != NULL)
     {
         if (tree->compare(current->data, node->data) > 0)
+        {
+#if MEASURE_TIME == 1
+            struct timeval end;
+            gettimeofday(&end, NULL);
+            long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+            redBlackTreeNextNodeTime += endTime - startTime;
+#endif
+
             return current;
+        }
         if (current->right != NULL)
             if (tree->compare(current->right->data, node->data) > 0)
+            {
+#if MEASURE_TIME == 1
+                struct timeval end;
+                gettimeofday(&end, NULL);
+                long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+                redBlackTreeNextNodeTime += endTime - startTime;
+#endif
+
                 return minimumInRedBlackSubTree(current->right);
+            }
         current = current->parent;
     }
+#if MEASURE_TIME == 1
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+        redBlackTreeNextNodeTime += endTime - startTime;
+#endif
+
     return NULL;
-}
-
-void printRedBlackTree(redBlackTree *tree)
-{
-    printf("\n\nRed-Black Tree:\n");
-    redBlackTreeNode *node = minimumInRedBlackSubTree(tree->first);
-    printf("tree->first: %x\n", tree->first);
-
-    while (node != NULL)
-    {
-        PointId *point = (PointId *)node->data;
-        printf("Node: %x, Parent: %x, Left: %x, Right: %x, Colour: %s, x: %f, y: %f\n", node, node->parent, node->left, node->right, node->colour == Red ? "Red" : "Black", point->point.x, point->point.y);
-        node = getNextNodeFromRedBlackTree(tree, node);
-    }
 }
