@@ -16,4 +16,9 @@ typedef struct LinkedList
     LinkedListNode *first;
 } LinkedList;
 
+LinkedList *newLinkedList();
+void removeLinkedList(LinkedList *list);
+void pushToLinkedList(LinkedList *list, void *data);
+void* popFromLinkedList(LinkedList *list);
+
 #endif

@@ -2,17 +2,25 @@
 #define DATA_STRUCTURE_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include "../utilities.h"
+#include "../constants.h"
 #include "doubleLinkedList.h"
 #include "linkedList.h"
 
 typedef struct Point
 {
-    double x;
-    double y;
-#if NO_DIM==3
-    double z;
+#if NO_DIM==2
+    FLOATING_POINT_PRECISION x;
+    FLOATING_POINT_PRECISION y;
+#elif NO_DIM==3
+    FLOATING_POINT_PRECISION x;
+    FLOATING_POINT_PRECISION y;
+    FLOATING_POINT_PRECISION z;
+#else
+    FLOATING_POINT_PRECISION coords[NO_DIM];
 #endif
+
 } Point;
 
 typedef struct PointId
@@ -21,19 +29,13 @@ typedef struct PointId
     Point point;
 } PointId;
 
-typedef struct Edge
-{
-    PointId points[2];
-} Edge;
-
-typedef struct DataStructure
-{
-    void* root;
-    void (*insert)(void *, void *);
-    void* (*get)(void *, void *);
-    void (*remove)(void *, void *);
-} DataStructure;
-
+// typedef struct DataStructure
+// {
+//     void* root;
+//     void (*insert)(void *, void *);
+//     void* (*get)(void *, void *);
+//     void (*remove)(void *, void *);
+// } DataStructure;
 
 
 void* getNextNode(void *node);

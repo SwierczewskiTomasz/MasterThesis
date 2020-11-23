@@ -1,47 +1,39 @@
 #ifndef SIMPLEX_H
 #define SIMPLEX_H
 
-#ifndef NO_DIM
-#define NO_DIM 2
-#endif
-
-
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "DataStructures/dataStructure.h"
-
-typedef struct Triangle
-{
-    unsigned long id;
-    //Center point of circumcircle
-    Point circumcenter;
-    double circumradius;
-    PointId vertices[NO_DIM + 1];
-} Triangle;
-
-typedef struct Tetrahedron
-{
-    unsigned long id;
-    //Center point of circumsphere
-    Point circumcenter;
-    double circumradius;
-    PointId vertices[NO_DIM + 1];
-} Tetrahedron;
+#include "myMath.h"
 
 typedef struct Simplex
 {
-#if NO_DIM==2
-    Triangle object;
-#else
-    Tetrahedron object;
-#endif
     unsigned long id;
-    //Center point of circumsphere
+    //Center point of circumcircle of circumsphere (or other things in other dimensions)
     Point circumcenter;
     double circumradius;
     PointId vertices[NO_DIM + 1];
+    // Edge edges[NO_DIM + 1];
+    
+    struct Simplex *neighbors[NO_DIM + 1];
 } Simplex;
+
+// PointId cw(Simplex *simplex, PointId vertex);
+// PointId ccw(Simplex *simplex, PointId vertex);
+// PointId cw_i(Simplex *simplex, int i);
+// PointId ccw_i(Simplex *simplex, int i);
+// Edge neighbor(Simplex *simplex, PointId vertex);
+// Edge neighbor_i(Simplex *simplex, int i);
+
+Simplex* neighborOfSimplex(Simplex *simplex, int i);
+
+void createNewSimplex(Simplex *simplex, PointId points[NO_DIM + 1]);
+void calculateCircumcircle(Simplex *simplex);
+
+void sortPointsInSimplex(Simplex *simplex);
+double comparePoints(Point p1, Point p2);
+double comparePointsVoids(void *p1, void *p2);
 
 #endif

@@ -3,6 +3,7 @@ CFLAGS = -O3
 LIBS = -lm
 
 FILES = \
+	constants.h\
 	DataStructures/dataStructure.h\
 	DataStructures/dataStructure.c\
 	DataStructures/redBlackTree.h\
@@ -11,6 +12,8 @@ FILES = \
 	DataStructures/doubleLinkedList.c\
 	DataStructures/linkedList.h\
 	DataStructures/linkedList.c\
+	edgeOfEdge.h\
+	edgeOfEdge.c\
 	myMath.h\
 	myMath.c\
 	polygon.h\
@@ -19,6 +22,8 @@ FILES = \
 	simplex.c\
 	serialDT.c\
 	serialDT.h\
+	supertriangles.h\
+	supertriangles.c\
 	utilities.h\
 	utilities.c
 

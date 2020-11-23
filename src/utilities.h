@@ -1,14 +1,7 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-#ifndef MEASURE_TIME
-#define MEASURE_TIME 1
-#endif
-
-#ifndef DEBUG
-#define DEBUG 1
-#define DEBUG_REDBLACKTREE 1
-#endif
+#include "constants.h"
 
 long long extern doubleLinkedListInsertTime;
 long long extern doubleLinkedListInsertTime2;
@@ -21,4 +14,6 @@ long long extern redBlackTreeNextNodeTime;
 int generateNextTestNumberOfPoints(int n);
 void testRedBlackTree();
 void testDoubleLinkedList();
+void printInformationsAboutSizeOfStructures();
+
 #endif

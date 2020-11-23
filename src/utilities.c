@@ -6,6 +6,14 @@
 #include "DataStructures/redBlackTree.h"
 #include "serialDT.h"
 
+#if defined(WIND32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include <time.h>
+#include <Windows.h>
+#else
+#include <sys/time.h>
+#include <unistd.h>
+#endif
+
 int generateNextTestNumberOfPoints(int n)
 {
     if (n == 0)
@@ -24,7 +32,7 @@ void testRedBlackTree()
     srand(0);
 
     int n = 0;
-    for (int i = 0; i < 80; i++)
+    for (int i = 0; i < 60; i++)
     {
         redBlackTreeInsertTime = 0;
         redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
@@ -45,6 +53,11 @@ void testRedBlackTree()
             insertIntoRedBlackTree(tree, point);
         }
         printf("%d, %lld\n", n, redBlackTreeInsertTime);
+        
+        removeRedBlackTree(tree, true);
+
+        // if(i > 60)
+        //     sleep(2);
     }
 }
 
@@ -83,3 +96,4 @@ void testDoubleLinkedList()
         printf("%d, %lld\n", n, doubleLinkedListInsertTime);
     }
 }
+

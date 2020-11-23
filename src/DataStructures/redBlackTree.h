@@ -1,6 +1,7 @@
 #ifndef REDBLACKTREE_H
 #define REDBLACKTREE_H
 
+#include <stdbool.h>
 #include "../utilities.h"
 
 enum Colour 
@@ -22,8 +23,11 @@ typedef struct redBlackTree
 {
     double (*compare)(void *, void *);
     redBlackTreeNode *first;
+    int count;
 } redBlackTree;
 
+redBlackTree* newRedBlackTree(double (*compare)(void *, void *));
+void removeRedBlackTree(redBlackTree *tree, bool removeData);
 
 redBlackTreeNode* getSibling(redBlackTreeNode *node);
 redBlackTreeNode* getUncle(redBlackTreeNode *node);
