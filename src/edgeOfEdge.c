@@ -33,7 +33,7 @@ void sortPointsArray(PointId **array, int n)
                 // Nie jestem pewien, czy to będzie dobrze działać, bo pracujemy tak de facto na PointId *, a rzeczywiście są PointId, a ja dałem PointId **array, aby można było ją modyfikować.
                 PointId *copy = array[j];
                 array[j] = array[j + 1];
-                array[j + 1] = array[j];
+                array[j + 1] = copy;
             }
         }
     }
@@ -81,8 +81,10 @@ EdgeOfEdge *newEdgeOfEdge(Edge *e, int i)
 {
     EdgeOfEdge *result = (EdgeOfEdge *)malloc(sizeof(EdgeOfEdge));
     result->first = e;
+    result->second = NULL;
     PointId *array = removePointFromArray(e->points, NO_DIM, i);
     memcpy(result->points, array, (NO_DIM - 1) * sizeof(PointId));
+    free(array);
 #if DEBUG_EDGEOFEDGE == 1
     printf("File %s, line %i: newEdgeOfEdge function.\n", (char *)__FILE__, __LINE__);
     printf("Creating new Edge of edge. Edge: %p, i: %d, Points: p1: x: %f, y: %f, p2: x: %f, y: %f, first: %p, second: %p, secondIndex: %d, neighbors: n1: %p, n2: %p\n", 
@@ -90,4 +92,10 @@ EdgeOfEdge *newEdgeOfEdge(Edge *e, int i)
     printf("Created Edge of Edge: %p, first: %p, second: %p, p1: x: %f, y: %f\n\n", result, result->first, result->second, result->points[0].point.x, result->points[0].point.y);
 #endif
     return result;
+}
+
+void freeEdgeOfEdge(void* e)
+{
+    EdgeOfEdge *edge = (EdgeOfEdge*)e;
+    free(edge);
 }

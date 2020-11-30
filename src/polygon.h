@@ -26,12 +26,19 @@ typedef struct PolygonLinkedListNode
 typedef struct PolygonList
 {
     PolygonLinkedListNode *first;
+    void (*freeData)(void *);
 } PolygonList;
 
-PointId *removePointFromArray(PointId *array, int n, int k);
 Edge* createNewEdge(Simplex *simplex, int i);
+void freeEdge(void *e);
+
+PointId *removePointFromArray(PointId *array, int n, int k);
 bool pointEquals(PointId p1, PointId p2);
 bool edgeEquals(Edge *e1, Edge *e2);
+
+PolygonList *newPolygonList(void (*freeData)(void *));
+void removePolygonList(PolygonList *list, bool removeData);
+
 PolygonLinkedListNode* findInPolygonList(PolygonList *list, Edge *e);
 void insertIntoPolygonList(PolygonList *list, Edge *e);
 void removeFromPolygonList(PolygonList *list, PolygonLinkedListNode* node);

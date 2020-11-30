@@ -32,6 +32,7 @@ typedef struct Partition
 
     redBlackTree *vertices;
     redBlackTree *triangles;
+    redBlackTree *globalVertices;
 } Partition;
 
 typedef struct DelaunayTriangulation
@@ -39,12 +40,12 @@ typedef struct DelaunayTriangulation
     Partition *partitions;
 } DelaunayTriangulation;
 
-void TIPP();
+void TIPP(int k, int n);
 void generateInitialMesh(Partition *partition, int nParticles);
 double comparePositionOfTwoPoints(void *a, void *b);
 void computeDelaunayTriangulation(Partition *partition, int stopAtStep);
 void insertPoint(PointId *point, Partition *partition);
-double pointInsideCircumcircle(Point point, PointId points[NO_DIM + 1]);
+// double pointInsideCircumcircle(Point point, PointId points[NO_DIM + 1]);
 void calculateCircumcircle(Simplex *simplex);
 double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2);
 #if NO_DIM == 3
@@ -62,7 +63,17 @@ double comparePointers(void *a, void *b);
 void theMostNewInsertPoint(PointId *point, Partition *partition);
 PointId** combination(PointId* data, int n);
 void printRedBlackTree(redBlackTree *tree);
+void printRedBlackTreeString(redBlackTree *tree, char* (*printData)(void *));
 void printRedBlackTreeTriangles(redBlackTree *tree);
 void initializePartition(Partition *partition);
+void freePartition(Partition *partition);
+
+Simplex *findFirstSimplexToModify(PointId *point, Partition *partition);
+LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point);
+PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trianglesToModify);
+redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges);
+void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *treeEdgeOfEdges);
+LinkedList *createSimplexList(PolygonList *edges, PointId* point);
+void updateAndAddSimplexes(PolygonList *edges, Partition *partition);
 
 #endif

@@ -52,8 +52,14 @@ void createNewSimplex(Simplex *result, PointId points[NO_DIM + 1])
     int n = NO_DIM + 1;
     //Trzeba nadać unikanlne id
 
-    memcpy(result->vertices, points, (NO_DIM + 1) * sizeof(PointId));
+    memcpy(result->vertices, points, n * sizeof(PointId));
     calculateCircumcircle(result);
+}
+
+void freeSimplex(void *s)
+{
+    Simplex *simplex = (Simplex*)s;
+    free(simplex);
 }
 
 void calculateCircumcircle(Simplex *simplex)
@@ -113,6 +119,19 @@ void calculateCircumcircle(Simplex *simplex)
     simplex->circumcenter.x = x0;
     simplex->circumcenter.y = y0;
     simplex->circumradius = radius;
+
+    for (int i = 0; i < n; i++)
+    {
+        free(bxMatrix[i]);
+        free(byMatrix[i]);
+        free(aMatrix[i]);
+        free(cMatrix[i]);
+    }
+
+    free(bxMatrix);
+    free(byMatrix);
+    free(aMatrix);
+    free(cMatrix);
 
 #elif NO_DIM == 3
     int n = NO_DIM + 1;
@@ -182,6 +201,21 @@ void calculateCircumcircle(Simplex *simplex)
     simplex->circumcenter.y = y0;
     simplex->circumcenter.z = z0;
     simplex->circumradius = radius;
+
+    for (int i = 0; i < n; i++)
+    {
+        free(bxMatrix[i]);
+        free(byMatrix[i]);
+        free(bzMatrix[i]);
+        free(aMatrix[i]);
+        free(cMatrix[i]);
+    }
+
+    free(bxMatrix);
+    free(byMatrix);
+    free(bzMatrix);
+    free(aMatrix);
+    free(cMatrix);
 #else
     int n = NO_DIM + 1;
 
@@ -271,6 +305,25 @@ void calculateCircumcircle(Simplex *simplex)
         simplex->circumcenter.coords[i] = coords[i];
     }
     simplex->circumradius = radius;
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < NO_DIM; j++)
+        {
+            free(bMatrix[j][i]);
+        }
+        free(aMatrix[i]);
+        free(cMatrix[i]);
+    }
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        free(bMatrix[i]);
+    }
+
+    free(bMatrix);
+    free(aMatrix);
+    free(cMatrix);
 #endif
 }
 
@@ -330,7 +383,7 @@ double comparePoints(Point p1, Point p2)
 
 double comparePointsVoids(void *p1, void *p2)
 {
-    PointId *point1 = (PointId*)p1;
-    PointId *point2 = (PointId*)p2;
+    PointId *point1 = (PointId *)p1;
+    PointId *point2 = (PointId *)p2;
     return comparePoints(point1->point, point2->point);
 }

@@ -12,7 +12,8 @@ long long extern redBlackTreeRemoveTime;
 long long extern redBlackTreeNextNodeTime;
 
 int generateNextTestNumberOfPoints(int n);
-void testRedBlackTree();
+void testTIPP();
+void testRedBlackTreeUtilities();
 void testDoubleLinkedList();
 void printInformationsAboutSizeOfStructures();
 

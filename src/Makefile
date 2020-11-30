@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O3
+CFLAGS = -O3 -Wall -ggdb3
 LIBS = -lm
 
 FILES = \
@@ -27,13 +27,24 @@ FILES = \
 	utilities.h\
 	utilities.c
 
+TESTS = \
+	tests/mainTests.c\
+	tests/mainTests.h\
+	tests/testRedBlackTree.c\
+	tests/testRedBlackTree.h\
+
+MAIN_FILE = \
+	main.c
 
 OUT = out/DT
 
 all: main
 
-main : 
-	$(CC) $(FILES) $(CFLAGS) $(LIBS) -o $(OUT)
+main: 
+	$(CC) $(FILES) $(MAIN_FILE) $(CFLAGS) $(LIBS) -o $(OUT)
+
+test:
+	$(CC) $(FILES) $(TESTS) $(CFLAGS) $(LIBS) -o $(OUT)
 
 clean: 
 	rm -f out/DT

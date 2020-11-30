@@ -243,6 +243,11 @@ double laplaceExpansion(double **data, int n)
         det += wsp * data[0][i] * laplaceExpansion(minor, n - 1);
     }
 
+    for(int i = 0; i < n - 1; i++)
+    {
+        free(minor[i]);
+    }
+
     free(minor);
 
     // printf("det: %f \n", det);

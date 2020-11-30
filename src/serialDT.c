@@ -26,25 +26,7 @@ long long redBlackTreeGetTime = 0;
 long long redBlackTreeRemoveTime = 0;
 long long redBlackTreeNextNodeTime = 0;
 
-int main(int argc, char **argv)
-{
-    TIPP();
-
-    // int n = 0;
-    // for (int i = 0; i < 100; i++)
-    // {
-    //     printf("i: %d, n: %d\n", i, n);
-    //     n = generateNextTestNumberOfPoints(n);
-    // }
-
-    // printf("%d \n", -1 % 4);
-
-    // testRedBlackTree();
-    // testDoubleLinkedList();
-    return 0;
-}
-
-void TIPP()
+void TIPP(int k, int n)
 {
     // putPointsToPartitions(partitions, points);
 
@@ -56,10 +38,7 @@ void TIPP()
     Partition *partition = (Partition *)malloc(sizeof(Partition));
     initializePartition(partition);
 
-    int k = 10;
-    int n = 2;
-
-    printf("Generowanie partycji \n");
+    // printf("Generowanie partycji \n");
     generateInitialMesh(partition, k);
 
 #if DEBUG_TRIANGULATION == 1
@@ -72,78 +51,88 @@ void TIPP()
     printRedBlackTree(partition->vertices);
 #endif
 
-    printf("Obliczanie DT \n\n");
+    // printf("Obliczanie DT \n\n");
     // DelaunayTriangulation DT = computeDelaunayTriangulation(partition);
     // printf("partition->vertices->first->prev: %14p\n", partition->vertices->first->prev);
     // printf("partition->triangles->first->prev: %14p\n", partition->triangles->first->prev);
 
     struct timeval te;
     gettimeofday(&te, NULL);
-    long long time1 = te.tv_sec * 1000000LL + te.tv_usec / 1000;
+    long long time1 = te.tv_sec * 1000000LL + te.tv_usec;
     computeDelaunayTriangulation(partition, n);
     struct timeval te2;
     gettimeofday(&te2, NULL);
-    long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec / 1000;
+    long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
 
-    printf("%lld\n", time2 - time1);
+    printf("%d, %lld\n", n, time2 - time1);
     // printf("After DT\n");
-    printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
-    printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
-    printf("doubleLinkedListInsertTime2: %lld\n", doubleLinkedListInsertTime2);
+    // printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
+    // printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
+    // printf("doubleLinkedListInsertTime2: %lld\n", doubleLinkedListInsertTime2);
 
-    printf("createPolygonTime: %lld\n", createPolygonTime);
-    printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
-    printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
-    printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
+    // printf("createPolygonTime: %lld\n", createPolygonTime);
+    // printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
+    // printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
+    // printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
 
-    printf("redBlackTreeInsertTime: %lld\n", redBlackTreeInsertTime);
-    printf("redBlackTreeGetTime: %lld\n", redBlackTreeGetTime);
-    printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
-    printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
+    // printf("redBlackTreeInsertTime: %lld\n", redBlackTreeInsertTime);
+    // printf("redBlackTreeGetTime: %lld\n", redBlackTreeGetTime);
+    // printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
+    // printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
 
-    FILE *fp;
-    fp = fopen("./out/outputVertices.txt", "w+");
+    // FILE *fp;
+    // fp = fopen("./out/outputVertices.txt", "w+");
 
-    //void *pointer = partition->vertices->first;
-    redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
+    // //void *pointer = partition->vertices->first;
+    // redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
 
-    while (pointer != NULL)
-    {
-        PointId *point = (PointId *)pointer->data;
-        fprintf(fp, "%10.4f, %10.4f \n", point->point.x, point->point.y);
-        pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
-    }
+    // while (pointer != NULL)
+    // {
+    //     PointId *point = (PointId *)pointer->data;
+    //     fprintf(fp, "%10.4f, %10.4f \n", point->point.x, point->point.y);
+    //     pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
+    // }
 
-    fclose(fp);
+    // fclose(fp);
 
-    fp = fopen("./out/outputTriangles.txt", "w+");
+    // fp = fopen("./out/outputTriangles.txt", "w+");
 
-    pointer = minimumInRedBlackSubTree(partition->triangles->first);
+    // pointer = minimumInRedBlackSubTree(partition->triangles->first);
 
-    while (pointer != NULL)
-    {
-        // printf("Load next triangle\n");
-        Simplex *simplex = (Simplex *)pointer->data;
-        // printf("Loaded\n");
-        // fprintf(fp, "%10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y, simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
-        fprintf(fp, "%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n",
-                simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-                simplex->vertices[1].point.x, simplex->vertices[1].point.y,
-                simplex->vertices[1].point.x, simplex->vertices[1].point.y,
-                simplex->vertices[2].point.x, simplex->vertices[2].point.y,
-                simplex->vertices[2].point.x, simplex->vertices[2].point.y,
-                simplex->vertices[0].point.x, simplex->vertices[0].point.y);
+    // while (pointer != NULL)
+    // {
+    //     // printf("Load next triangle\n");
+    //     Simplex *simplex = (Simplex *)pointer->data;
+    //     // printf("Loaded\n");
+    //     // fprintf(fp, "%10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y, simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+    //     fprintf(fp, "%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n",
+    //             simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+    //             simplex->vertices[1].point.x, simplex->vertices[1].point.y,
+    //             simplex->vertices[1].point.x, simplex->vertices[1].point.y,
+    //             simplex->vertices[2].point.x, simplex->vertices[2].point.y,
+    //             simplex->vertices[2].point.x, simplex->vertices[2].point.y,
+    //             simplex->vertices[0].point.x, simplex->vertices[0].point.y);
 
-        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
-    }
+    //     pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+    // }
 
-    fclose(fp);
+    // fclose(fp);
+    freePartition(partition);
+    free(partition);
 }
 
 void initializePartition(Partition *partition)
 {
-    partition->vertices = newRedBlackTree(comparePointsVoids);
-    partition->triangles = newRedBlackTree(comparePositionOfTwoTriangles);
+    partition->vertices = newRedBlackTree(comparePointsVoids, free);
+    partition->globalVertices = newRedBlackTree(comparePointsVoids, free);
+    partition->triangles = newRedBlackTree(comparePositionOfTwoTriangles, freeSimplex);
+}
+
+void freePartition(Partition *partition)
+{
+    removeRedBlackTree(partition->vertices, true);
+    removeRedBlackTree(partition->globalVertices, true);
+    removeRedBlackTree(partition->triangles, true);
 }
 
 void putPointsToPartitions(Set *partitions, Set *points)
@@ -286,7 +275,7 @@ double comparePositionOfTwoPoints(void *a, void *b)
 
 void computeDelaunayTriangulation(Partition *partition, int stopAtStep)
 {
-    int count = partition->vertices->count;
+    // int count = partition->vertices->count;
     redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
 
     int c = 0;
@@ -321,63 +310,12 @@ void theMostNewInsertPoint(PointId *point, Partition *partition)
     printf("theMostNewInsertPoint function, point: %14p, x: %10.4f, y: %10.4f\n\n", point, point->point.x, point->point.y);
 #endif
 
-    int count = partition->triangles->count;
-    // DoubleLinkedListNode *pointer = partition->triangles->first;
-    // DoubleLinkedList list;
-    // DoubleLinkedListNode *current;
-    // current = list.first;
-    // list.first = NULL;
+    Simplex *simplex = findFirstSimplexToModify(point, partition);
 
-    redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->triangles->first);
-
-    int c = 0;
-
-    Simplex *simplex;
-    double squareDistance;
-    double squareRadius;
-
-    // #if DEBUG_TRIANGULATION == 1
-    //     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-    //     printf("Printing all of the triangles tree, but with details: \n\n");
-
-    //     while (pointer != NULL)
-    //     {
-    //         simplex = pointer->data;
-    //         printf("Creating polygon. Analyze of simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-    //         printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-    //                simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
-    //         printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-
-    //         pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
-    //     }
-    //     pointer = minimumInRedBlackSubTree(partition->triangles->first);
-
-    //     printf("End of printing triangles. \n\n");
-
-    // #endif
-
-    while (pointer != NULL)
+    if (simplex == NULL)
     {
-        simplex = (Simplex *)pointer->data;
-        squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
-        squareRadius = simplex->circumradius * simplex->circumradius;
-
-#if DEBUG_TRIANGULATION == 1
-        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-        printf("Analyze of simplex - %14p\n\n", simplex);
-#endif
-
-        if (squareDistance <= squareRadius)
-        {
-#if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
-#endif
-            break;
-        }
-
-        //pointer = getNextNode(pointer);
-        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - We didn't found simplex to modify. \n\n", (char *)__FILE__, __LINE__);
+        return;
     }
 
 #if DEBUG_TRIANGULATION == 1
@@ -388,96 +326,10 @@ void theMostNewInsertPoint(PointId *point, Partition *partition)
     printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
 #endif
 
-    LinkedList *trianglesToModify = newLinkedList();
-
-    if (squareDistance <= squareRadius)
-    {
-        // Teraz stwórz sobie listę odwiedzanych po kolei
-        // Trzeba oznaczać te sympleksy, które już odwiedziliśmy.
-
-        // Niech lista trianglesToModify przechowuje listę trójkątów do modyfikacji
-        // Niech lista listToAnalyze przechowuje listę trójkątów, które muszę jeszcze odwiedzić
-        // A drzewo tree te, które już dodałem kiedykolwiek do listy do analizy (aby nie odwiedzać ich kolejny raz).
-
-        LinkedList *listToAnalyze = newLinkedList();
-        redBlackTree *tree = newRedBlackTree(comparePointers);
-
-        pushToLinkedList(listToAnalyze, simplex);
-        insertIntoRedBlackTree(tree, simplex);
-
-        while (listToAnalyze->count != 0)
-        {
-            simplex = popFromLinkedList(listToAnalyze);
+    LinkedList *trianglesToModify = findTrianglesToModify(simplex, point);
 
 #if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("theMostNewInsertPoint function - simplex to analyze: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-            printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-                   simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
-            printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-
-            printf("Tree: \n");
-            printRedBlackTreeTriangles(tree);
-#endif
-
-            squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
-            squareRadius = simplex->circumradius * simplex->circumradius;
-
-            if (squareDistance <= squareRadius)
-            {
-                pushToLinkedList(trianglesToModify, simplex);
-
-#if DEBUG_TRIANGULATION == 1
-                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-                printf("This triangle must be later modified. Added to Linked List. Simplex: %14p \n\n", simplex);
-#endif
-
-                for (int i = 0; i < NO_DIM + 1; i++)
-                {
-                    Simplex *toAdd = simplex->neighbors[i];
-
-                    if (toAdd == NULL)
-                        continue;
-
-                    redBlackTreeNode *nodeFromTree = getFromRedBlackTree(tree, toAdd);
-                    Simplex *fromTree = NULL;
-
-                    if (nodeFromTree != NULL)
-                    {
-                        fromTree = (Simplex *)nodeFromTree->data;
-                    }
-
-                    if (fromTree == NULL)
-                    {
-#if DEBUG_TRIANGULATION == 1
-                        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-                        printf("This neighbor must be later analized. Added to Linked List: %14p \n\n", toAdd);
-#endif
-                        pushToLinkedList(listToAnalyze, toAdd);
-                        insertIntoRedBlackTree(tree, toAdd);
-                    }
-                    else
-                    {
-                        if (toAdd != fromTree)
-                        {
-                            fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - firstly founded this pointer in tree, but later is other that expected. toAdd: %14p, fromTree: %14p\n", (char *)__FILE__, __LINE__, toAdd, fromTree);
-                            // #if DEBUG_TRIANGULATION == 1
-                            //                             printf("This neighbor must be later analized. Also he has the same circum as current, but other points. Added to Linked List: %14p \n\n", toAdd);
-                            // #endif
-                            //                             pushToLinkedList(listToAnalyze, toAdd);
-                        }
-                        // Exists in tree, so we processed ealier this simplex.
-                    }
-                }
-            }
-        }
-
-        removeRedBlackTree(tree, false);
-    }
-
     LinkedListNode *current = trianglesToModify->first;
-
-#if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
     printf("theMostNewInsertPoint function - \x1B[34mfounded triangles to modify\x1B[0m (list):\n");
 
@@ -490,86 +342,14 @@ void theMostNewInsertPoint(PointId *point, Partition *partition)
         printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
         current = current->next;
     }
-
+    current = trianglesToModify->first;
     printf("Now we will create polygon. \n\n");
 #endif
 
-    current = trianglesToModify->first;
-
-    PolygonList *edges = (PolygonList *)malloc(sizeof(PolygonList));
-    PolygonList *removedEdges = (PolygonList *)malloc(sizeof(PolygonList));
-
-    while (current != NULL)
-    {
-        Simplex *data = current->data;
+    PolygonList *edges = findPolygon(point, partition, trianglesToModify);
 
 #if DEBUG_TRIANGULATION == 1
-        simplex = data;
-        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-        printf("Creating polygon. Analyze of simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
-        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-#endif
-
-        for (int i = 0; i < NO_DIM + 1; i++)
-        {
-            Edge *edge = createNewEdge(data, i);
-            PolygonLinkedListNode *founded = findInPolygonList(edges, edge);
-
-#if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("Current edge: %14p, Founded edge in edges: %14p\n", edge, founded);
-            printf("Edge: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f\n", edge->points[0].point.x, edge->points[0].point.y, edge->points[1].point.x, edge->points[1].point.y);
-            if (founded != NULL)
-                printf("Edge from founded: %14p, p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f\n", founded->edge, founded->edge->points[0].point.x, founded->edge->points[0].point.y, founded->edge->points[1].point.x, founded->edge->points[1].point.y);
-            printf("\n");
-#endif
-
-            if (founded == NULL)
-            {
-                founded = findInPolygonList(removedEdges, edge);
-                if (founded == NULL)
-                {
-                    insertIntoPolygonList(edges, edge);
-                }
-            }
-            else
-            {
-#if DEBUG_TRIANGULATION == 1
-                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-                printf("Edge founded and removed from polygon list: %14p, p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f\n\n", founded->edge, founded->edge->points[0].point.x, founded->edge->points[0].point.y, founded->edge->points[1].point.x, founded->edge->points[1].point.y);
-#endif
-                removeFromPolygonList(edges, founded);
-                insertIntoPolygonList(removedEdges, founded->edge);
-            }
-        }
-
-#if DEBUG_TRIANGULATION == 1
-        printf("partition->triangles Tree:\n");
-        printRedBlackTreeTriangles(partition->triangles);
-#endif
-        //removeFromDoubleLinkedList(partition->triangles, current->data);
-        redBlackTreeNode *fromTree = getFromRedBlackTree(partition->triangles, data);
-        if (fromTree == NULL)
-            fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - Don't found simplex in triangles tree (partition->triangles), which one we want to remove. Simplex: %14p, fromTree: %14p \n", (char *)__FILE__, __LINE__, data, fromTree);
-
-#if DEBUG_TRIANGULATION == 1
-        printf("Removing from triangle tree this simplex: \x1B[33m%14p, node: %14p\x1B[0m\n", fromTree->data, fromTree);
-        simplex = (Simplex *)fromTree->data;
-        printf("Node: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", fromTree, fromTree->data, fromTree->parent, fromTree->left, fromTree->right, fromTree->colour == Red ? "Red  " : "Black");
-        printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f, Neighbors: n1: %14p, n2: %14p, n3: %14p\n\n",
-               simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y, simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-#endif
-
-        removeFromRedBlackTree(partition->triangles, fromTree);
-        current = current->next;
-    }
-
     PolygonLinkedListNode *currentEdge = edges->first;
-
-#if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
     printf("Created polygon (list):\n");
     while (currentEdge != NULL)
@@ -587,71 +367,8 @@ void theMostNewInsertPoint(PointId *point, Partition *partition)
     // Teraz analizujemy każdą "krawędź krawędzi" (wymyśleć jak to lepiej nazwać) - dla każdej krawędzi sprawdzam jej krawędzi.
     // W 2D będą to tylko wierzchołki, w 3D będą to krawędzie, w 4D trójkąty i tak dalej.
 
-    redBlackTree *treeEdgeOfEdges = newRedBlackTree(compareTwoEdgesOfEdges);
-
-    while (currentEdge != NULL)
-    {
-        for (int i = 0; i < NO_DIM; i++)
-        {
-            EdgeOfEdge *e = newEdgeOfEdge(currentEdge->edge, i);
-#if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("Created edge of edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
-#endif
-            redBlackTreeNode *nodeFromTree = getFromRedBlackTree(treeEdgeOfEdges, e);
-            EdgeOfEdge *fromTree = NULL;
-
-            if (nodeFromTree != NULL)
-            {
-                fromTree = (EdgeOfEdge *)nodeFromTree->data;
-            }
-
-#if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("NodeFromTree: %14p ", nodeFromTree);
-            if (nodeFromTree != NULL)
-                printf("fromTree: %14p", fromTree);
-            printf("\n\n");
-#endif
-
-            if (fromTree == NULL)
-            {
-#if DEBUG_TRIANGULATION == 1
-                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-                printf("Before inserting edge of edge to tree: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
-#endif
-                insertIntoRedBlackTree(treeEdgeOfEdges, e);
-#if DEBUG_TRIANGULATION == 1
-                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-                printf("After inserting edge of edge to tree: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
-#endif
-            }
-            else
-            {
-                free(e);
-                if (fromTree->second == NULL)
-                {
-                    fromTree->second = currentEdge->edge;
-                    currentEdge->edge->neighbors[i] = fromTree->first;
-#if DEBUG_TRIANGULATION == 1
-                    printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-                    printf("Founded edge of edge in tree: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n", currentEdge->edge, currentEdge->edge->first, currentEdge->edge->second, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y);
-                    printf("i: %d, Neighbors: n1: %14p, n2: %14p \n", i, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
-                    printf("Edge of Edge fromTree: %14p, first: %14p, second: %14p\n\n", fromTree, fromTree->first, fromTree->second);
-#endif
-                }
-                else
-                {
-                    fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - founded more than 2 edges for one edge of edges. Should be only 2 edges. \n", (char *)__FILE__, __LINE__);
-                    fprintf(stderr, "fromTree: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f\n\n", fromTree, fromTree->first, fromTree->second, fromTree->points[0].point.x, fromTree->points[0].point.y);
-                }
-            }
-        }
-
-        currentEdge = currentEdge->next;
-    }
-
-    currentEdge = edges->first;
+    redBlackTree *treeEdgeOfEdges = createTreeOfEdgeOfEdges(edges);
+    uploadInformationsAboutNeighborsInEdges(edges, treeEdgeOfEdges);
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
@@ -682,143 +399,29 @@ void theMostNewInsertPoint(PointId *point, Partition *partition)
     printf("\n");
 #endif
 
-    while (currentEdge != NULL)
-    {
-        for (int i = 0; i < NO_DIM; i++)
-        {
-            EdgeOfEdge *e = newEdgeOfEdge(currentEdge->edge, i);
-
-#if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("Created edge of edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
-#endif
-
-            redBlackTreeNode *nodeFromTree = getFromRedBlackTree(treeEdgeOfEdges, e);
-            EdgeOfEdge *fromTree = NULL;
-
-            if (nodeFromTree != NULL)
-            {
-                fromTree = (EdgeOfEdge *)nodeFromTree->data;
-            }
-
-#if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("NodeFromTree: %14p ", nodeFromTree);
-            if (nodeFromTree != NULL)
-                printf("fromTree: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f", fromTree, fromTree->first, fromTree->second, fromTree->points[0].point.x, fromTree->points[0].point.y);
-            printf("\n\n");
-#endif
-
-            if (fromTree == NULL)
-            {
-                fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - we didn't found this EdgeOfEdge in tree. \n", (char *)__FILE__, __LINE__);
-            }
-            else
-            {
-                if (fromTree->second != NULL)
-                {
-                    currentEdge->edge->neighbors[i] = fromTree->second;
-#if DEBUG_TRIANGULATION == 1
-                    printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-                    printf("Founded edge of edge in tree: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n", currentEdge->edge, currentEdge->edge->first, currentEdge->edge->second, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y);
-                    printf("i: %d, Neighbors: n1: %14p, n2: %14p \n", i, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
-                    printf("Edge of Edge fromTree: %14p, first: %14p, second: %14p\n\n", fromTree, fromTree->first, fromTree->second);
-#endif
-                }
-                else
-                {
-                    fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - We should find second edge for this edge of edges. \n", (char *)__FILE__, __LINE__);
-                }
-            }
-            free(e);
-        }
-
-        currentEdge = currentEdge->next;
-    }
-
     removeRedBlackTree(treeEdgeOfEdges, true);
 
     // Teraz mamy dla każdej informacji także o sąsiadach. Możemy to wykorzystać do zapisywania sąsiadów w sympleksach.
     // PointId points[3] = {*point, currentNode->edge->points[0], currentNode->edge->points[1]};
 
-    currentEdge = edges->first;
-
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-    printf("Just before adding new simplexes to triangles tree. \n\nTriangles tree:\n");
+    printf("Just before adding new simplexes to triangles tree. \n\npartition->triangles tree:\n");
     printRedBlackTreeTriangles(partition->triangles);
 #endif
 
-    LinkedList *simplexList = newLinkedList();
-
-    while (currentEdge != NULL)
-    {
-        Simplex *result = (Simplex *)malloc(sizeof(Simplex));
-        // PointId points[NO_DIM + 1] = addPointToSortedArray(currentEdge->edge->points, point, NO_DIM + 1);
-        // sortPointsArray(&points, NO_DIM + 1);
-        PointId points[NO_DIM + 1]; // = addPointAsFirstToArray(currentEdge->edge->points, point, NO_DIM + 1);
-        addPointAsFirstToArray(points, currentEdge->edge->points, point, NO_DIM + 1);
-        createNewSimplex(result, points);
-
-        result->neighbors[0] = currentEdge->edge->second;
-        if (result->neighbors[0] != NULL)
-        {
-            //Tutaj trzeba naprawić wskaźnik do obecnego sympleksu, trzeba rozpoznać po drugiej stronie który to dokładnie jest. Może zapisywać to w edge? Jako i.
-            result->neighbors[0]->neighbors[currentEdge->edge->secondIndex] = result;
-        }
-
-        currentEdge->edge->first = result;
-        pushToLinkedList(simplexList, result);
-
-        currentEdge = currentEdge->next;
-
-#if DEBUG_TRIANGULATION == 1
-        simplex = result;
-        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-        printf("Created Simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
-        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-        printf("Current Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n\n",
-               currentEdge->edge, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y,
-               currentEdge->edge->points[1].point.x, currentEdge->edge->points[1].point.y, currentEdge->edge->first, currentEdge->edge->second,
-               currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
-#endif
-    }
+    LinkedList *simplexList = createSimplexList(edges, point);
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
     printf("Created linked list with simplexes, now we should correct neighbors and add to Red Black Tree. \n");
 #endif
 
-    currentEdge = edges->first;
+    updateAndAddSimplexes(edges, partition);
 
-    while (currentEdge != NULL)
-    {
-        Simplex *result = (Simplex *)currentEdge->edge->first;
-
-        for (int i = 1; i < NO_DIM + 1; i++)
-        {
-            result->neighbors[i] = currentEdge->edge->neighbors[i - 1]->first;
-        }
-
-        sortPointsInSimplex(result);
-        insertIntoRedBlackTree(partition->triangles, result);
-
-#if DEBUG_TRIANGULATION == 1
-        simplex = result;
-        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-        printf("Created new simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
-        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-        printf("Triangles tree: \n");
-        printRedBlackTreeTriangles(partition->triangles);
-#endif
-        currentEdge = currentEdge->next;
-        //insertIntoDoubleLinkedList2(partition->triangles, result, comparePositionOfTwoTriangles);
-        // printf("Triangle inserted: %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", result->circumcenter.x, result->circumcenter.y, result->circumradius, result->vertices[0].point.x, result->vertices[0].point.y, result->vertices[1].point.x, result->vertices[1].point.y, result->vertices[2].point.x, result->vertices[2].point.y);
-    }
+    removePolygonList(edges, true);
+    removeLinkedList(simplexList, false);
+    removeLinkedList(trianglesToModify, true);
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
@@ -849,142 +452,7 @@ PointId **combination(PointId *data, int n)
     return result;
 }
 
-double pointInsideCircumcircle(Point point, PointId points[NO_DIM + 1])
-{
-    //If >0, point inside
-    Simplex simplex;
-    memcpy(simplex.vertices, points, (NO_DIM + 1) * sizeof(PointId));
 
-#if NO_DIM == 2
-    int n = NO_DIM + 1;
-
-    double r[NO_DIM + 1];
-    for (int i = 0; i < n; i++)
-    {
-        r[i] = simplex.vertices[i].point.x * simplex.vertices[i].point.x + simplex.vertices[i].point.y * simplex.vertices[i].point.y;
-    }
-
-    double **bxMatrix = (double **)malloc(n * sizeof(double *));
-    double **byMatrix = (double **)malloc(n * sizeof(double *));
-    double **aMatrix = (double **)malloc(n * sizeof(double *));
-    double **cMatrix = (double **)malloc(n * sizeof(double *));
-
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i] = (double *)malloc(n * sizeof(double));
-        byMatrix[i] = (double *)malloc(n * sizeof(double));
-        aMatrix[i] = (double *)malloc(n * sizeof(double));
-        cMatrix[i] = (double *)malloc(n * sizeof(double));
-    }
-
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i][0] = r[i];
-        bxMatrix[i][1] = simplex.vertices[i].point.y;
-        bxMatrix[i][2] = 1;
-
-        byMatrix[i][0] = r[i];
-        byMatrix[i][1] = simplex.vertices[i].point.x;
-        byMatrix[i][2] = 1;
-
-        aMatrix[i][0] = simplex.vertices[i].point.x;
-        aMatrix[i][1] = simplex.vertices[i].point.y;
-        aMatrix[i][2] = 1;
-
-        cMatrix[i][0] = r[i];
-        cMatrix[i][1] = simplex.vertices[i].point.x;
-        cMatrix[i][2] = simplex.vertices[i].point.y;
-    }
-
-    double bx = -determinant(bxMatrix, n);
-    double by = determinant(byMatrix, n);
-    double a = determinant(aMatrix, n);
-    double c = -determinant(cMatrix, n);
-
-    double x0 = -bx / (2 * a);
-    double y0 = -by / (2 * a);
-
-    //Zastanowić się, czy potrzebujemy radius, czy wystarczy nam radius^2. Wtedy jedna operacja sqrt mniej.
-    double radius = sqrt(bx * bx + by * by - 4 * a * c) / (2 * abs(a));
-
-    simplex.circumcenter.x = x0;
-    simplex.circumcenter.y = y0;
-    simplex.circumradius = radius;
-#else
-    int n = NO_DIM + 1;
-
-    double r[NO_DIM + 1];
-    for (int i = 0; i < n; i++)
-    {
-        r[i] = simplex.vertices[i].point.x * simplex.vertices[i].point.x + simplex.vertices[i].point.y * simplex.vertices[i].point.y + simplex.vertices[i].point.z * simplex.vertices[i].point.z;
-    }
-
-    double **bxMatrix = (double **)malloc(n * sizeof(double *));
-    double **byMatrix = (double **)malloc(n * sizeof(double *));
-    double **bzMatrix = (double **)malloc(n * sizeof(double *));
-    double **aMatrix = (double **)malloc(n * sizeof(double *));
-    double **cMatrix = (double **)malloc(n * sizeof(double *));
-
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i] = (double *)malloc(n * sizeof(double));
-        byMatrix[i] = (double *)malloc(n * sizeof(double));
-        bzMatrix[i] = (double *)malloc(n * sizeof(double));
-        aMatrix[i] = (double *)malloc(n * sizeof(double));
-        cMatrix[i] = (double *)malloc(n * sizeof(double));
-    }
-
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i][0] = r[i];
-        bxMatrix[i][1] = simplex.vertices[i].point.y;
-        bxMatrix[i][2] = simplex.vertices[i].point.z;
-        bxMatrix[i][3] = 1;
-
-        byMatrix[i][0] = r[i];
-        byMatrix[i][1] = simplex.vertices[i].point.x;
-        byMatrix[i][2] = simplex.vertices[i].point.z;
-        byMatrix[i][3] = 1;
-
-        bzMatrix[i][0] = r[i];
-        bzMatrix[i][1] = simplex.vertices[i].point.x;
-        bzMatrix[i][2] = simplex.vertices[i].point.y;
-        bzMatrix[i][3] = 1;
-
-        aMatrix[i][0] = simplex.vertices[i].point.x;
-        aMatrix[i][1] = simplex.vertices[i].point.y;
-        aMatrix[i][2] = simplex.vertices[i].point.z;
-        aMatrix[i][3] = 1;
-
-        cMatrix[i][0] = r[i];
-        cMatrix[i][1] = simplex.vertices[i].point.x;
-        cMatrix[i][2] = simplex.vertices[i].point.y;
-        cMatrix[i][3] = simplex.vertices[i].point.z;
-    }
-
-    double bx = determinant(bxMatrix, n);
-    double by = -determinant(byMatrix, n);
-    double bz = determinant(bzMatrix, n);
-    double a = determinant(aMatrix, n);
-    double c = -determinant(cMatrix, n);
-
-    double x0 = bx / (2 * a);
-    double y0 = by / (2 * a);
-    double z0 = bz / (2 * a);
-
-    double radius = sqrt(bx * bx + by * by + bz * bz - 4 * a * c) / (2 * abs(a));
-
-    simplex.circumcenter.x = x0;
-    simplex.circumcenter.y = y0;
-    simplex.circumcenter.z = z0;
-    simplex.circumradius = radius;
-
-    double squareDistance = squareOfDistanceFromPointToPoint(simplex.circumcenter, point);
-    double squareRadius = simplex.circumradius * simplex.circumradius;
-
-    return squareRadius - squareDistance;
-#endif
-}
 
 double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2)
 {
@@ -1108,6 +576,20 @@ void printRedBlackTree(redBlackTree *tree)
     printf("\n\n");
 }
 
+void printRedBlackTreeString(redBlackTree *tree, char* (*printData)(void *))
+{
+    printf("\nRed-Black Tree:\n");
+    redBlackTreeNode *node = minimumInRedBlackSubTree(tree->first);
+    printf("tree->first: %14p\n", tree->first);
+
+    while (node != NULL)
+    {
+        printf("Node: %14p, Data: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s, %s\n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black", printData(node->data));
+        node = getNextNodeFromRedBlackTree(tree, node);
+    }
+    printf("\n\n");
+}
+
 void printRedBlackTreeTriangles(redBlackTree *tree)
 {
     printf("\nRed-Black Tree:\n");
@@ -1124,4 +606,484 @@ void printRedBlackTreeTriangles(redBlackTree *tree)
         node = getNextNodeFromRedBlackTree(tree, node);
     }
     printf("\n\n");
+}
+
+Simplex *findFirstSimplexToModify(PointId *point, Partition *partition)
+{
+    // redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->triangles->first);
+    Simplex *forSearch = (Simplex*)malloc(sizeof(Simplex));
+    forSearch->circumcenter.x = point->point.x;
+    forSearch->circumradius = 0;
+    redBlackTreeNode *pointer = getFromRedBlackTreeFirstSmaller(partition->triangles, forSearch);
+
+    free(forSearch);
+
+    Simplex *simplex;
+    double squareDistance;
+    double squareRadius;
+
+    while (pointer != NULL)
+    {
+        simplex = (Simplex *)pointer->data;
+        squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
+        squareRadius = simplex->circumradius * simplex->circumradius;
+
+#if DEBUG_TRIANGULATION == 1
+        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+        printf("Analyze of simplex - %14p\n\n", simplex);
+#endif
+
+        if (squareDistance <= squareRadius)
+        {
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
+#endif
+            break;
+        }
+
+        //pointer = getNextNode(pointer);
+        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+    }
+
+    return simplex;
+}
+
+LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
+{
+    LinkedList *trianglesToModify = newLinkedList(freeSimplex);
+
+    // Teraz stwórz sobie listę odwiedzanych po kolei
+    // Trzeba oznaczać te sympleksy, które już odwiedziliśmy.
+
+    // Niech lista trianglesToModify przechowuje listę trójkątów do modyfikacji
+    // Niech lista listToAnalyze przechowuje listę trójkątów, które muszę jeszcze odwiedzić
+    // A drzewo tree te, które już dodałem kiedykolwiek do listy do analizy (aby nie odwiedzać ich kolejny raz).
+
+    LinkedList *listToAnalyze = newLinkedList(freeSimplex);
+    redBlackTree *tree = newRedBlackTree(comparePointers, freeSimplex);
+
+    pushToLinkedList(listToAnalyze, simplex);
+    insertIntoRedBlackTree(tree, simplex);
+
+    while (listToAnalyze->count != 0)
+    {
+        simplex = popFromLinkedList(listToAnalyze);
+
+#if DEBUG_TRIANGULATION == 1
+        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+        printf("theMostNewInsertPoint function - simplex to analyze: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+
+        // printf("Tree (tree with simplexes anytime added to analyze): \n");
+        // printRedBlackTreeTriangles(tree);
+#endif
+
+        double squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
+        double squareRadius = simplex->circumradius * simplex->circumradius;
+
+        if (squareDistance <= squareRadius)
+        {
+            pushToLinkedList(trianglesToModify, simplex);
+
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("This triangle must be later modified. Added to Linked List. Simplex: %14p \n\n", simplex);
+#endif
+
+            for (int i = 0; i < NO_DIM + 1; i++)
+            {
+                Simplex *toAdd = simplex->neighbors[i];
+
+                if (toAdd == NULL)
+                    continue;
+
+                redBlackTreeNode *nodeFromTree = getFromRedBlackTree(tree, toAdd);
+                Simplex *fromTree = NULL;
+
+                if (nodeFromTree != NULL)
+                {
+                    fromTree = (Simplex *)nodeFromTree->data;
+                }
+
+                if (fromTree == NULL)
+                {
+#if DEBUG_TRIANGULATION == 1
+                    printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                    printf("This neighbor must be later analized. Added to Linked List: %14p \n\n", toAdd);
+#endif
+                    pushToLinkedList(listToAnalyze, toAdd);
+                    insertIntoRedBlackTree(tree, toAdd);
+                }
+                else
+                {
+                    if (toAdd != fromTree)
+                    {
+                        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - firstly founded this pointer in tree, but later is other that expected. toAdd: %14p, fromTree: %14p\n", (char *)__FILE__, __LINE__, toAdd, fromTree);
+                        // #if DEBUG_TRIANGULATION == 1
+                        //                             printf("This neighbor must be later analized. Also he has the same circum as current, but other points. Added to Linked List: %14p \n\n", toAdd);
+                        // #endif
+                        //                             pushToLinkedList(listToAnalyze, toAdd);
+                    }
+                    // Exists in tree, so we processed ealier this simplex.
+                }
+            }
+        }
+    }
+
+    removeLinkedList(listToAnalyze, false);
+    removeRedBlackTree(tree, false);
+
+    return trianglesToModify;
+}
+
+PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trianglesToModify)
+{
+    PolygonList *edges = newPolygonList(freeEdge);
+    PolygonList *removedEdges = newPolygonList(freeEdge);
+    LinkedListNode *current = trianglesToModify->first;
+
+    while (current != NULL)
+    {
+        Simplex *data = current->data;
+
+#if DEBUG_TRIANGULATION == 1
+        Simplex *simplex = data;
+        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+        printf("Creating polygon. Analyze of simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+#endif
+
+        for (int i = 0; i < NO_DIM + 1; i++)
+        {
+            Edge *edge = createNewEdge(data, i);
+
+// Do usunięcia
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("Current Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n\n",
+                   edge, edge->points[0].point.x, edge->points[0].point.y,
+                   edge->points[1].point.x, edge->points[1].point.y, edge->first, edge->second,
+                   edge->secondIndex, edge->neighbors[0], edge->neighbors[1]);
+#endif
+
+            PolygonLinkedListNode *founded = findInPolygonList(edges, edge);
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("Current edge: %14p, Founded edge in edges: %14p\n", edge, founded);
+            printf("Current Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n\n",
+                   edge, edge->points[0].point.x, edge->points[0].point.y,
+                   edge->points[1].point.x, edge->points[1].point.y, edge->first, edge->second,
+                   edge->secondIndex, edge->neighbors[0], edge->neighbors[1]);
+            if (founded != NULL)
+                printf("Edge from founded: %14p, p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f\n", founded->edge, founded->edge->points[0].point.x, founded->edge->points[0].point.y, founded->edge->points[1].point.x, founded->edge->points[1].point.y);
+            printf("\n");
+#endif
+
+            if (founded == NULL)
+            {
+                founded = findInPolygonList(removedEdges, edge);
+                if (founded == NULL)
+                {
+                    insertIntoPolygonList(edges, edge);
+                }
+            }
+            else
+            {
+#if DEBUG_TRIANGULATION == 1
+                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("Edge founded and removed from polygon list: %14p, p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f\n\n", founded->edge, founded->edge->points[0].point.x, founded->edge->points[0].point.y, founded->edge->points[1].point.x, founded->edge->points[1].point.y);
+#endif
+                freeEdge(edge);
+                insertIntoPolygonList(removedEdges, founded->edge);
+                removeFromPolygonList(edges, founded);
+            }
+        }
+
+#if DEBUG_TRIANGULATION == 1
+        printf("partition->triangles Tree:\n");
+        printRedBlackTreeTriangles(partition->triangles);
+#endif
+        //removeFromDoubleLinkedList(partition->triangles, current->data);
+        redBlackTreeNode *fromTree = getFromRedBlackTree(partition->triangles, data);
+        if (fromTree == NULL)
+            fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - Don't found simplex in triangles tree (partition->triangles), which one we want to remove. Simplex: %14p, fromTree: %14p \n", (char *)__FILE__, __LINE__, data, fromTree);
+
+#if DEBUG_TRIANGULATION == 1
+        printf("Removing from triangle tree this simplex: \x1B[33m%14p, node: %14p\x1B[0m\n", fromTree->data, fromTree);
+        simplex = (Simplex *)fromTree->data;
+        printf("Node: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", fromTree, fromTree->data, fromTree->parent, fromTree->left, fromTree->right, fromTree->colour == Red ? "Red  " : "Black");
+        printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f, Neighbors: n1: %14p, n2: %14p, n3: %14p\n\n",
+               simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y, simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+        printf("partition->triangles: \n");
+        printRedBlackTreeTriangles(partition->triangles);
+#endif
+
+        removeFromRedBlackTree(partition->triangles, fromTree);
+
+#if DEBUG_TRIANGULATION == 1
+        printf("partition->triangles: \n");
+        printRedBlackTreeTriangles(partition->triangles);
+#endif
+
+        //Potencjalnie niebezpieczne
+        // freeSimplex(data);
+        current = current->next;
+    }
+
+    removePolygonList(removedEdges, true);
+    return edges;
+}
+
+redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges)
+{
+    redBlackTree *treeEdgeOfEdges = newRedBlackTree(compareTwoEdgesOfEdges, freeEdgeOfEdge);
+    PolygonLinkedListNode *currentEdge = edges->first;
+
+    while (currentEdge != NULL)
+    {
+        for (int i = 0; i < NO_DIM; i++)
+        {
+            EdgeOfEdge *e = newEdgeOfEdge(currentEdge->edge, i);
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("Created edge of edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
+#endif
+            redBlackTreeNode *nodeFromTree = getFromRedBlackTree(treeEdgeOfEdges, e);
+            EdgeOfEdge *fromTree = NULL;
+
+            if (nodeFromTree != NULL)
+            {
+                fromTree = (EdgeOfEdge *)nodeFromTree->data;
+            }
+
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("NodeFromTree: %14p ", nodeFromTree);
+            if (nodeFromTree != NULL)
+                printf("fromTree: %14p", fromTree);
+            printf("\n\n");
+#endif
+
+            if (fromTree == NULL)
+            {
+#if DEBUG_TRIANGULATION == 1
+                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("Before inserting edge of edge to tree: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
+#endif
+                insertIntoRedBlackTree(treeEdgeOfEdges, e);
+#if DEBUG_TRIANGULATION == 1
+                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("After inserting edge of edge to tree: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
+#endif
+            }
+            else
+            {
+                freeEdgeOfEdge(e);
+                if (fromTree->second == NULL)
+                {
+                    fromTree->second = currentEdge->edge;
+                    currentEdge->edge->neighbors[i] = fromTree->first;
+#if DEBUG_TRIANGULATION == 1
+                    printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                    printf("Founded edge of edge in tree: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n", currentEdge->edge, currentEdge->edge->first, currentEdge->edge->second, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y);
+                    printf("i: %d, Neighbors: n1: %14p, n2: %14p \n", i, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+                    printf("Edge of Edge fromTree: %14p, first: %14p, second: %14p\n\n", fromTree, fromTree->first, fromTree->second);
+#endif
+                }
+                else
+                {
+                    fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - founded more than 2 edges for one edge of edges. Should be only 2 edges. \n", (char *)__FILE__, __LINE__);
+                    fprintf(stderr, "fromTree: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f\n\n", fromTree, fromTree->first, fromTree->second, fromTree->points[0].point.x, fromTree->points[0].point.y);
+                    sleep(4);
+                }
+            }
+        }
+
+        currentEdge = currentEdge->next;
+    }
+
+    return treeEdgeOfEdges;
+}
+
+void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *treeEdgeOfEdges)
+{
+    PolygonLinkedListNode *currentEdge = edges->first;
+    while (currentEdge != NULL)
+    {
+        for (int i = 0; i < NO_DIM; i++)
+        {
+            EdgeOfEdge *e = newEdgeOfEdge(currentEdge->edge, i);
+
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("Created edge of edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0].point.x, e->points[0].point.y);
+#endif
+
+            redBlackTreeNode *nodeFromTree = getFromRedBlackTree(treeEdgeOfEdges, e);
+            EdgeOfEdge *fromTree = NULL;
+
+            if (nodeFromTree != NULL)
+            {
+                fromTree = (EdgeOfEdge *)nodeFromTree->data;
+            }
+
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("NodeFromTree: %14p ", nodeFromTree);
+            if (nodeFromTree != NULL)
+                printf("fromTree: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f", fromTree, fromTree->first, fromTree->second, fromTree->points[0].point.x, fromTree->points[0].point.y);
+            printf("\n\n");
+#endif
+
+            if (fromTree == NULL)
+            {
+                fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - we didn't found this EdgeOfEdge in tree. \n", (char *)__FILE__, __LINE__);
+            }
+            else
+            {
+                if (fromTree->second == currentEdge->edge)
+                {
+                    if (fromTree->first != NULL)
+                    {
+                        currentEdge->edge->neighbors[i] = fromTree->first;
+                    }
+                    else
+                    {
+                        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - Second Edge should be connected to this Edge of Edge. \n", (char *)__FILE__, __LINE__);
+                    }
+                }
+                else
+                {
+                    if (fromTree->first == currentEdge->edge)
+                    {
+                        if (fromTree->second != NULL)
+                        {
+                            currentEdge->edge->neighbors[i] = fromTree->second;
+                        }
+                        else
+                        {
+                            fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - Second Edge should be connected to this Edge of Edge. \n", (char *)__FILE__, __LINE__);
+                        }
+                    }
+                    else
+                    {
+                        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - We should be connected to this Edge of Edge. \n", (char *)__FILE__, __LINE__);
+                    }
+                }
+
+#if DEBUG_TRIANGULATION == 1
+                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("Current edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n", currentEdge->edge, currentEdge->edge->first, currentEdge->edge->second, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y);
+                printf("i: %d, Neighbors: n1: %14p, n2: %14p \n", i, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+                printf("Edge of Edge fromTree: %14p, first: %14p, second: %14p\n\n", fromTree, fromTree->first, fromTree->second);
+#endif
+
+                //                 if (fromTree->second != NULL)
+                //                 {
+                //                     currentEdge->edge->neighbors[i] = fromTree->second;
+                // #if DEBUG_TRIANGULATION == 1
+                //                     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                //                     printf("Current edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n", currentEdge->edge, currentEdge->edge->first, currentEdge->edge->second, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y);
+                //                     printf("i: %d, Neighbors: n1: %14p, n2: %14p \n", i, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+                //                     printf("Edge of Edge fromTree: %14p, first: %14p, second: %14p\n\n", fromTree, fromTree->first, fromTree->second);
+                // #endif
+                //                 }
+                //                 else
+                //                 {
+                //                     fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - We should find second edge for this edge of edges. \n", (char *)__FILE__, __LINE__);
+                //                 }
+            }
+            freeEdgeOfEdge(e);
+        }
+
+        currentEdge = currentEdge->next;
+    }
+}
+
+LinkedList *createSimplexList(PolygonList *edges, PointId *point)
+{
+    PolygonLinkedListNode *currentEdge = edges->first;
+    LinkedList *simplexList = newLinkedList(freeSimplex);
+
+    while (currentEdge != NULL)
+    {
+        Simplex *result = (Simplex *)malloc(sizeof(Simplex));
+        // PointId points[NO_DIM + 1] = addPointToSortedArray(currentEdge->edge->points, point, NO_DIM + 1);
+        // sortPointsArray(&points, NO_DIM + 1);
+        PointId points[NO_DIM + 1]; // = addPointAsFirstToArray(currentEdge->edge->points, point, NO_DIM + 1);
+        addPointAsFirstToArray(points, currentEdge->edge->points, point, NO_DIM + 1);
+        createNewSimplex(result, points);
+
+        result->neighbors[0] = currentEdge->edge->second;
+        if (result->neighbors[0] != NULL)
+        {
+            //Tutaj trzeba naprawić wskaźnik do obecnego sympleksu, trzeba rozpoznać po drugiej stronie który to dokładnie jest. Może zapisywać to w edge? Jako i.
+            result->neighbors[0]->neighbors[currentEdge->edge->secondIndex] = result;
+        }
+
+        currentEdge->edge->first = result;
+        pushToLinkedList(simplexList, result);
+
+#if DEBUG_TRIANGULATION == 1
+        Simplex *simplex = result;
+        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+        printf("Created Simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+        printf("Current Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n\n",
+               currentEdge->edge, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y,
+               currentEdge->edge->points[1].point.x, currentEdge->edge->points[1].point.y, currentEdge->edge->first, currentEdge->edge->second,
+               currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+#endif
+
+        currentEdge = currentEdge->next;
+    }
+
+    return simplexList;
+}
+
+void updateAndAddSimplexes(PolygonList *edges, Partition *partition)
+{
+    PolygonLinkedListNode *currentEdge = edges->first;
+
+    while (currentEdge != NULL)
+    {
+
+        Simplex *result = (Simplex *)currentEdge->edge->first;
+
+        for (int i = 1; i < NO_DIM + 1; i++)
+        {
+            //result->neighbors[i] = currentEdge->edge->neighbors[i - 1]->first;
+            result->neighbors[i] = currentEdge->edge->neighbors[i - 1]->first;
+        }
+        sortPointsInSimplex(result);
+        insertIntoRedBlackTree(partition->triangles, result);
+
+#if DEBUG_TRIANGULATION == 1
+        Simplex *simplex = result;
+        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+        printf("Created new simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+        printf("Current Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n\n",
+               currentEdge->edge, currentEdge->edge->points[0].point.x, currentEdge->edge->points[0].point.y,
+               currentEdge->edge->points[1].point.x, currentEdge->edge->points[1].point.y, currentEdge->edge->first, currentEdge->edge->second,
+               currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+        printf("Triangles tree: \n");
+        printRedBlackTreeTriangles(partition->triangles);
+        // printf("Tadam\n");
+        // sleep(2);
+#endif
+        currentEdge = currentEdge->next;
+        //insertIntoDoubleLinkedList2(partition->triangles, result, comparePositionOfTwoTriangles);
+        // printf("Triangle inserted: %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", result->circumcenter.x, result->circumcenter.y, result->circumradius, result->vertices[0].point.x, result->vertices[0].point.y, result->vertices[1].point.x, result->vertices[1].point.y, result->vertices[2].point.x, result->vertices[2].point.y);
+    }
 }

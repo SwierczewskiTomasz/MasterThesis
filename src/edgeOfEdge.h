@@ -17,7 +17,9 @@ double pointsArrayEquals(PointId *array1, PointId *array2, int n);
 void sortPointsArray(PointId **array, int n);
 PointId* addPointToSortedArray(PointId *array, PointId *p, int n);
 void addPointAsFirstToArray(PointId *result, PointId *array, PointId *p, int n);
+
 EdgeOfEdge *newEdgeOfEdge(Edge *e, int i);
+void freeEdgeOfEdge(void *e);
 
 
 #endif

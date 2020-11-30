@@ -59,6 +59,11 @@ void supertriangles2D(Partition *partition)
     insertIntoRedBlackTree(partition->triangles, triangle2);
 
     // printRedBlackTree(partition->triangles);
+
+    insertIntoRedBlackTree(partition->globalVertices, point1);
+    insertIntoRedBlackTree(partition->globalVertices, point2);
+    insertIntoRedBlackTree(partition->globalVertices, point3);
+    insertIntoRedBlackTree(partition->globalVertices, point4);
 }
 
 #if NO_DIM == 3

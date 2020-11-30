@@ -502,3 +502,162 @@ void insertPoint(PointId *point, Partition *partition)
         pointer = getNextNode(pointer);
     }
 }
+
+
+    // #if DEBUG_TRIANGULATION == 1
+    //     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //     printf("Printing all of the triangles tree, but with details: \n\n");
+
+    //     while (pointer != NULL)
+    //     {
+    //         simplex = pointer->data;
+    //         printf("Creating polygon. Analyze of simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+    //         printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+    //                simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+    //         printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+
+    //         pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+    //     }
+    //     pointer = minimumInRedBlackSubTree(partition->triangles->first);
+
+    //     printf("End of printing triangles. \n\n");
+
+    // #endif
+
+
+    double pointInsideCircumcircle(Point point, PointId points[NO_DIM + 1])
+{
+    //If >0, point inside
+    Simplex simplex;
+    memcpy(simplex.vertices, points, (NO_DIM + 1) * sizeof(PointId));
+
+#if NO_DIM == 2
+    int n = NO_DIM + 1;
+
+    double r[NO_DIM + 1];
+    for (int i = 0; i < n; i++)
+    {
+        r[i] = simplex.vertices[i].point.x * simplex.vertices[i].point.x + simplex.vertices[i].point.y * simplex.vertices[i].point.y;
+    }
+
+    double **bxMatrix = (double **)malloc(n * sizeof(double *));
+    double **byMatrix = (double **)malloc(n * sizeof(double *));
+    double **aMatrix = (double **)malloc(n * sizeof(double *));
+    double **cMatrix = (double **)malloc(n * sizeof(double *));
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i] = (double *)malloc(n * sizeof(double));
+        byMatrix[i] = (double *)malloc(n * sizeof(double));
+        aMatrix[i] = (double *)malloc(n * sizeof(double));
+        cMatrix[i] = (double *)malloc(n * sizeof(double));
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i][0] = r[i];
+        bxMatrix[i][1] = simplex.vertices[i].point.y;
+        bxMatrix[i][2] = 1;
+
+        byMatrix[i][0] = r[i];
+        byMatrix[i][1] = simplex.vertices[i].point.x;
+        byMatrix[i][2] = 1;
+
+        aMatrix[i][0] = simplex.vertices[i].point.x;
+        aMatrix[i][1] = simplex.vertices[i].point.y;
+        aMatrix[i][2] = 1;
+
+        cMatrix[i][0] = r[i];
+        cMatrix[i][1] = simplex.vertices[i].point.x;
+        cMatrix[i][2] = simplex.vertices[i].point.y;
+    }
+
+    double bx = -determinant(bxMatrix, n);
+    double by = determinant(byMatrix, n);
+    double a = determinant(aMatrix, n);
+    double c = -determinant(cMatrix, n);
+
+    double x0 = -bx / (2 * a);
+    double y0 = -by / (2 * a);
+
+    //Zastanowić się, czy potrzebujemy radius, czy wystarczy nam radius^2. Wtedy jedna operacja sqrt mniej.
+    double radius = sqrt(bx * bx + by * by - 4 * a * c) / (2 * abs(a));
+
+    simplex.circumcenter.x = x0;
+    simplex.circumcenter.y = y0;
+    simplex.circumradius = radius;
+#else
+    int n = NO_DIM + 1;
+
+    double r[NO_DIM + 1];
+    for (int i = 0; i < n; i++)
+    {
+        r[i] = simplex.vertices[i].point.x * simplex.vertices[i].point.x + simplex.vertices[i].point.y * simplex.vertices[i].point.y + simplex.vertices[i].point.z * simplex.vertices[i].point.z;
+    }
+
+    double **bxMatrix = (double **)malloc(n * sizeof(double *));
+    double **byMatrix = (double **)malloc(n * sizeof(double *));
+    double **bzMatrix = (double **)malloc(n * sizeof(double *));
+    double **aMatrix = (double **)malloc(n * sizeof(double *));
+    double **cMatrix = (double **)malloc(n * sizeof(double *));
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i] = (double *)malloc(n * sizeof(double));
+        byMatrix[i] = (double *)malloc(n * sizeof(double));
+        bzMatrix[i] = (double *)malloc(n * sizeof(double));
+        aMatrix[i] = (double *)malloc(n * sizeof(double));
+        cMatrix[i] = (double *)malloc(n * sizeof(double));
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i][0] = r[i];
+        bxMatrix[i][1] = simplex.vertices[i].point.y;
+        bxMatrix[i][2] = simplex.vertices[i].point.z;
+        bxMatrix[i][3] = 1;
+
+        byMatrix[i][0] = r[i];
+        byMatrix[i][1] = simplex.vertices[i].point.x;
+        byMatrix[i][2] = simplex.vertices[i].point.z;
+        byMatrix[i][3] = 1;
+
+        bzMatrix[i][0] = r[i];
+        bzMatrix[i][1] = simplex.vertices[i].point.x;
+        bzMatrix[i][2] = simplex.vertices[i].point.y;
+        bzMatrix[i][3] = 1;
+
+        aMatrix[i][0] = simplex.vertices[i].point.x;
+        aMatrix[i][1] = simplex.vertices[i].point.y;
+        aMatrix[i][2] = simplex.vertices[i].point.z;
+        aMatrix[i][3] = 1;
+
+        cMatrix[i][0] = r[i];
+        cMatrix[i][1] = simplex.vertices[i].point.x;
+        cMatrix[i][2] = simplex.vertices[i].point.y;
+        cMatrix[i][3] = simplex.vertices[i].point.z;
+    }
+
+    double bx = determinant(bxMatrix, n);
+    double by = -determinant(byMatrix, n);
+    double bz = determinant(bzMatrix, n);
+    double a = determinant(aMatrix, n);
+    double c = -determinant(cMatrix, n);
+
+    double x0 = bx / (2 * a);
+    double y0 = by / (2 * a);
+    double z0 = bz / (2 * a);
+
+    double radius = sqrt(bx * bx + by * by + bz * bz - 4 * a * c) / (2 * abs(a));
+
+    simplex.circumcenter.x = x0;
+    simplex.circumcenter.y = y0;
+    simplex.circumcenter.z = z0;
+    simplex.circumradius = radius;
+
+    double squareDistance = squareOfDistanceFromPointToPoint(simplex.circumcenter, point);
+    double squareRadius = simplex.circumradius * simplex.circumradius;
+
+    return squareRadius - squareDistance;
+#endif
+}

@@ -30,8 +30,9 @@ typedef struct Simplex
 Simplex* neighborOfSimplex(Simplex *simplex, int i);
 
 void createNewSimplex(Simplex *simplex, PointId points[NO_DIM + 1]);
-void calculateCircumcircle(Simplex *simplex);
+void freeSimplex(void *s);
 
+void calculateCircumcircle(Simplex *simplex);
 void sortPointsInSimplex(Simplex *simplex);
 double comparePoints(Point p1, Point p2);
 double comparePointsVoids(void *p1, void *p2);

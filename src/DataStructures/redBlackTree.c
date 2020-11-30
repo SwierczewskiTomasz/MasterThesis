@@ -10,10 +10,11 @@
 #include <stdio.h>
 #include "redBlackTree.h"
 
-redBlackTree *newRedBlackTree(double (*compare)(void *, void *))
+redBlackTree *newRedBlackTree(double (*compare)(void *, void *), void (*freeData)(void *))
 {
     redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
     tree->compare = compare;
+    tree->freeData = freeData;
     tree->first = NULL;
     tree->count = 0;
     return tree;
@@ -49,7 +50,7 @@ void removeRedBlackTree(redBlackTree *tree, bool removeData)
                 {
                     tree->first = NULL;
                     if (removeData)
-                        free(toRemoveNode->data);
+                        tree->freeData(toRemoveNode->data);
                     free(toRemoveNode);
                     free(tree);
                     return;
@@ -61,7 +62,7 @@ void removeRedBlackTree(redBlackTree *tree, bool removeData)
                     node->right = NULL;
 
                 if (removeData)
-                    free(toRemoveNode->data);
+                    tree->freeData(toRemoveNode->data);
                 free(toRemoveNode);
             }
         }
@@ -105,8 +106,11 @@ void rotateRight(redBlackTree *tree, redBlackTreeNode *node)
     node->parent = node->left;
     node->left = node->left->right;
 
-    if (node->parent->right != NULL)
-        node->parent->right->parent = node;
+    // if (node->parent->right != NULL)
+    //     node->parent->right->parent = node;
+
+    if (node->left != NULL)
+        node->left->parent = node;
 
     node->parent->right = node;
 }
@@ -130,8 +134,8 @@ void rotateLeft(redBlackTree *tree, redBlackTreeNode *node)
     node->parent = node->right;
     node->right = node->right->left;
 
-    if (node->parent->left != NULL)
-        node->parent->left->parent = node;
+    if (node->right != NULL)
+        node->right->parent = node;
 
     node->parent->left = node;
 }
@@ -193,6 +197,65 @@ redBlackTreeNode *getFromRedBlackTree(redBlackTree *tree, void *data)
     return NULL;
 }
 
+redBlackTreeNode *getFromRedBlackTreeFirstSmaller(redBlackTree *tree, void *data)
+{
+#if MEASURE_TIME == 1
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
+#endif
+
+    if (data == NULL)
+    {
+
+#if MEASURE_TIME == 1
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+        redBlackTreeGetTime += endTime - startTime;
+#endif
+
+        return NULL;
+    }
+
+    redBlackTreeNode *current = tree->first;
+    redBlackTreeNode *prevCurrent;
+
+    while (current != NULL)
+    {
+        if (current->data == data)
+        {
+
+#if MEASURE_TIME == 1
+            struct timeval end;
+            gettimeofday(&end, NULL);
+            long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+            redBlackTreeGetTime += endTime - startTime;
+#endif
+
+            return current;
+        }
+        double result = tree->compare(current->data, data);
+        prevCurrent = current;
+        if (result > 0)
+            current = current->left;
+        else if (result < 0)
+            current = current->right;
+        else
+            return current;
+        //printf("Error in %s line %i: getFromRedBlackTree - situation with exact the same data, but different point in tree shouldn't happen. For this implementation. \n", (char *)__FILE__, __LINE__);
+    }
+
+#if MEASURE_TIME == 1
+    struct timeval end;
+    gettimeofday(&end, NULL);
+    long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+    redBlackTreeGetTime += endTime - startTime;
+#endif
+    
+    return prevCurrent;
+}
+
 redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
 {
 #if MEASURE_TIME == 1
@@ -200,6 +263,8 @@ redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
     gettimeofday(&start, NULL);
     long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
 #endif
+
+    tree->count++;
 
     redBlackTreeNode *current = tree->first;
 
@@ -209,6 +274,8 @@ redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
         {
             fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: insertIntoRedBlackTree function. \n", (char *)__FILE__, __LINE__);
             fprintf(stderr, "Trying to insert data %14p, which one exists in tree %14p. \n\n", data, tree);
+
+            tree->count--;
 
 #if MEASURE_TIME == 1
             struct timeval end;
@@ -437,129 +504,6 @@ void restoreColoursInRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
     }
 }
 
-void replaceRedBlackTreeNode(redBlackTree *tree, redBlackTreeNode *node, redBlackTreeNode *child)
-{
-    child->parent = node->parent;
-    if (node->parent == NULL)
-        return;
-    if (node == node->parent->left)
-        node->parent->left = child;
-    else
-        node->parent->right = child;
-}
-
-void removeCase6(redBlackTree *tree, redBlackTreeNode *node)
-{
-    redBlackTreeNode *sibling = getSibling(node);
-
-    sibling->colour = node->parent->colour;
-    node->parent->colour = Black;
-
-    if (node == node->parent->left)
-    {
-        sibling->right->colour = Black;
-        rotateLeft(tree, node->parent);
-    }
-    else
-    {
-        sibling->left->colour = Black;
-        rotateRight(tree, node->parent);
-    }
-}
-
-void removeCase5(redBlackTree *tree, redBlackTreeNode *node)
-{
-    redBlackTreeNode *sibling = getSibling(node);
-
-    if (sibling->colour == Black)
-    {
-        if ((node == node->parent->left) && (sibling->right->colour == Black) && (sibling->left->colour == Red))
-        {
-            sibling->colour = Red;
-            sibling->left->colour = Black;
-            rotateRight(tree, sibling);
-        }
-        else if ((node == node->parent->right) && (sibling->left->colour == Black) && (sibling->right->colour == Red))
-        {
-            sibling->colour = Red;
-            sibling->right->colour = Black;
-            rotateLeft(tree, sibling);
-        }
-    }
-
-    removeCase6(tree, node);
-}
-
-void removeCase4(redBlackTree *tree, redBlackTreeNode *node)
-{
-    redBlackTreeNode *sibling = getSibling(node);
-
-    if (node->parent->colour == Red && sibling->colour == Black && sibling->left->colour == Black && sibling->right->colour == Black)
-    {
-        sibling->colour = Red;
-        node->parent->colour = Black;
-    }
-    else
-        removeCase5(tree, node);
-}
-
-void removeCase3(redBlackTree *tree, redBlackTreeNode *node)
-{
-    redBlackTreeNode *sibling = getSibling(node);
-
-    if (node->parent->colour == Black && sibling->colour == Black && sibling->left->colour == Black && sibling->right->colour == Black)
-    {
-        sibling->colour = Red;
-
-        //Here is loop. Try to analyze this and look how much time it can take.
-        removeCase1(tree, node->parent);
-    }
-    else
-        removeCase4(tree, node);
-}
-
-void removeCase2(redBlackTree *tree, redBlackTreeNode *node)
-{
-    redBlackTreeNode *sibling = getSibling(node);
-
-    if (sibling->colour == Red)
-    {
-        node->parent->colour = Red;
-        sibling->colour = Black;
-        if (node == node->parent->left)
-            rotateLeft(tree, node->parent);
-        else
-            rotateRight(tree, node->parent);
-    }
-
-    removeCase3(tree, node);
-}
-
-void removeCase1(redBlackTree *tree, redBlackTreeNode *node)
-{
-    if (node->parent != NULL)
-    {
-        removeCase2(tree, node);
-    }
-}
-
-// For this function node should contain only one non-leaf child. Or at most one.
-void removeWhenOneChildFromRedBlackTreeNode(redBlackTree *tree, redBlackTreeNode *node)
-{
-    redBlackTreeNode *child = node->left != NULL ? node->left : node->right;
-    if (child == NULL)
-        return;
-
-    replaceRedBlackTreeNode(tree, node, child);
-    if (node->colour == Black)
-        if (child->colour == Red)
-            child->colour = Black;
-        else
-            removeCase1(tree, child);
-
-    //free(node);
-}
-
 redBlackTreeNode *minimumInRedBlackSubTree(redBlackTreeNode *node)
 {
     redBlackTreeNode *current = node;
@@ -592,44 +536,96 @@ void removeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
         return;
     }
 
-    if (node->left == NULL && node->right == NULL)
+    if (node->left != NULL && node->right != NULL)
     {
-        if (node->parent != NULL)
-            if (node->parent->left == node)
-                node->parent->left = NULL;
-            else
-                node->parent->right = NULL;
-        else
-            tree->first = NULL;
-    }
-    else if (node->left != NULL && node->right != NULL)
-    {
+        // printf("removeFromRedBlackTree function: \n");
+        // printf("   Node: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black");
         redBlackTreeNode *newNode = minimumInRedBlackSubTree(node->right);
-        newNode->parent->left = NULL;
-        newNode->parent = node->parent;
-        if (node->parent != NULL)
-            if (node->parent->left == node)
-                node->parent->left = newNode;
-            else
-                node->parent->right = newNode;
-        else
-            tree->first = newNode;
+        redBlackTreeNode *copy = (redBlackTreeNode *)malloc(sizeof(redBlackTreeNode));
 
-        newNode->left = node->left;
-        newNode->right = node->right;
+        copy->colour = newNode->colour;
+        copy->left = newNode->left;
+        copy->parent = newNode->parent;
+        copy->right = newNode->right;
+
         newNode->colour = node->colour;
+        newNode->left = node->left;
+        newNode->parent = node->parent;
+        if(node->right != newNode)
+        {
+            newNode->right = node->right;
+        }
+        else
+        {
+            newNode->right = node;
+        }
+        // printf("   Node: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black");
+        // printf("NewNode: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", newNode, newNode->data, newNode->parent, newNode->left, newNode->right, newNode->colour == Red ? "Red  " : "Black");
 
-        node->left = NULL;
-        node->right = NULL;
-        node->parent = NULL;
+        if (node->right != NULL)
+        {
+            if(node->right != newNode)
+            {
+                node->right->parent = newNode;
+            }
+            else
+            {
+                copy->parent = newNode;
+            }
+        }
+
+        if (node->left != NULL)
+        {
+            node->left->parent = newNode;
+        }
+
+        if (node->parent == NULL)
+        {
+            tree->first = newNode;
+        }
+        else
+        {
+            if (node->parent->left == node)
+            {
+                node->parent->left = newNode;
+            }
+            else
+            {
+                node->parent->right = newNode;
+            }
+        }
+
+        if (copy->parent != NULL)
+        {
+            if (copy->parent->left == newNode)
+            {
+                copy->parent->left = node;
+            }
+            else
+            {
+                copy->parent->right = node;
+            }
+        }
+        else
+        {
+            fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: removeFromRedBlackTree function. Child don't have parent. \n", (char *)__FILE__, __LINE__);
+        }
+        node->colour = copy->colour;
+        node->left = copy->left;
+        node->parent = copy->parent;
+        node->right = copy->right;
+
+        // printf("   Node: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black");
+        // printf("NewNode: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", newNode, newNode->data, newNode->parent, newNode->left, newNode->right, newNode->colour == Red ? "Red  " : "Black");
+        // printf("   Copy: %14p, Simplex: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n\n", copy, copy->data, copy->parent, copy->left, copy->right, copy->colour == Red ? "Red  " : "Black");
+        free(copy);
     }
-    else
-    {
-        removeWhenOneChildFromRedBlackTreeNode(tree, node);
-    }
+
+    removeWhenOneChildFromRedBlackTreeNode(tree, node);
 
     // printf("Free node: %p\n\n", node);
-    // free(node);
+    free(node);
+    tree->count--;
 
 #if MEASURE_TIME == 1
     struct timeval end;
@@ -637,6 +633,301 @@ void removeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
     long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
     redBlackTreeRemoveTime += endTime - startTime;
 #endif
+}
+
+// For this function node should contain only one non-leaf child. Or at most one.
+void removeWhenOneChildFromRedBlackTreeNode(redBlackTree *tree, redBlackTreeNode *node)
+{
+    redBlackTreeNode *child = node->left != NULL ? node->left : node->right;
+    // if (child == NULL)
+    //     return;
+
+    // replaceRedBlackTreeNode(tree, node, child);
+    if (node->colour == Black)
+    {
+        if (child != NULL)
+        {
+            if (child->colour == Red)
+            {
+                child->colour = Black;
+            }
+            else
+            {
+                fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: removeWhenOneChildFromRedBlackTreeNode function. Child and node shouldn't be black. \n", (char *)__FILE__, __LINE__);
+                removeCase1(tree, child);
+            }
+        }
+        else
+        {
+            removeCase1(tree, node);
+        }
+    }
+    replaceRedBlackTreeNode(tree, node, child);
+    //free(node);
+}
+
+void replaceRedBlackTreeNode(redBlackTree *tree, redBlackTreeNode *node, redBlackTreeNode *child)
+{
+    if (child != NULL)
+    {
+        child->parent = node->parent;
+    }
+    if (node->parent == NULL)
+    {
+        tree->first = child;
+    }
+    else
+    {
+        if (node == node->parent->left)
+            node->parent->left = child;
+        else
+            node->parent->right = child;
+    }
+}
+
+void removeCase1(redBlackTree *tree, redBlackTreeNode *node)
+{
+    if (node->parent != NULL)
+    {
+        removeCase2(tree, node);
+    }
+}
+
+void removeCase2(redBlackTree *tree, redBlackTreeNode *node)
+{
+    redBlackTreeNode *sibling = getSibling(node);
+
+    if (sibling == NULL)
+    {
+        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: removeCase2 function. Sibling should exists. \n", (char *)__FILE__, __LINE__);
+    }
+
+    if (sibling->colour == Red)
+    {
+        node->parent->colour = Red;
+        sibling->colour = Black;
+        if (node == node->parent->left)
+            rotateLeft(tree, node->parent);
+        else
+            rotateRight(tree, node->parent);
+    }
+
+    removeCase3(tree, node);
+}
+
+void removeCase3(redBlackTree *tree, redBlackTreeNode *node)
+{
+    redBlackTreeNode *sibling = getSibling(node);
+
+    if (sibling == NULL)
+    {
+        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: removeCase3 function. Sibling should exists. \n", (char *)__FILE__, __LINE__);
+    }
+
+    if (node->parent->colour == Black && sibling->colour == Black)
+    {
+        if (sibling->left == NULL)
+        {
+            if (sibling->right == NULL)
+            {
+                sibling->colour = Red;
+
+                //Here is loop. Try to analyze this and look how much time it can take.
+                removeCase1(tree, node->parent);
+            }
+            else if (sibling->right->colour == Black)
+            {
+                sibling->colour = Red;
+
+                //Here is loop. Try to analyze this and look how much time it can take.
+                removeCase1(tree, node->parent);
+            }
+            else
+            {
+                removeCase4(tree, node);
+            }
+        }
+        else if (sibling->left->colour == Black)
+        {
+            if (sibling->right == NULL)
+            {
+                sibling->colour = Red;
+
+                //Here is loop. Try to analyze this and look how much time it can take.
+                removeCase1(tree, node->parent);
+            }
+            else if (sibling->right->colour == Black)
+            {
+                sibling->colour = Red;
+
+                //Here is loop. Try to analyze this and look how much time it can take.
+                removeCase1(tree, node->parent);
+            }
+            else
+            {
+                removeCase4(tree, node);
+            }
+        }
+        else
+        {
+            removeCase4(tree, node);
+        }
+    }
+    else
+    {
+        removeCase4(tree, node);
+    }
+}
+
+void removeCase4(redBlackTree *tree, redBlackTreeNode *node)
+{
+    redBlackTreeNode *sibling = getSibling(node);
+
+    if (sibling == NULL)
+    {
+        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: removeCase4 function. Sibling should exists. \n", (char *)__FILE__, __LINE__);
+    }
+
+    if (node->parent->colour == Red && sibling->colour == Black)
+    {
+        if (sibling->left == NULL)
+        {
+            if (sibling->right == NULL)
+            {
+                sibling->colour = Red;
+                node->parent->colour = Black;
+            }
+            else if (sibling->right->colour == Black)
+            {
+                sibling->colour = Red;
+                node->parent->colour = Black;
+            }
+            else
+            {
+                removeCase5(tree, node);
+            }
+        }
+        else if (sibling->left->colour == Black)
+        {
+            if (sibling->right == NULL)
+            {
+                sibling->colour = Red;
+                node->parent->colour = Black;
+            }
+            else if (sibling->right->colour == Black)
+            {
+                sibling->colour = Red;
+                node->parent->colour = Black;
+            }
+            else
+            {
+                removeCase5(tree, node);
+            }
+        }
+        else
+        {
+            removeCase5(tree, node);
+        }
+    }
+    else
+    {
+        removeCase5(tree, node);
+    }
+}
+
+void removeCase5(redBlackTree *tree, redBlackTreeNode *node)
+{
+    redBlackTreeNode *sibling = getSibling(node);
+
+    if (sibling == NULL)
+    {
+        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: removeCase5 function. Sibling should exists. \n", (char *)__FILE__, __LINE__);
+    }
+
+    if (sibling->colour == Black)
+    {
+        if (node == node->parent->left)
+        {
+            if (sibling->left != NULL)
+            {
+                if (sibling->left->colour == Red)
+                {
+                    if (sibling->right != NULL)
+                    {
+                        if (sibling->right->colour == Black)
+                        {
+                            sibling->colour = Red;
+                            sibling->left->colour = Black;
+                            rotateRight(tree, sibling);
+                        }
+                    }
+                    else
+                    {
+
+                        sibling->colour = Red;
+                        sibling->left->colour = Black;
+                        rotateRight(tree, sibling);
+                    }
+                }
+            }
+        }
+        else // if (node == node->parent->right)
+        {
+            if (sibling->right != NULL)
+            {
+                if (sibling->right->colour == Red)
+                {
+                    if (sibling->left != NULL)
+                    {
+                        if (sibling->left->colour == Black)
+                        {
+                            sibling->colour = Red;
+                            sibling->right->colour = Black;
+                            rotateLeft(tree, sibling);
+                        }
+                    }
+                    else
+                    {
+                        sibling->colour = Red;
+                        sibling->right->colour = Black;
+                        rotateLeft(tree, sibling);
+                    }
+                }
+            }
+        }
+    }
+
+    removeCase6(tree, node);
+}
+
+void removeCase6(redBlackTree *tree, redBlackTreeNode *node)
+{
+    redBlackTreeNode *sibling = getSibling(node);
+
+    if (sibling == NULL)
+    {
+        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: removeCase6 function. Sibling should exists. \n", (char *)__FILE__, __LINE__);
+    }
+
+    sibling->colour = node->parent->colour;
+    node->parent->colour = Black;
+
+    if (node == node->parent->left)
+    {
+        if (sibling->right != NULL)
+        {
+            sibling->right->colour = Black;
+        }
+        rotateLeft(tree, node->parent);
+    }
+    else
+    {
+        if (sibling->left != NULL)
+        {
+            sibling->left->colour = Black;
+        }
+        rotateRight(tree, node->parent);
+    }
 }
 
 redBlackTreeNode *getNextNodeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node)
@@ -660,10 +951,11 @@ redBlackTreeNode *getNextNodeFromRedBlackTree(redBlackTree *tree, redBlackTreeNo
     //     }
 
 #if DEBUG == 1
-    if (node->right == node)
+    if (node->right == node || node->left == node || node->parent == node)
     {
         fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - We have here loop! \n", (char *)__FILE__, __LINE__);
         fprintf(stderr, "Node: %14p, Data: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black");
+        sleep(10);
         return NULL;
     }
 #endif

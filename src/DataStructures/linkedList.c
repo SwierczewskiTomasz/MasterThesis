@@ -1,19 +1,22 @@
 #include "stdio.h"
 #include "linkedList.h"
 
-LinkedList *newLinkedList()
+LinkedList *newLinkedList(void (*freeData)(void *))
 {
     LinkedList *result = (LinkedList *)malloc(sizeof(LinkedList));
     result->count = 0;
     result->first = NULL;
+    result->freeData = freeData;
     return result;
 }
 
-void removeLinkedList(LinkedList *list)
+void removeLinkedList(LinkedList *list, bool removeData)
 {
     while (list->count != 0)
     {
-        popFromLinkedList(list);
+        void *data = popFromLinkedList(list);
+        if(removeData)
+            list->freeData(data);
     }
     free(list);
 }
