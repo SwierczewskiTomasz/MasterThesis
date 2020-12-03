@@ -12,6 +12,8 @@ FILES = \
 	DataStructures/doubleLinkedList.c\
 	DataStructures/linkedList.h\
 	DataStructures/linkedList.c\
+	HilbertCurve/hilbertCurve.h\
+	HilbertCurve/hilbertCurve.c\
 	edgeOfEdge.h\
 	edgeOfEdge.c\
 	myMath.h\

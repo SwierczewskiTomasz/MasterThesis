@@ -47,13 +47,27 @@ Simplex *neighborOfSimplex(Simplex *simplex, int i)
     return simplex->neighbors[i];
 }
 
-void createNewSimplex(Simplex *result, PointId points[NO_DIM + 1])
+void createNewSimplex(Simplex *result, PointId points[NO_DIM + 1], int hilbertDimension)
 {
     int n = NO_DIM + 1;
     //Trzeba nadać unikanlne id
 
     memcpy(result->vertices, points, n * sizeof(PointId));
     calculateCircumcircle(result);
+    result->hilbertDimension = hilbertDimension;
+
+    double x = 0.0;
+    double y = 0.0;
+    for(int i = 0; i < n; i++)
+    {
+        x += points[i].point.x;
+        y += points[i].point.y;
+    }
+
+    x /= n;
+    y /= n;
+
+    result->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, x, y, 0, 100, 0, 100);
 }
 
 void freeSimplex(void *s)

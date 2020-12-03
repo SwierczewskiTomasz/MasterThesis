@@ -1,17 +1,17 @@
 #include "supertriangles.h"
 
-void supertriangles(Partition *partition)
+void supertriangles(Partition *partition, int hilbertDimension)
 {
 #if NO_DIM == 2
-    supertriangles2D(partition);
+    supertriangles2D(partition, hilbertDimension);
 #elif NO_DIM == 3
-    supertriangles3D(partition);
+    supertriangles3D(partition, hilbertDimension);
 #else
-    supertriangles4DAndMore(partition);
+    supertriangles4DAndMore(partition, hilbertDimension);
 #endif
 }
 
-void supertriangles2D(Partition *partition)
+void supertriangles2D(Partition *partition, int hilbertDimension)
 {
     PointId *point1 = (PointId *)malloc(sizeof(PointId));
     PointId *point2 = (PointId *)malloc(sizeof(PointId));
@@ -32,11 +32,11 @@ void supertriangles2D(Partition *partition)
 
     PointId triangle1Points[3] = {*point1, *point2, *point3};
     Simplex *triangle1 = (Simplex *)malloc(sizeof(Simplex));
-    createNewSimplex(triangle1, triangle1Points);
+    createNewSimplex(triangle1, triangle1Points, hilbertDimension);
 
     PointId triangle2Points[3] = {*point2, *point3, *point4};
     Simplex *triangle2 = (Simplex *)malloc(sizeof(Simplex));
-    createNewSimplex(triangle2, triangle2Points);
+    createNewSimplex(triangle2, triangle2Points, hilbertDimension);
 
     for(int i = 0; i < 3; i++)
     {
@@ -67,7 +67,7 @@ void supertriangles2D(Partition *partition)
 }
 
 #if NO_DIM == 3
-void supertriangles3D(Partition *partition)
+void supertriangles3D(Partition *partition, int hilbertDimension)
 {
     int n = (int)pow(2, NO_DIM);
     PointId **points = (PointId**)malloc(n * sizeof(PointId*));
@@ -118,7 +118,7 @@ void supertriangles3D(Partition *partition)
     for(int i = 0; i < m; i++)
     {
         triangles[i] = (Simplex*)malloc(sizeof(Simplex));
-        createNewSimplex(triangles[i], trianglePoints[i]);
+        createNewSimplex(triangles[i], trianglePoints[i], hilbertDimension);
         
         for(int j = 0; j < NO_DIM + 1; j++)
         {
@@ -145,7 +145,7 @@ void supertriangles3D(Partition *partition)
 #endif
 
 #if NO_DIM > 3
-void supertriangles4DAndMore(Partition *partition)
+void supertriangles4DAndMore(Partition *partition, int hilbertDimension)
 {
     fprintf(stderr, "Error in %s line %i: supertriangles4DAndMore function is not implemented \n", (char *)__FILE__, __LINE__);
 }

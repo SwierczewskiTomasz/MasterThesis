@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "DataStructures/dataStructure.h"
+#include "HilbertCurve/hilbertCurve.h"
 #include "myMath.h"
+
 
 typedef struct Simplex
 {
@@ -15,6 +17,8 @@ typedef struct Simplex
     Point circumcenter;
     double circumradius;
     PointId vertices[NO_DIM + 1];
+    int hilbertId;
+    int hilbertDimension;
     // Edge edges[NO_DIM + 1];
     
     struct Simplex *neighbors[NO_DIM + 1];
@@ -29,7 +33,7 @@ typedef struct Simplex
 
 Simplex* neighborOfSimplex(Simplex *simplex, int i);
 
-void createNewSimplex(Simplex *simplex, PointId points[NO_DIM + 1]);
+void createNewSimplex(Simplex *simplex, PointId points[NO_DIM + 1], int hilbertDimension);
 void freeSimplex(void *s);
 
 void calculateCircumcircle(Simplex *simplex);

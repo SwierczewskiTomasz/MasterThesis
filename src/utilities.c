@@ -4,6 +4,7 @@
 #include "utilities.h"
 #include "DataStructures/dataStructure.h"
 #include "DataStructures/redBlackTree.h"
+#include "HilbertCurve/hilbertCurve.h"
 #include "serialDT.h"
 
 #if defined(WIND32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -30,12 +31,33 @@ int generateNextTestNumberOfPoints(int n)
 void testTIPP()
 {
     int n = 0;
+    int hilbertDimension = 16;
 
-    for (int i = 0; i < 80; i++)
+    int dimensions[10];
+    dimensions[0] = 1;
+    dimensions[1] = 2;
+    dimensions[2] = 4;
+    dimensions[3] = 8;
+    dimensions[4] = 16;
+    dimensions[5] = 32;
+    dimensions[6] = 64;
+    dimensions[7] = 128;
+    dimensions[8] = 256;
+    dimensions[9] = 4096;
+
+    // for (int i = 9; i < 10; i++)
+    // {
+    //     printf("\ndimensions: %d, %d\n", i, dimensions[i]);
+    //     n = 0;
+    for (int j = 0; j < 110; j++)
     {
         n = generateNextTestNumberOfPoints(n);
-        TIPP(n, n);
+        if(j >= 90)
+            TIPP(n, n, 32);
     }
+    // }
+
+    // TIPP(1024*1024*1024, 1024*1024*1024, 32);
 }
 
 void testRedBlackTreeUtilities()
@@ -55,7 +77,6 @@ void testRedBlackTreeUtilities()
         n = generateNextTestNumberOfPoints(n);
 
         PointId **array = (PointId **)calloc(n, sizeof(PointId **));
-
 
         for (int i = 0; i < n; i++)
         {
@@ -158,4 +179,22 @@ void printInformationsAboutSizeOfStructures()
     printf("Simplex:               %4ld \n", sizeof(Simplex));
 
     printf("\n");
+}
+
+void printHilbertCurve(int n, char *filename)
+{
+    FILE *fp;
+    fp = fopen(filename, "w+");
+    int k = n * n;
+    double prevX, prevY;
+    hilbertCurveD2DoubleXY(n, 0, &prevX, &prevY, 0, 100, 0, 100);
+    for (int i = 1; i < k; i++)
+    {
+        double x, y;
+        hilbertCurveD2DoubleXY(n, i, &x, &y, 0, 100, 0, 100);
+        fprintf(fp, "%f, %f\n%f, %f\n\n", prevX, prevY, x, y);
+        prevX = x;
+        prevY = y;
+    }
+    fclose(fp);
 }

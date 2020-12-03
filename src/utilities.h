@@ -16,5 +16,6 @@ void testTIPP();
 void testRedBlackTreeUtilities();
 void testDoubleLinkedList();
 void printInformationsAboutSizeOfStructures();
+void printHilbertCurve(int n, char *filename);
 
 #endif

@@ -26,7 +26,7 @@ long long redBlackTreeGetTime = 0;
 long long redBlackTreeRemoveTime = 0;
 long long redBlackTreeNextNodeTime = 0;
 
-void TIPP(int k, int n)
+void TIPP(int k, int n, int hilbertDimension)
 {
     // putPointsToPartitions(partitions, points);
 
@@ -39,7 +39,7 @@ void TIPP(int k, int n)
     initializePartition(partition);
 
     // printf("Generowanie partycji \n");
-    generateInitialMesh(partition, k);
+    generateInitialMesh(partition, k, hilbertDimension);
 
 #if DEBUG_TRIANGULATION == 1
     printf("Trójkąty: \n");
@@ -59,7 +59,7 @@ void TIPP(int k, int n)
     struct timeval te;
     gettimeofday(&te, NULL);
     long long time1 = te.tv_sec * 1000000LL + te.tv_usec;
-    computeDelaunayTriangulation(partition, n);
+    computeDelaunayTriangulation(partition, n, hilbertDimension);
     struct timeval te2;
     gettimeofday(&te2, NULL);
     long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
@@ -125,7 +125,7 @@ void initializePartition(Partition *partition)
 {
     partition->vertices = newRedBlackTree(comparePointsVoids, free);
     partition->globalVertices = newRedBlackTree(comparePointsVoids, free);
-    partition->triangles = newRedBlackTree(comparePositionOfTwoTriangles, freeSimplex);
+    partition->triangles = newRedBlackTree(comparePositionOfTwoTrianglesHilbert, freeSimplex);
 }
 
 void freePartition(Partition *partition)
@@ -145,11 +145,11 @@ void chooseRandomlyInitialPoints(Set *partitions, Set *points, Set *initialPoint
     fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: chooseRandomlyInitialPoints function is not implemented \n", (char *)__FILE__, __LINE__);
 }
 
-void generateInitialMesh(Partition *partition, int nParticles)
+void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimension)
 {
     srand(0);
 
-    supertriangles(partition);
+    supertriangles(partition, hilbertDimension);
 
     // redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
     // tree->compare = comparePositionOfTwoPoints;
@@ -273,7 +273,7 @@ double comparePositionOfTwoPoints(void *a, void *b)
     return s1->point.x - s2->point.x;
 }
 
-void computeDelaunayTriangulation(Partition *partition, int stopAtStep)
+void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilbertDimension)
 {
     // int count = partition->vertices->count;
     redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
@@ -289,7 +289,7 @@ void computeDelaunayTriangulation(Partition *partition, int stopAtStep)
         // printf("Inserting point: x: %10.4f, y: %10.4f\n", point->point.x, point->point.y);
         //insertPoint(point, partition);
         // newInsertPoint(point, partition);
-        theMostNewInsertPoint(point, partition);
+        theMostNewInsertPoint(point, partition, hilbertDimension);
 
         // printf("Point inserted: x: %10.4f, y: %10.4f\n", point->point.x, point->point.y);
         //pointer = getNextNode(pointer);
@@ -302,7 +302,7 @@ void computeDelaunayTriangulation(Partition *partition, int stopAtStep)
     }
 }
 
-void theMostNewInsertPoint(PointId *point, Partition *partition)
+void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDimension)
 {
 
 #if DEBUG_TRIANGULATION == 1
@@ -410,7 +410,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition)
     printRedBlackTreeTriangles(partition->triangles);
 #endif
 
-    LinkedList *simplexList = createSimplexList(edges, point);
+    LinkedList *simplexList = createSimplexList(edges, point, hilbertDimension);
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
@@ -542,6 +542,23 @@ double comparePositionOfTwoTriangles(void *a, void *b)
     // double r = s2->circumcenter.x;
     // printf("Data loaded\n");
     double result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
+    // printf("Result computed\n");
+    if (result == 0)
+        return pointsArrayEquals(s1->vertices, s2->vertices, NO_DIM + 1);
+    return result;
+}
+
+double comparePositionOfTwoTrianglesHilbert(void *a, void *b)
+{
+    // printf("Compare position of two triangles\n");
+    Simplex *s1 = (Simplex *)a;
+    Simplex *s2 = (Simplex *)b;
+    // double r = s2->circumcenter.x;
+    // printf("Data loaded\n");
+    double result = s1->hilbertId - s2->hilbertId;
+    if(result != 0)
+        return result;
+    result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
     // printf("Result computed\n");
     if (result == 0)
         return pointsArrayEquals(s1->vertices, s2->vertices, NO_DIM + 1);
@@ -1006,7 +1023,7 @@ void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *t
     }
 }
 
-LinkedList *createSimplexList(PolygonList *edges, PointId *point)
+LinkedList *createSimplexList(PolygonList *edges, PointId *point, int hilbertDimension)
 {
     PolygonLinkedListNode *currentEdge = edges->first;
     LinkedList *simplexList = newLinkedList(freeSimplex);
@@ -1018,7 +1035,7 @@ LinkedList *createSimplexList(PolygonList *edges, PointId *point)
         // sortPointsArray(&points, NO_DIM + 1);
         PointId points[NO_DIM + 1]; // = addPointAsFirstToArray(currentEdge->edge->points, point, NO_DIM + 1);
         addPointAsFirstToArray(points, currentEdge->edge->points, point, NO_DIM + 1);
-        createNewSimplex(result, points);
+        createNewSimplex(result, points, hilbertDimension);
 
         result->neighbors[0] = currentEdge->edge->second;
         if (result->neighbors[0] != NULL)
