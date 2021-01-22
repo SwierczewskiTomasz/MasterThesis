@@ -53,6 +53,12 @@ void createNewSimplex(Simplex *result, PointId points[NO_DIM + 1], int hilbertDi
     //Trzeba nadać unikanlne id
 
     memcpy(result->vertices, points, n * sizeof(PointId));
+
+    // for(int i = 0; i < n; i++)
+    // {
+    //     printf("Vertex %i: x: %10.4f, y: %10.4f, z: %10.4f \n", i, points[i].point.x, points[i].point.y, points[i].point.z);
+    // }
+
     calculateCircumcircle(result);
     result->hilbertDimension = hilbertDimension;
 

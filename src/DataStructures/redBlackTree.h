@@ -50,7 +50,9 @@ void removeCase5(redBlackTree *tree, redBlackTreeNode *node);
 void removeCase6(redBlackTree *tree, redBlackTreeNode *node);
 
 redBlackTreeNode* getNextNodeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node);
+redBlackTreeNode *getPrevNodeFromRedBlackTree(redBlackTree *tree, redBlackTreeNode *node);
 redBlackTreeNode *minimumInRedBlackSubTree(redBlackTreeNode *node);
+redBlackTreeNode *maximumInRedBlackSubTree(redBlackTreeNode *node);
 
 redBlackTreeNode *getFromRedBlackTreeFirstSmaller(redBlackTree *tree, void *data);
 

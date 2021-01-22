@@ -8,6 +8,8 @@ FILES = \
 	DataStructures/dataStructure.c\
 	DataStructures/redBlackTree.h\
 	DataStructures/redBlackTree.c\
+	DataStructures/redBlackTreeDLL.h\
+	DataStructures/redBlackTreeDLL.c\
 	DataStructures/doubleLinkedList.h\
 	DataStructures/doubleLinkedList.c\
 	DataStructures/linkedList.h\

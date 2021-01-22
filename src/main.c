@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 
     // testRedBlackTree();
     // testDoubleLinkedList();
-    // printInformationsAboutSizeOfStructures();
+    printInformationsAboutSizeOfStructures();
 
     // printHilbertCurve(1, "./out/Hilbert_1.txt");
     // printHilbertCurve(2, "./out/Hilbert_2.txt");

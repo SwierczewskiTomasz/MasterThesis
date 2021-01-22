@@ -25,6 +25,7 @@ long long redBlackTreeInsertTime = 0;
 long long redBlackTreeGetTime = 0;
 long long redBlackTreeRemoveTime = 0;
 long long redBlackTreeNextNodeTime = 0;
+long long redBlackTreePrevNodeTime = 0;
 
 void TIPP(int k, int n, int hilbertDimension)
 {
@@ -38,7 +39,7 @@ void TIPP(int k, int n, int hilbertDimension)
     Partition *partition = (Partition *)malloc(sizeof(Partition));
     initializePartition(partition);
 
-    // printf("Generowanie partycji \n");
+    printf("Generowanie partycji \n");
     generateInitialMesh(partition, k, hilbertDimension);
 
 #if DEBUG_TRIANGULATION == 1
@@ -80,43 +81,44 @@ void TIPP(int k, int n, int hilbertDimension)
     // printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
     // printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
 
-    // FILE *fp;
-    // fp = fopen("./out/outputVertices.txt", "w+");
+    FILE *fp;
+    fp = fopen("./out/outputVertices.txt", "w+");
 
-    // //void *pointer = partition->vertices->first;
-    // redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
+    //void *pointer = partition->vertices->first;
+    redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
 
-    // while (pointer != NULL)
-    // {
-    //     PointId *point = (PointId *)pointer->data;
-    //     fprintf(fp, "%10.4f, %10.4f \n", point->point.x, point->point.y);
-    //     pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
-    // }
+    while (pointer != NULL)
+    {
+        PointId *point = (PointId *)pointer->data;
+        fprintf(fp, "%10.4f, %10.4f \n", point->point.x, point->point.y);
+        pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
+    }
 
-    // fclose(fp);
+    fclose(fp);
 
-    // fp = fopen("./out/outputTriangles.txt", "w+");
+    fp = fopen("./out/outputTriangles.txt", "w+");
 
-    // pointer = minimumInRedBlackSubTree(partition->triangles->first);
+    pointer = minimumInRedBlackSubTree(partition->triangles->first);
 
-    // while (pointer != NULL)
-    // {
-    //     // printf("Load next triangle\n");
-    //     Simplex *simplex = (Simplex *)pointer->data;
-    //     // printf("Loaded\n");
-    //     // fprintf(fp, "%10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y, simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
-    //     fprintf(fp, "%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n",
-    //             simplex->vertices[0].point.x, simplex->vertices[0].point.y,
-    //             simplex->vertices[1].point.x, simplex->vertices[1].point.y,
-    //             simplex->vertices[1].point.x, simplex->vertices[1].point.y,
-    //             simplex->vertices[2].point.x, simplex->vertices[2].point.y,
-    //             simplex->vertices[2].point.x, simplex->vertices[2].point.y,
-    //             simplex->vertices[0].point.x, simplex->vertices[0].point.y);
+    while (pointer != NULL)
+    {
+        // printf("Load next triangle\n");
+        Simplex *simplex = (Simplex *)pointer->data;
+        // printf("Loaded\n");
+        // fprintf(fp, "%10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y, simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+        fprintf(fp, "%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n",
+                simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+                simplex->vertices[1].point.x, simplex->vertices[1].point.y,
+                simplex->vertices[1].point.x, simplex->vertices[1].point.y,
+                simplex->vertices[2].point.x, simplex->vertices[2].point.y,
+                simplex->vertices[2].point.x, simplex->vertices[2].point.y,
+                simplex->vertices[0].point.x, simplex->vertices[0].point.y);
 
-    //     pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
-    // }
+        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+    }
 
-    // fclose(fp);
+    fclose(fp);
+
     freePartition(partition);
     free(partition);
 }
@@ -310,7 +312,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     printf("theMostNewInsertPoint function, point: %14p, x: %10.4f, y: %10.4f\n\n", point, point->point.x, point->point.y);
 #endif
 
-    Simplex *simplex = findFirstSimplexToModify(point, partition);
+    Simplex *simplex = findFirstSimplexToModify(point, partition, hilbertDimension);
 
     if (simplex == NULL)
     {
@@ -452,8 +454,6 @@ PointId **combination(PointId *data, int n)
     return result;
 }
 
-
-
 double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2)
 {
     double A = point2.y - point1.y;
@@ -467,60 +467,60 @@ double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2)
     return squareOfDistance;
 }
 
-#if NO_DIM == 3
-double squareOfDistanceFromPointToPlane(Point point, Point point1, Point point2, Point point3)
-{
-    int n = NO_DIM + 1;
+// #if NO_DIM == 3
+// double squareOfDistanceFromPointToPlane(Point point, Point point1, Point point2, Point point3)
+// {
+//     int n = NO_DIM + 1;
 
-    Point points[3] = {point1, point2, point3};
+//     Point points[3] = {point1, point2, point3};
 
-    double **aMatrix = (double **)malloc(n * sizeof(double *));
-    double **bMatrix = (double **)malloc(n * sizeof(double *));
-    double **cMatrix = (double **)malloc(n * sizeof(double *));
-    double **dMatrix = (double **)malloc(n * sizeof(double *));
+//     double **aMatrix = (double **)malloc(n * sizeof(double *));
+//     double **bMatrix = (double **)malloc(n * sizeof(double *));
+//     double **cMatrix = (double **)malloc(n * sizeof(double *));
+//     double **dMatrix = (double **)malloc(n * sizeof(double *));
 
-    for (int i = 0; i < n; i++)
-    {
-        aMatrix[i] = (double *)malloc(n * sizeof(double));
-        bMatrix[i] = (double *)malloc(n * sizeof(double));
-        cMatrix[i] = (double *)malloc(n * sizeof(double));
-        dMatrix[i] = (double *)malloc(n * sizeof(double));
-    }
+//     for (int i = 0; i < n; i++)
+//     {
+//         aMatrix[i] = (double *)malloc(n * sizeof(double));
+//         bMatrix[i] = (double *)malloc(n * sizeof(double));
+//         cMatrix[i] = (double *)malloc(n * sizeof(double));
+//         dMatrix[i] = (double *)malloc(n * sizeof(double));
+//     }
 
-    for (int i = 0; i < n; i++)
-    {
-        aMatrix[i][0] = 1;
-        aMatrix[i][1] = points[i].y;
-        aMatrix[i][2] = points[i].z;
+//     for (int i = 0; i < n; i++)
+//     {
+//         aMatrix[i][0] = 1;
+//         aMatrix[i][1] = points[i].y;
+//         aMatrix[i][2] = points[i].z;
 
-        bMatrix[i][0] = points[i].x;
-        bMatrix[i][1] = 1;
-        bMatrix[i][2] = points[i].z;
+//         bMatrix[i][0] = points[i].x;
+//         bMatrix[i][1] = 1;
+//         bMatrix[i][2] = points[i].z;
 
-        cMatrix[i][0] = points[i].x;
-        cMatrix[i][1] = points[i].y;
-        cMatrix[i][2] = 1;
+//         cMatrix[i][0] = points[i].x;
+//         cMatrix[i][1] = points[i].y;
+//         cMatrix[i][2] = 1;
 
-        dMatrix[i][0] = points[i].x;
-        dMatrix[i][1] = points[i].y;
-        dMatrix[i][2] = points[i].z;
-    }
+//         dMatrix[i][0] = points[i].x;
+//         dMatrix[i][1] = points[i].y;
+//         dMatrix[i][2] = points[i].z;
+//     }
 
-    double detA = determinant(aMatrix, n);
-    double detB = determinant(bMatrix, n);
-    double detC = determinant(cMatrix, n);
-    double detD = determinant(dMatrix, n);
+//     double detA = determinant(aMatrix, n);
+//     double detB = determinant(bMatrix, n);
+//     double detC = determinant(cMatrix, n);
+//     double detD = determinant(dMatrix, n);
 
-    double D = -detD;
-    double A = -D / detD * detA;
-    double B = -D / detD * detB;
-    double C = -D / detD * detC;
+//     double D = -detD;
+//     double A = -D / detD * detA;
+//     double B = -D / detD * detB;
+//     double C = -D / detD * detC;
 
-    double temp = A * point.x + B * point.y + C * point.z + D;
-    double squareOfDistance = temp * temp / (A * A + B * B + C * C);
-    return squareOfDistance;
-}
-#endif
+//     double temp = A * point.x + B * point.y + C * point.z + D;
+//     double squareOfDistance = temp * temp / (A * A + B * B + C * C);
+//     return squareOfDistance;
+// }
+// #endif
 
 double squareOfDistanceFromPointToPoint(Point point1, Point point2)
 {
@@ -556,7 +556,7 @@ double comparePositionOfTwoTrianglesHilbert(void *a, void *b)
     // double r = s2->circumcenter.x;
     // printf("Data loaded\n");
     double result = s1->hilbertId - s2->hilbertId;
-    if(result != 0)
+    if (result != 0)
         return result;
     result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
     // printf("Result computed\n");
@@ -593,7 +593,7 @@ void printRedBlackTree(redBlackTree *tree)
     printf("\n\n");
 }
 
-void printRedBlackTreeString(redBlackTree *tree, char* (*printData)(void *))
+void printRedBlackTreeString(redBlackTree *tree, char *(*printData)(void *))
 {
     printf("\nRed-Black Tree:\n");
     redBlackTreeNode *node = minimumInRedBlackSubTree(tree->first);
@@ -617,51 +617,154 @@ void printRedBlackTreeTriangles(redBlackTree *tree)
     {
         Simplex *simplex = (Simplex *)node->data;
         printf("Node: %14p, Data: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black");
+#if NO_DIM == 2
         printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f, Neighbors: n1: %14p, n2: %14p, n3: %14p\n",
                simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y,
                simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y, simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+#endif
+#if NO_DIM == 3
+        printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, z: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, z: %10.4f, p2: x: %10.4f, y: %10.4f, z: %10.4f, \
+p3: x: %10.4f, y: %10.4f, z: %10.4f, p4: x: %10.4f, y: %10.4f, z: %10.4f, Neighbors: n1: %14p, n2: %14p, n3: %14p, n4: %14p\n",
+               simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y, simplex->vertices[0].point.z,
+               simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[1].point.z, simplex->vertices[2].point.x, simplex->vertices[2].point.y, simplex->vertices[2].point.z,
+               simplex->vertices[3].point.x, simplex->vertices[3].point.y, simplex->vertices[3].point.z, simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2], simplex->neighbors[3]);
+#endif
         node = getNextNodeFromRedBlackTree(tree, node);
     }
     printf("\n\n");
 }
 
-Simplex *findFirstSimplexToModify(PointId *point, Partition *partition)
+Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilbertDimension)
 {
     // redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->triangles->first);
-    Simplex *forSearch = (Simplex*)malloc(sizeof(Simplex));
+    Simplex *forSearch = (Simplex *)malloc(sizeof(Simplex));
     forSearch->circumcenter.x = point->point.x;
+    forSearch->circumcenter.y = point->point.y;
+    forSearch->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, point->point.x, point->point.y, 0, 100, 0, 100);
     forSearch->circumradius = 0;
     redBlackTreeNode *pointer = getFromRedBlackTreeFirstSmaller(partition->triangles, forSearch);
+    redBlackTreeNode *pointer2 = pointer;
 
-    free(forSearch);
-
-    Simplex *simplex;
+    Simplex *simplex = NULL;
     double squareDistance;
     double squareRadius;
 
-    while (pointer != NULL)
+    //     while (pointer != NULL)
+    //     {
+    //         simplex = (Simplex *)pointer->data;
+    //         squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
+    //         squareRadius = simplex->circumradius * simplex->circumradius;
+
+    // #if DEBUG_TRIANGULATION == 1
+    //         printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //         printf("Analyze of simplex - %14p\n\n", simplex);
+    // #endif
+
+    //         if (squareDistance <= squareRadius)
+    //         {
+    // #if DEBUG_TRIANGULATION == 1
+    //             printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //             printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
+    // #endif
+    //             break;
+    //         }
+
+    //         //pointer = getNextNode(pointer);
+    //         pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+    //     }
+
+    //     if (pointer == NULL)
+    //     {
+    //         pointer = getFromRedBlackTreeFirstSmaller(partition->triangles, forSearch);
+
+    //         while (pointer != NULL)
+    //         {
+    //             simplex = (Simplex *)pointer->data;
+    //             squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
+    //             squareRadius = simplex->circumradius * simplex->circumradius;
+
+    // #if DEBUG_TRIANGULATION == 1
+    //             printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //             printf("Analyze of simplex - %14p\n\n", simplex);
+    // #endif
+
+    //             if (squareDistance <= squareRadius)
+    //             {
+    // #if DEBUG_TRIANGULATION == 1
+    //                 printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //                 printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
+    // #endif
+    //                 break;
+    //             }
+
+    //             //pointer = getNextNode(pointer);
+    //             pointer = getPrevNodeFromRedBlackTree(partition->triangles, pointer);
+    //         }
+
+    //         if (pointer == NULL)
+    //         {
+    //             fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: findFirstSimplexToModify function didn't found simplex to modify. \n", (char *)__FILE__, __LINE__);
+    //         }
+    //     }
+
+    while (pointer != NULL || pointer2 != NULL)
     {
-        simplex = (Simplex *)pointer->data;
-        squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
-        squareRadius = simplex->circumradius * simplex->circumradius;
-
-#if DEBUG_TRIANGULATION == 1
-        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-        printf("Analyze of simplex - %14p\n\n", simplex);
-#endif
-
-        if (squareDistance <= squareRadius)
+        if (pointer != NULL)
         {
+            simplex = (Simplex *)pointer->data;
+            squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
+            squareRadius = simplex->circumradius * simplex->circumradius;
+
 #if DEBUG_TRIANGULATION == 1
             printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-            printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
+            printf("Analyze of simplex - %14p\n\n", simplex);
 #endif
-            break;
+
+            if (squareDistance <= squareRadius)
+            {
+#if DEBUG_TRIANGULATION == 1
+                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
+#endif
+                break;
+            }
+
+            //pointer = getNextNode(pointer);
+
+            pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
         }
 
-        //pointer = getNextNode(pointer);
-        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+        if (pointer2 != NULL)
+        {
+            simplex = (Simplex *)pointer2->data;
+            squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
+            squareRadius = simplex->circumradius * simplex->circumradius;
+
+#if DEBUG_TRIANGULATION == 1
+            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("Analyze of simplex - %14p\n\n", simplex);
+#endif
+
+            if (squareDistance <= squareRadius)
+            {
+#if DEBUG_TRIANGULATION == 1
+                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
+#endif
+                break;
+            }
+
+            //pointer = getNextNode(pointer);
+            pointer2 = getPrevNodeFromRedBlackTree(partition->triangles, pointer2);
+        }
     }
+
+    if (pointer == NULL && pointer2 == NULL)
+    {
+        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: findFirstSimplexToModify function didn't found simplex to modify. \n", (char *)__FILE__, __LINE__);
+    }
+
+    free(forSearch);
 
     return simplex;
 }
