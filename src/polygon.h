@@ -7,7 +7,7 @@
 // Edge of simplex - it can be edge in 2D, face in 3D, tetrahedron in 4D etc. It connects 2 simplexes. 
 typedef struct Edge
 {
-    PointId points[NO_DIM];
+    PointId *points[NO_DIM];
     Simplex *first;
     Simplex *second;
     // secondIndex - in the simplex we know who is our neighbor, but we don't know on wich position is stored our position in other simplex. 
@@ -32,8 +32,8 @@ typedef struct PolygonList
 Edge* createNewEdge(Simplex *simplex, int i);
 void freeEdge(void *e);
 
-PointId *removePointFromArray(PointId *array, int n, int k);
-bool pointEquals(PointId p1, PointId p2);
+PointId **removePointFromArray(PointId **array, int n, int k);
+bool pointEquals(PointId *p1, PointId *p2);
 bool edgeEquals(Edge *e1, Edge *e2);
 
 PolygonList *newPolygonList(void (*freeData)(void *));

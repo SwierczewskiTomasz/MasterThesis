@@ -30,11 +30,11 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
     point4->point.x = 100;
     point4->point.y = 100;
 
-    PointId triangle1Points[3] = {*point1, *point2, *point3};
+    PointId *triangle1Points[3] = {point1, point2, point3};
     Simplex *triangle1 = (Simplex *)malloc(sizeof(Simplex));
     createNewSimplex(triangle1, triangle1Points, hilbertDimension);
 
-    PointId triangle2Points[3] = {*point2, *point3, *point4};
+    PointId *triangle2Points[3] = {point2, point3, point4};
     Simplex *triangle2 = (Simplex *)malloc(sizeof(Simplex));
     createNewSimplex(triangle2, triangle2Points, hilbertDimension);
 
@@ -92,37 +92,37 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
 
     // Number of triangles
     int m = 5;
-    PointId **trianglePoints = (PointId**)malloc(m * sizeof(PointId*));
+    PointId ***trianglePoints = (PointId***)malloc(m * sizeof(PointId**));
 
-    trianglePoints[0] = (PointId*)malloc((NO_DIM + 1) * sizeof(PointId));
-    trianglePoints[0][0] = *points[0];
-    trianglePoints[0][1] = *points[1];
-    trianglePoints[0][2] = *points[2];
-    trianglePoints[0][3] = *points[4];
+    trianglePoints[0] = (PointId**)malloc((NO_DIM + 1) * sizeof(PointId*));
+    trianglePoints[0][0] = points[0];
+    trianglePoints[0][1] = points[1];
+    trianglePoints[0][2] = points[2];
+    trianglePoints[0][3] = points[4];
 
-    trianglePoints[1] = (PointId*)malloc((NO_DIM + 1) * sizeof(PointId));
-    trianglePoints[1][0] = *points[3];
-    trianglePoints[1][1] = *points[2];
-    trianglePoints[1][2] = *points[1];
-    trianglePoints[1][3] = *points[7];
+    trianglePoints[1] = (PointId**)malloc((NO_DIM + 1) * sizeof(PointId*));
+    trianglePoints[1][0] = points[3];
+    trianglePoints[1][1] = points[2];
+    trianglePoints[1][2] = points[1];
+    trianglePoints[1][3] = points[7];
 
-    trianglePoints[2] = (PointId*)malloc((NO_DIM + 1) * sizeof(PointId));
-    trianglePoints[2][0] = *points[6];
-    trianglePoints[2][1] = *points[4];
-    trianglePoints[2][2] = *points[2];
-    trianglePoints[2][3] = *points[7];
+    trianglePoints[2] = (PointId**)malloc((NO_DIM + 1) * sizeof(PointId*));
+    trianglePoints[2][0] = points[6];
+    trianglePoints[2][1] = points[4];
+    trianglePoints[2][2] = points[2];
+    trianglePoints[2][3] = points[7];
 
-    trianglePoints[3] = (PointId*)malloc((NO_DIM + 1) * sizeof(PointId));
-    trianglePoints[3][0] = *points[5];
-    trianglePoints[3][1] = *points[4];
-    trianglePoints[3][2] = *points[1];
-    trianglePoints[3][3] = *points[7];
+    trianglePoints[3] = (PointId**)malloc((NO_DIM + 1) * sizeof(PointId*));
+    trianglePoints[3][0] = points[5];
+    trianglePoints[3][1] = points[4];
+    trianglePoints[3][2] = points[1];
+    trianglePoints[3][3] = points[7];
 
-    trianglePoints[4] = (PointId*)malloc((NO_DIM + 1) * sizeof(PointId));
-    trianglePoints[4][0] = *points[4];
-    trianglePoints[4][1] = *points[1];
-    trianglePoints[4][2] = *points[7];
-    trianglePoints[4][3] = *points[2];
+    trianglePoints[4] = (PointId**)malloc((NO_DIM + 1) * sizeof(PointId*));
+    trianglePoints[4][0] = points[4];
+    trianglePoints[4][1] = points[1];
+    trianglePoints[4][2] = points[7];
+    trianglePoints[4][3] = points[2];
 
     Simplex **triangles = (Simplex**)malloc(m * sizeof(Simplex*));
     

@@ -16,7 +16,7 @@ typedef struct Simplex
     //Center point of circumcircle of circumsphere (or other things in other dimensions)
     Point circumcenter;
     double circumradius;
-    PointId vertices[NO_DIM + 1];
+    PointId *vertices[NO_DIM + 1];
     int hilbertId;
     int hilbertDimension;
     // Edge edges[NO_DIM + 1];
@@ -33,7 +33,7 @@ typedef struct Simplex
 
 Simplex* neighborOfSimplex(Simplex *simplex, int i);
 
-void createNewSimplex(Simplex *simplex, PointId points[NO_DIM + 1], int hilbertDimension);
+void createNewSimplex(Simplex *simplex, PointId *points[NO_DIM + 1], int hilbertDimension);
 void freeSimplex(void *s);
 
 void calculateCircumcircle(Simplex *simplex);

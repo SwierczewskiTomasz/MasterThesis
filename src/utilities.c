@@ -30,33 +30,33 @@ int generateNextTestNumberOfPoints(int n)
 
 void testTIPP()
 {
-    // int n = 0;
-    // int hilbertDimension = 16;
+    int n = 0;
+    int hilbertDimension = 16;
 
-    // int dimensions[10];
-    // dimensions[0] = 1;
-    // dimensions[1] = 2;
-    // dimensions[2] = 4;
-    // dimensions[3] = 8;
-    // dimensions[4] = 16;
-    // dimensions[5] = 32;
-    // dimensions[6] = 64;
-    // dimensions[7] = 128;
-    // dimensions[8] = 256;
-    // dimensions[9] = 4096;
+    int dimensions[10];
+    dimensions[0] = 1;
+    dimensions[1] = 2;
+    dimensions[2] = 4;
+    dimensions[3] = 8;
+    dimensions[4] = 16;
+    dimensions[5] = 32;
+    dimensions[6] = 64;
+    dimensions[7] = 128;
+    dimensions[8] = 256;
+    dimensions[9] = 4096;
 
-    // for (int i = 5; i < 10; i++)
-    // {
-    //     printf("\ndimensions: %d, %d\n", i, dimensions[i]);
-    //     n = 0;
-    //     for (int j = 0; j < 60; j++)
-    //     {
-    //         n = generateNextTestNumberOfPoints(n);
-    //         TIPP(n, n, dimensions[i]);
-    //     }
-    // }
+    for (int i = 5; i < 10; i++)
+    {
+        printf("\ndimensions: %d, %d\n", i, dimensions[i]);
+        n = 0;
+        for (int j = 0; j < 70; j++)
+        {
+            n = generateNextTestNumberOfPoints(n);
+            TIPP(n, n, dimensions[i]);
+        }
+    }
 
-    TIPP(32, 32, 1);
+    TIPP(4096, 4096, 1);
 
     // TIPP(1024*1024*1024, 1024*1024*1024, 32);
 }

@@ -7,8 +7,8 @@ Edge *createNewEdge(Simplex *simplex, int i)
     Edge *result = (Edge *)malloc(sizeof(Edge));
     result->first = simplex;
     result->second = neighborOfSimplex(simplex, i);
-    PointId *array = removePointFromArray(simplex->vertices, NO_DIM + 1, i);
-    memcpy(result->points, array, NO_DIM * sizeof(PointId));
+    PointId **array = removePointFromArray(simplex->vertices, NO_DIM + 1, i);
+    memcpy(result->points, array, NO_DIM * sizeof(PointId*));
     free(array);
 
     if (result->second != NULL)
@@ -41,9 +41,9 @@ void freeEdge(void *e)
 //     return result;
 // }
 
-PointId *removePointFromArray(PointId *array, int n, int k)
+PointId **removePointFromArray(PointId **array, int n, int k)
 {
-    PointId *result = (PointId *)malloc((n - 1) * sizeof(PointId));
+    PointId **result = (PointId **)malloc((n - 1) * sizeof(PointId*));
     if (k > n)
         return NULL;
     for (int i = 0; i < k; i++)
@@ -57,12 +57,19 @@ PointId *removePointFromArray(PointId *array, int n, int k)
     return result;
 }
 
-// #if NO_DIM==2
-bool pointEquals(PointId p1, PointId p2)
+#if NO_DIM==2
+bool pointEquals(PointId *p1, PointId *p2)
 {
-    return p1.point.x == p2.point.x && p1.point.y == p2.point.y;
+    return p1->point.x == p2->point.x && p1->point.y == p2->point.y;
 }
-// #endif
+#endif
+
+#if NO_DIM==3
+bool pointEquals(PointId *p1, PointId *p2)
+{
+    return p1->point.x == p2->point.x && p1->point.y == p2->point.y && p1->point.z == p2->point.z;
+}
+#endif
 
 bool edgeEquals(Edge *e1, Edge *e2)
 {
@@ -121,8 +128,8 @@ PolygonLinkedListNode *findInPolygonList(PolygonList *list, Edge *e)
         printf("File %s, line %i: findInPolygonList function.\n", (char *)__FILE__, __LINE__);
         printf("Node: %14p, Edge: %14p\n", node, edge);
         printf("Edge from list: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n\n",
-               edge, edge->points[0].point.x, edge->points[0].point.y,
-               edge->points[1].point.x, edge->points[1].point.y, edge->first, edge->second,
+               edge, edge->points[0]->point.x, edge->points[0]->point.y,
+               edge->points[1]->point.x, edge->points[1]->point.y, edge->first, edge->second,
                edge->secondIndex, edge->neighbors[0], edge->neighbors[1]);
 #endif
 

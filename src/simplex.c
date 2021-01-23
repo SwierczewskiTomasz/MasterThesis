@@ -47,16 +47,16 @@ Simplex *neighborOfSimplex(Simplex *simplex, int i)
     return simplex->neighbors[i];
 }
 
-void createNewSimplex(Simplex *result, PointId points[NO_DIM + 1], int hilbertDimension)
+void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertDimension)
 {
     int n = NO_DIM + 1;
     //Trzeba nadać unikanlne id
 
-    memcpy(result->vertices, points, n * sizeof(PointId));
+    memcpy(result->vertices, points, n * sizeof(PointId*));
 
     // for(int i = 0; i < n; i++)
     // {
-    //     printf("Vertex %i: x: %10.4f, y: %10.4f, z: %10.4f \n", i, points[i].point.x, points[i].point.y, points[i].point.z);
+    //     printf("Vertex %i: x: %10.4f, y: %10.4f, z: %10.4f \n", i, points[i]->point.x, points[i]->point.y, points[i]->point.z);
     // }
 
     calculateCircumcircle(result);
@@ -66,8 +66,8 @@ void createNewSimplex(Simplex *result, PointId points[NO_DIM + 1], int hilbertDi
     double y = 0.0;
     for(int i = 0; i < n; i++)
     {
-        x += points[i].point.x;
-        y += points[i].point.y;
+        x += points[i]->point.x;
+        y += points[i]->point.y;
     }
 
     x /= n;
@@ -90,7 +90,7 @@ void calculateCircumcircle(Simplex *simplex)
     double r[NO_DIM + 1];
     for (int i = 0; i < n; i++)
     {
-        r[i] = simplex->vertices[i].point.x * simplex->vertices[i].point.x + simplex->vertices[i].point.y * simplex->vertices[i].point.y;
+        r[i] = simplex->vertices[i]->point.x * simplex->vertices[i]->point.x + simplex->vertices[i]->point.y * simplex->vertices[i]->point.y;
     }
 
     double **bxMatrix = (double **)malloc(n * sizeof(double *));
@@ -109,20 +109,20 @@ void calculateCircumcircle(Simplex *simplex)
     for (int i = 0; i < n; i++)
     {
         bxMatrix[i][0] = r[i];
-        bxMatrix[i][1] = simplex->vertices[i].point.y;
+        bxMatrix[i][1] = simplex->vertices[i]->point.y;
         bxMatrix[i][2] = 1;
 
         byMatrix[i][0] = r[i];
-        byMatrix[i][1] = simplex->vertices[i].point.x;
+        byMatrix[i][1] = simplex->vertices[i]->point.x;
         byMatrix[i][2] = 1;
 
-        aMatrix[i][0] = simplex->vertices[i].point.x;
-        aMatrix[i][1] = simplex->vertices[i].point.y;
+        aMatrix[i][0] = simplex->vertices[i]->point.x;
+        aMatrix[i][1] = simplex->vertices[i]->point.y;
         aMatrix[i][2] = 1;
 
         cMatrix[i][0] = r[i];
-        cMatrix[i][1] = simplex->vertices[i].point.x;
-        cMatrix[i][2] = simplex->vertices[i].point.y;
+        cMatrix[i][1] = simplex->vertices[i]->point.x;
+        cMatrix[i][2] = simplex->vertices[i]->point.y;
     }
 
     double bx = -determinant(bxMatrix, n);
@@ -159,7 +159,7 @@ void calculateCircumcircle(Simplex *simplex)
     double r[NO_DIM + 1];
     for (int i = 0; i < n; i++)
     {
-        r[i] = simplex->vertices[i].point.x * simplex->vertices[i].point.x + simplex->vertices[i].point.y * simplex->vertices[i].point.y + simplex->vertices[i].point.z * simplex->vertices[i].point.z;
+        r[i] = simplex->vertices[i]->point.x * simplex->vertices[i]->point.x + simplex->vertices[i]->point.y * simplex->vertices[i]->point.y + simplex->vertices[i]->point.z * simplex->vertices[i]->point.z;
     }
 
     double **bxMatrix = (double **)malloc(n * sizeof(double *));
@@ -180,29 +180,29 @@ void calculateCircumcircle(Simplex *simplex)
     for (int i = 0; i < n; i++)
     {
         bxMatrix[i][0] = r[i];
-        bxMatrix[i][1] = simplex->vertices[i].point.y;
-        bxMatrix[i][2] = simplex->vertices[i].point.z;
+        bxMatrix[i][1] = simplex->vertices[i]->point.y;
+        bxMatrix[i][2] = simplex->vertices[i]->point.z;
         bxMatrix[i][3] = 1;
 
         byMatrix[i][0] = r[i];
-        byMatrix[i][1] = simplex->vertices[i].point.x;
-        byMatrix[i][2] = simplex->vertices[i].point.z;
+        byMatrix[i][1] = simplex->vertices[i]->point.x;
+        byMatrix[i][2] = simplex->vertices[i]->point.z;
         byMatrix[i][3] = 1;
 
         bzMatrix[i][0] = r[i];
-        bzMatrix[i][1] = simplex->vertices[i].point.x;
-        bzMatrix[i][2] = simplex->vertices[i].point.y;
+        bzMatrix[i][1] = simplex->vertices[i]->point.x;
+        bzMatrix[i][2] = simplex->vertices[i]->point.y;
         bzMatrix[i][3] = 1;
 
-        aMatrix[i][0] = simplex->vertices[i].point.x;
-        aMatrix[i][1] = simplex->vertices[i].point.y;
-        aMatrix[i][2] = simplex->vertices[i].point.z;
+        aMatrix[i][0] = simplex->vertices[i]->point.x;
+        aMatrix[i][1] = simplex->vertices[i]->point.y;
+        aMatrix[i][2] = simplex->vertices[i]->point.z;
         aMatrix[i][3] = 1;
 
         cMatrix[i][0] = r[i];
-        cMatrix[i][1] = simplex->vertices[i].point.x;
-        cMatrix[i][2] = simplex->vertices[i].point.y;
-        cMatrix[i][3] = simplex->vertices[i].point.z;
+        cMatrix[i][1] = simplex->vertices[i]->point.x;
+        cMatrix[i][2] = simplex->vertices[i]->point.y;
+        cMatrix[i][3] = simplex->vertices[i]->point.z;
     }
 
     double bx = determinant(bxMatrix, n);
@@ -245,7 +245,7 @@ void calculateCircumcircle(Simplex *simplex)
         r[i] = 0;
         for (int j = 0; j < NO_DIM; j++)
         {
-            r[i] += simplex->vertices[i].point.coords[j] * simplex->vertices[i].point.coords[j];
+            r[i] += simplex->vertices[i]->point.coords[j] * simplex->vertices[i]->point.coords[j];
         }
     }
 
@@ -275,25 +275,25 @@ void calculateCircumcircle(Simplex *simplex)
             bMatrix[j][i][0] = r[i];
             for (int k = 0; k < j; k++)
             {
-                bMatrix[j][i][k] = simplex->vertices[i].point.coords[k];
+                bMatrix[j][i][k] = simplex->vertices[i]->point.coords[k];
             }
             for (int k = j + 1; k < NO_DIM; k++)
             {
-                bMatrix[j][i][k] = simplex->vertices[i].point.coords[k];
+                bMatrix[j][i][k] = simplex->vertices[i]->point.coords[k];
             }
             bMatrix[j][i][n - 1] = 1;
         }
 
         for (int j = 0; j < NO_DIM; j++)
         {
-            aMatrix[i][j] = simplex->vertices[i].point.coords[j];
+            aMatrix[i][j] = simplex->vertices[i]->point.coords[j];
         }
         aMatrix[i][2] = 1;
 
         cMatrix[i][0] = r[i];
         for (int j = 0; j < NO_DIM; j++)
         {
-            aMatrix[i][j + 1] = simplex->vertices[i].point.coords[j];
+            aMatrix[i][j + 1] = simplex->vertices[i]->point.coords[j];
         }
     }
 
@@ -353,10 +353,10 @@ void sortPointsInSimplex(Simplex *simplex)
     {
         for (int j = 0; j < NO_DIM - i; j++)
         {
-            if (comparePoints(simplex->vertices[j].point, simplex->vertices[j + 1].point) > 0)
+            if (comparePoints(simplex->vertices[j]->point, simplex->vertices[j + 1]->point) > 0)
             {
                 // Nie jestem pewien, czy to będzie dobrze działać, bo pracujemy tak de facto na PointId *, a rzeczywiście są PointId, a ja dałem PointId **array, aby można było ją modyfikować.
-                PointId copy = simplex->vertices[j];
+                PointId *copy = simplex->vertices[j];
                 simplex->vertices[j] = simplex->vertices[j + 1];
                 simplex->vertices[j + 1] = copy;
 
