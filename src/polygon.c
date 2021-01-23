@@ -1,14 +1,23 @@
 #include <stdlib.h>
 #include "polygon.h"
 
+#if ID == 1
+ID_TYPE EdgeIdCount = 0;
+#endif
+
 // Creates new Edge by "removing" i vertex from simplex.
-Edge *createNewEdge(Simplex *simplex, int i)
+Edge *newEdge(Simplex *simplex, int i)
 {
     Edge *result = (Edge *)malloc(sizeof(Edge));
+
+#if ID == 1
+    result->id = EdgeIdCount++;
+#endif
+
     result->first = simplex;
     result->second = neighborOfSimplex(simplex, i);
     PointId **array = removePointFromArray(simplex->vertices, NO_DIM + 1, i);
-    memcpy(result->points, array, NO_DIM * sizeof(PointId*));
+    memcpy(result->points, array, NO_DIM * sizeof(PointId *));
     free(array);
 
     if (result->second != NULL)
@@ -32,7 +41,7 @@ void freeEdge(void *e)
     free(edge);
 }
 
-// Edge* createNewEdge(PointId p1, PointId p2)
+// Edge* newEdge(PointId p1, PointId p2)
 // {
 //     Edge *result = (Edge*)malloc(sizeof(Edge));
 //     result->points[0] = p1;
@@ -43,7 +52,7 @@ void freeEdge(void *e)
 
 PointId **removePointFromArray(PointId **array, int n, int k)
 {
-    PointId **result = (PointId **)malloc((n - 1) * sizeof(PointId*));
+    PointId **result = (PointId **)malloc((n - 1) * sizeof(PointId *));
     if (k > n)
         return NULL;
     for (int i = 0; i < k; i++)
@@ -57,14 +66,14 @@ PointId **removePointFromArray(PointId **array, int n, int k)
     return result;
 }
 
-#if NO_DIM==2
+#if NO_DIM == 2
 bool pointEquals(PointId *p1, PointId *p2)
 {
     return p1->point.x == p2->point.x && p1->point.y == p2->point.y;
 }
 #endif
 
-#if NO_DIM==3
+#if NO_DIM == 3
 bool pointEquals(PointId *p1, PointId *p2)
 {
     return p1->point.x == p2->point.x && p1->point.y == p2->point.y && p1->point.z == p2->point.z;
@@ -158,9 +167,9 @@ void insertIntoPolygonList(PolygonList *list, Edge *e)
 
 void removeFromPolygonList(PolygonList *list, PolygonLinkedListNode *node)
 {
-    if(list == NULL || node == NULL)
+    if (list == NULL || node == NULL)
         return;
-    
+
     PolygonLinkedListNode *p = list->first;
     if (p == node)
     {
@@ -178,3 +187,76 @@ void removeFromPolygonList(PolygonList *list, PolygonLinkedListNode *node)
     }
     free(node);
 }
+
+char *printLongEdge(Edge *edge)
+{
+    int n = 600;
+    char *result = (char *)malloc(n * sizeof(char));
+
+    sprintf(result, "Edge: %14p, points: ", edge);
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        char *temp = printLongPointId(edge->points[i]);
+        int length = strlen(temp) + 10;
+        char *temp2 = (char *)malloc(length * sizeof(char));
+        sprintf(temp2, ", p%i: %s", i, temp);
+        strcat(result, temp2);
+        free(temp);
+        free(temp2);
+    }
+
+    char *printFirst = printLongSimplex(edge->first);
+    char *printSecond = printLongSimplex(edge->second);
+
+    char temp[300];
+    sprintf(temp, ", first: %s, second: %s, secondIndex: %i, neighbors: ", printFirst, printSecond, edge->secondIndex);
+    strcat(result, temp);
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        char temp2[20];
+        sprintf(temp2, ", n%i: %14p", i, edge->neighbors[i]);
+        strcat(result, temp2);
+    }
+
+    strcat(result, "\n");
+
+    free(printFirst);
+    free(printSecond);
+
+    return result;
+}
+
+#if ID == 1
+char *printShortEdge(Edge *edge)
+{
+    int n = 600;
+    char *result = (char*)malloc(n * sizeof(char));
+    sprintf(result, "Edge: %i, points: ", edge->id);
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        char temp[10];
+        sprintf(temp, ", p%i: %i", i, edge->points[i]->id);
+        strcat(result, temp);
+    }
+
+    char temp[300];
+    sprintf(temp, ", first: %i, second: %i, secondIndex: %i, neighbors: ", edge->first == NULL?-1:edge->first->id,
+            edge->second == NULL?-1:edge->second->id, edge->secondIndex);
+    strcat(result, temp);
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        char temp2[20];
+        sprintf(temp2, ", n%i: %i", i, edge->neighbors[i] == NULL?-1:edge->neighbors[i]->id);
+        strcat(result, temp2);
+    }
+
+    strcat(result, "\n");
+
+    return result;
+}
+
+#endif

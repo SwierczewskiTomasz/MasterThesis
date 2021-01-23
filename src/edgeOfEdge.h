@@ -5,10 +5,6 @@
 #include "simplex.h"
 #include "polygon.h"
 
-#if ID == 1
-ID_TYPE extern EdgeOfEdgeIdCount;
-#endif
-
 typedef struct EdgeOfEdge
 {
 #if ID == 1
@@ -28,6 +24,9 @@ void addPointAsFirstToArray(PointId **result, PointId **array, PointId *p, int n
 EdgeOfEdge *newEdgeOfEdge(Edge *e, int i);
 void freeEdgeOfEdge(void *e);
 
-char* printEdgeOfEdge(EdgeOfEdge *edge);
+char* printLongEdgeOfEdge(EdgeOfEdge *edge);
+#if ID == 1
+char* printShortEdgeOfEdge(EdgeOfEdge *edge);
+#endif
 
 #endif

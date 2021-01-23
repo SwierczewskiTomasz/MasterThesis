@@ -45,11 +45,13 @@ void TIPP(int k, int n, int hilbertDimension)
 #if DEBUG_TRIANGULATION == 1
     printf("Trójkąty: \n");
 
-    printRedBlackTreeTriangles(partition->triangles);
+    //printRedBlackTreeTriangles(partition->triangles);
+    printRedBlackTreeString(partition->triangles, printShortSimplex);
 
     printf("Wierzchołki: \n");
 
-    printRedBlackTree(partition->vertices);
+    //printRedBlackTree(partition->vertices);
+    printRedBlackTreeString(partition->vertices, printShortPointId);
 #endif
 
     // printf("Obliczanie DT \n\n");
@@ -66,20 +68,20 @@ void TIPP(int k, int n, int hilbertDimension)
     long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
 
     printf("%d, %lld\n", n, time2 - time1);
-    // printf("After DT\n");
-    // printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
-    // printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
-    // printf("doubleLinkedListInsertTime2: %lld\n", doubleLinkedListInsertTime2);
+    printf("After DT\n");
+    printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
+    printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
+    printf("doubleLinkedListInsertTime2: %lld\n", doubleLinkedListInsertTime2);
 
-    // printf("createPolygonTime: %lld\n", createPolygonTime);
-    // printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
-    // printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
-    // printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
+    printf("createPolygonTime: %lld\n", createPolygonTime);
+    printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
+    printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
+    printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
 
-    // printf("redBlackTreeInsertTime: %lld\n", redBlackTreeInsertTime);
-    // printf("redBlackTreeGetTime: %lld\n", redBlackTreeGetTime);
-    // printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
-    // printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
+    printf("redBlackTreeInsertTime: %lld\n", redBlackTreeInsertTime);
+    printf("redBlackTreeGetTime: %lld\n", redBlackTreeGetTime);
+    printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
+    printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
 
     FILE *fp;
     fp = fopen("./out/outputVertices.txt", "w+");
@@ -880,7 +882,7 @@ PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trian
 
         for (int i = 0; i < NO_DIM + 1; i++)
         {
-            Edge *edge = createNewEdge(data, i);
+            Edge *edge = newEdge(data, i);
 
 // Do usunięcia
 #if DEBUG_TRIANGULATION == 1

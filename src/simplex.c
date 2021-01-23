@@ -1,5 +1,9 @@
 #include "simplex.h"
 
+#if ID == 1
+ID_TYPE SimplexIdCount = 0;
+#endif
+
 // PointId cw(Simplex *simplex, PointId vertex)
 // {
 //     for(int i = 0; i < NO_DIM + 1; i++)
@@ -52,7 +56,11 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
     int n = NO_DIM + 1;
     //Trzeba nadać unikanlne id
 
-    memcpy(result->vertices, points, n * sizeof(PointId*));
+#if ID == 1
+    result->id = SimplexIdCount++;
+#endif
+
+    memcpy(result->vertices, points, n * sizeof(PointId *));
 
     // for(int i = 0; i < n; i++)
     // {
@@ -64,7 +72,7 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
 
     double x = 0.0;
     double y = 0.0;
-    for(int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         x += points[i]->point.x;
         y += points[i]->point.y;
@@ -78,7 +86,7 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
 
 void freeSimplex(void *s)
 {
-    Simplex *simplex = (Simplex*)s;
+    Simplex *simplex = (Simplex *)s;
     free(simplex);
 }
 
@@ -407,3 +415,47 @@ double comparePointsVoids(void *p1, void *p2)
     PointId *point2 = (PointId *)p2;
     return comparePoints(point1->point, point2->point);
 }
+
+char *printLongSimplex(Simplex *simplex)
+{
+    int n = 1000;
+    char *result = (char*)malloc(n * sizeof(char));
+
+    return result;
+}
+
+#if ID == 1
+char *printShortSimplex(Simplex *simplex)
+{
+    int n = 300;
+    char *result = (char*)malloc(n * sizeof(char));
+
+    char circumcenter[100];
+#if NO_DIM == 2
+    sprintf(circumcenter, "x: %10.4f, y: %10.4f", simplex->circumcenter.x, simplex->circumcenter.y);
+#elif NO_DIM == 3
+    sprintf(circumcenter, "x: %10.4f, y: %10.4f", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
+#else
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        char temp[20];
+        sprintf(temp, ", c%i: %10.4f", i, simplex->circumcenter.coords[i]);
+        strcat(circumcenter, temp);
+    }
+#endif
+
+    sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, neighbors: ",
+            simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension);
+
+    for(int i = 0; i < NO_DIM; i++)
+    {
+        char temp[20];
+        sprintf(temp, ", n%i: %i", i, simplex->neighbors[i] == NULL?-1:simplex->neighbors[i]->id);
+        strcat(result, temp);
+    }
+
+    strcat(result, "\n");
+
+    return result;
+}
+#endif

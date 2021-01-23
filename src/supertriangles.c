@@ -13,22 +13,27 @@ void supertriangles(Partition *partition, int hilbertDimension)
 
 void supertriangles2D(Partition *partition, int hilbertDimension)
 {
-    PointId *point1 = (PointId *)malloc(sizeof(PointId));
-    PointId *point2 = (PointId *)malloc(sizeof(PointId));
-    PointId *point3 = (PointId *)malloc(sizeof(PointId));
-    PointId *point4 = (PointId *)malloc(sizeof(PointId));
+    // PointId *point1 = (PointId *)malloc(sizeof(PointId));
+    // PointId *point2 = (PointId *)malloc(sizeof(PointId));
+    // PointId *point3 = (PointId *)malloc(sizeof(PointId));
+    // PointId *point4 = (PointId *)malloc(sizeof(PointId));
 
-    point1->point.x = 0;
-    point1->point.y = 0;
+    // point1->point.x = 0;
+    // point1->point.y = 0;
 
-    point2->point.x = 100;
-    point2->point.y = 0;
+    // point2->point.x = 100;
+    // point2->point.y = 0;
 
-    point3->point.x = 0;
-    point3->point.y = 100;
+    // point3->point.x = 0;
+    // point3->point.y = 100;
 
-    point4->point.x = 100;
-    point4->point.y = 100;
+    // point4->point.x = 100;
+    // point4->point.y = 100;
+
+    PointId *point1 = newPointId(0, 0);
+    PointId *point2 = newPointId(100, 0);
+    PointId *point3 = newPointId(0, 100);
+    PointId *point4 = newPointId(100, 100);
 
     PointId *triangle1Points[3] = {point1, point2, point3};
     Simplex *triangle1 = (Simplex *)malloc(sizeof(Simplex));
