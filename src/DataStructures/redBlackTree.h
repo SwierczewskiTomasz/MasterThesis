@@ -55,5 +55,6 @@ redBlackTreeNode *minimumInRedBlackSubTree(redBlackTreeNode *node);
 redBlackTreeNode *maximumInRedBlackSubTree(redBlackTreeNode *node);
 
 redBlackTreeNode *getFromRedBlackTreeFirstSmaller(redBlackTree *tree, void *data);
+redBlackTreeNode *getFromRedBlackTreeFirstBigger(redBlackTree *tree, void *data);
 
 #endif

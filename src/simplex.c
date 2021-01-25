@@ -82,6 +82,8 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
     y /= n;
 
     result->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, x, y, 0, 100, 0, 100);
+
+    calculateBoxId(result);
 }
 
 void freeSimplex(void *s)
@@ -444,8 +446,8 @@ char *printShortSimplex(Simplex *simplex)
     }
 #endif
 
-    sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, neighbors: ",
-            simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension);
+    sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, boxId: %i, %i, neighbors: ",
+            simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension, simplex->boxId[0], simplex->boxId[1]);
 
     for(int i = 0; i < NO_DIM; i++)
     {
@@ -458,4 +460,41 @@ char *printShortSimplex(Simplex *simplex)
 
     return result;
 }
+
+void calculateBoxId(Simplex *result)
+{
+    double *coordsMinMax[NO_DIM];
+    for(int i = 0; i < NO_DIM; i++)
+    {
+        coordsMinMax[i] = (double*)malloc(2 * sizeof(double));
+        coordsMinMax[i][0] = 0;
+        coordsMinMax[i][1] = 100;
+    }
+
+#if NO_DIM == 2
+    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0])/(coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0])/(coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+#elif NO_DIM == 3
+    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0])/(coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0])/(coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    result->boxId[2] = (int)((result->circumcenter.z - coordsMinMax[2][0])/(coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
+#else
+    for(int i = 0; i < NO_DIM; i++)
+    {
+        result->boxId[i] = (int)((result->circumcenter.coords[i] - coordsMinMax[i][0])/(coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
+    }
+#endif
+    for(int i = 0; i < NO_DIM; i++)
+    {
+        if(result->boxId[i] >= result->hilbertDimension)
+        {
+            result->boxId[i] = result->hilbertDimension - 1;
+        }
+        if(result->boxId[i] < 0)
+        {
+            result->boxId[i] = 0;
+        }
+    }
+}
+
 #endif

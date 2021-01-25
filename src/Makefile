@@ -14,6 +14,15 @@ FILES = \
 	DataStructures/doubleLinkedList.c\
 	DataStructures/linkedList.h\
 	DataStructures/linkedList.c\
+	DT/createSimplexList.c\
+	DT/createTreeOfEdgeOfEdges.c\
+	DT/findAllSimplexesToModify.c\
+	DT/findFirstSimplexToModify.c\
+	DT/findPolygon.c\
+	DT/serialDT.c\
+	DT/serialDT.h\
+	DT/updateAndAddSimplexes.c\
+	DT/uploadInformationsAboutNeighborsInEdges.c\
 	HilbertCurve/hilbertCurve.h\
 	HilbertCurve/hilbertCurve.c\
 	edgeOfEdge.h\
@@ -24,8 +33,6 @@ FILES = \
 	polygon.c\
 	simplex.h\
 	simplex.c\
-	serialDT.c\
-	serialDT.h\
 	supertriangles.h\
 	supertriangles.c\
 	utilities.h\

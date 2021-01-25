@@ -29,8 +29,8 @@ then
     gnuplot "generateImages.plt"
 else
     make main
-    out/DT &> out/output1.txt
-    # out/DT
+    out/DT
+    # out/DT &> out/output1.txt
     gnuplot "generateImages.plt"
 fi
 

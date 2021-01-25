@@ -22,6 +22,8 @@ typedef struct Simplex
     int hilbertDimension;
     // Edge edges[NO_DIM + 1];
 
+    int boxId[NO_DIM];
+
     struct Simplex *neighbors[NO_DIM + 1];
 } Simplex;
 
@@ -41,6 +43,8 @@ void calculateCircumcircle(Simplex *simplex);
 void sortPointsInSimplex(Simplex *simplex);
 double comparePoints(Point p1, Point p2);
 double comparePointsVoids(void *p1, void *p2);
+
+void calculateBoxId(Simplex *result);
 
 char* printLongSimplex(Simplex *simplex);
 #if ID == 1
