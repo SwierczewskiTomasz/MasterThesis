@@ -75,7 +75,7 @@ char *printLongPointId(PointId *point)
 #if NO_DIM == 2
     sprintf(result, "id: %i, %14p, x: %10.4f, y: %10.4f", point->id, point, point->point.x, point->point.y);
 #elif NO_DIM == 3
-    sprintf(result, "%14p, x: %10.4f, y: %10.4f", point, point->point.x, point->point.y, point->point.z);
+    sprintf(result, "id: %5i, %14p, x: %10.4f, y: %10.4f, z: %10.4f", point->id, point, point->point.x, point->point.y, point->point.z);
 #else
     sprintf(result, "%14p", point);
 
@@ -86,7 +86,7 @@ char *printLongPointId(PointId *point)
         strcat(result, temp);
     }
 #endif
-    printf("Length of printPointId: %li \n", strlen(result));
+    // printf("Length of printPointId: %li \n", strlen(result));
     return result;
 }
 

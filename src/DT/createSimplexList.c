@@ -38,7 +38,7 @@ LinkedList *createSimplexList(PolygonList *edges, PointId *point, int hilbertDim
 
 #if DEBUG_TRIANGULATION == 1
         Simplex *simplex = result;
-        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+        printf("File %s, line %i: createSimplexList function.\n", (char *)__FILE__, __LINE__);
         printf("Created Simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
         printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
                simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);

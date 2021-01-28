@@ -53,7 +53,7 @@ void TIPP(int k, int n, int hilbertDimension)
 #if DEBUG_TRIANGULATION == 1
     printf("Trójkąty: \n");
 
-    //printRedBlackTreeTriangles(partition->triangles);
+    //printRedBlackTreeString(partition->triangles, printShortSimplex);
     printRedBlackTreeString(partition->triangles, printShortSimplex);
 
     printf("Wierzchołki: \n");
@@ -124,6 +124,7 @@ void TIPP(int k, int n, int hilbertDimension)
         Simplex *simplex = (Simplex *)pointer->data;
         // printf("Loaded\n");
         // fprintf(fp, "%10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0]->point.x, simplex->vertices[0]->point.y, simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
+#if NO_DIM == 2
         fprintf(fp, "%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n",
                 simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
                 simplex->vertices[1]->point.x, simplex->vertices[1]->point.y,
@@ -131,7 +132,29 @@ void TIPP(int k, int n, int hilbertDimension)
                 simplex->vertices[2]->point.x, simplex->vertices[2]->point.y,
                 simplex->vertices[2]->point.x, simplex->vertices[2]->point.y,
                 simplex->vertices[0]->point.x, simplex->vertices[0]->point.y);
+#elif NO_DIM == 3
+        int r = rand()%200;
+        int g = rand()%200;
+        int b = rand()%200;
 
+        double e = (double)rand() / (double)RAND_MAX * 0;
+
+        fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n",
+                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
+                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b);
+
+        fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n\n",
+                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
+                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
+                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
+                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b);
+#endif
         pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
     }
 
@@ -189,11 +212,14 @@ void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimens
     // point4->point.x = 100;
     // point4->point.y = 100;
 
+    if(nParticles == 0)
+        return;
+
     // insertIntoDoubleLinkedList(partition->vertices, first, point2, comparePositionOfTwoPoints);
     // insertIntoDoubleLinkedList(partition->vertices, first, point3, comparePositionOfTwoPoints);
     // insertIntoDoubleLinkedList(partition->vertices, first, point4, comparePositionOfTwoPoints);
 
-    PointId *pointFirst = (PointId *)malloc(sizeof(PointId));
+    PointId *pointFirst; // = (PointId *)malloc(sizeof(PointId));
     // double uniformDistribution2 = 1 - (double)rand() / (double)(RAND_MAX);
     // double uniformDistribution3 = 1 - (double)rand() / (double)(RAND_MAX);
 
@@ -212,16 +238,31 @@ void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimens
     // x = x*fabs(x)*2+50;
     // y = y*fabs(y)*2+50;
 
-    double x = (double)rand() / (double)(RAND_MAX)*100;
-    double y = (double)rand() / (double)(RAND_MAX)*100;
+    // double x = (double)rand() / (double)(RAND_MAX)*100;
+    // double y = (double)rand() / (double)(RAND_MAX)*100;
 
-    pointFirst->point.x = x;
-    pointFirst->point.y = y;
+    // pointFirst->point.x = x;
+    // pointFirst->point.y = y;
+
+    FLOATING_POINT_PRECISION coords[NO_DIM];
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        coords[i] = (double)rand() / (double)(RAND_MAX)*100;
+    }
+
+#if NO_DIM == 2
+    pointFirst = newPointId(coords[0], coords[1]);
+#elif NO_DIM == 3
+    pointFirst = newPointId(coords[0], coords[1], coords[2]);
+#else
+    pointFirst = newPointId(coords);
+#endif
+
     insertIntoRedBlackTree(partition->vertices, pointFirst);
 
     for (int i = 0; i < nParticles - 1; i++)
     {
-        PointId *point = (PointId *)malloc(sizeof(PointId));
+        PointId *point;
 
         // uniformDistribution2 = 1 - (double)rand() / (double)(RAND_MAX);
         // uniformDistribution3 = 1 - (double)rand() / (double)(RAND_MAX);
@@ -235,11 +276,19 @@ void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimens
         // x = x*fabs(x)*40+50;
         // y = y*fabs(y)*40+50;
 
-        x = (double)rand() / (double)(RAND_MAX)*100;
-        y = (double)rand() / (double)(RAND_MAX)*100;
+        for (int i = 0; i < NO_DIM; i++)
+        {
+            coords[i] = (double)rand() / (double)(RAND_MAX)*100;
+        }
 
-        point->point.x = x;
-        point->point.y = y;
+#if NO_DIM == 2
+        point = newPointId(coords[0], coords[1]);
+#elif NO_DIM == 3
+        point = newPointId(coords[0], coords[1], coords[2]);
+#else
+        point = newPointId(coords);
+#endif
+
         // insertIntoDoubleLinkedList(partition->vertices, first, point, comparePositionOfTwoPoints);
         insertIntoRedBlackTree(partition->vertices, point);
     }
@@ -340,7 +389,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-    printf("theMostNewInsertPoint function, point: %14p, x: %10.4f, y: %10.4f\n\n", point, point->point.x, point->point.y);
+    printf("theMostNewInsertPoint function, %s \n\n", printLongPointId(point));
 #endif
 
 #if MEASURE_TIME == 1
@@ -366,10 +415,11 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-    printf("theMostNewInsertPoint function - founded simplex to modify: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-    printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
-           simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
-    printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+    // printf("theMostNewInsertPoint function - founded simplex to modify: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+    // printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
+    //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
+    // printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+    printf("theMostNewInsertPoint function - founded simplex to modify: %s\n\n", printShortSimplex(simplex));
 #endif
 
 #if MEASURE_TIME == 1
@@ -393,10 +443,11 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     while (current != NULL)
     {
         simplex = (Simplex *)current->data;
-        printf("Founded simplex to modify: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
-               simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
-        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+        // printf("Founded simplex to modify: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+        // printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
+        //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
+        // printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+        printf("Founded simplex to modify: %s \n\n", printShortSimplex(simplex));
         current = current->next;
     }
     current = trianglesToModify->first;
@@ -422,14 +473,15 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     printf("Created polygon (list):\n");
     while (currentEdge != NULL)
     {
-        printf("Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n",
-               currentEdge->edge, currentEdge->edge->points[0]->point.x, currentEdge->edge->points[0]->point.y,
-               currentEdge->edge->points[1]->point.x, currentEdge->edge->points[1]->point.y, currentEdge->edge->first, currentEdge->edge->second,
-               currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+        // printf("Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n",
+        //        currentEdge->edge, currentEdge->edge->points[0]->point.x, currentEdge->edge->points[0]->point.y,
+        //        currentEdge->edge->points[1]->point.x, currentEdge->edge->points[1]->point.y, currentEdge->edge->first, currentEdge->edge->second,
+        //        currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+        printf("Edge: %s \n", printShortEdge(currentEdge->edge));
         currentEdge = currentEdge->next;
     }
     currentEdge = edges->first;
-    printf("\n");
+    printf("End of polygon list \n\n");
 #endif
 
     // Teraz analizujemy każdą "krawędź krawędzi" (wymyśleć jak to lepiej nazwać) - dla każdej krawędzi sprawdzam jej krawędzi.
@@ -466,27 +518,29 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     printf("\nUploaded edges by adding information about neighbors:\n");
     while (currentEdge != NULL)
     {
-        printf("Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n",
-               currentEdge->edge, currentEdge->edge->points[0]->point.x, currentEdge->edge->points[0]->point.y,
-               currentEdge->edge->points[1]->point.x, currentEdge->edge->points[1]->point.y, currentEdge->edge->first, currentEdge->edge->second,
-               currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+        // printf("Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n",
+        //        currentEdge->edge, currentEdge->edge->points[0]->point.x, currentEdge->edge->points[0]->point.y,
+        //        currentEdge->edge->points[1]->point.x, currentEdge->edge->points[1]->point.y, currentEdge->edge->first, currentEdge->edge->second,
+        //        currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+        printf("Edge: %s \n", printShortEdge(currentEdge->edge));
         currentEdge = currentEdge->next;
     }
     currentEdge = edges->first;
     printf("\nTree edges of edges:\n\n");
-    redBlackTreeNode *edgeOfEdgeCurrent = minimumInRedBlackSubTree(treeEdgeOfEdges->first);
-    while (edgeOfEdgeCurrent != NULL)
-    {
-        EdgeOfEdge *currentEdgeOfEdge = edgeOfEdgeCurrent->data;
-        if (currentEdgeOfEdge == NULL)
-        {
-            printf("HMMM?\n");
-            break;
-        }
-        printf("redBlackTreeNode: %14p, edgeOfEdge: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f \n", edgeOfEdgeCurrent,
-               currentEdgeOfEdge, currentEdgeOfEdge->first, currentEdgeOfEdge->second, currentEdgeOfEdge->points[0]->point.x, currentEdgeOfEdge->points[0]->point.y);
-        edgeOfEdgeCurrent = getNextNodeFromRedBlackTree(treeEdgeOfEdges, edgeOfEdgeCurrent);
-    }
+    // redBlackTreeNode *edgeOfEdgeCurrent = minimumInRedBlackSubTree(treeEdgeOfEdges->first);
+    // while (edgeOfEdgeCurrent != NULL)
+    // {
+    //     EdgeOfEdge *currentEdgeOfEdge = edgeOfEdgeCurrent->data;
+    //     if (currentEdgeOfEdge == NULL)
+    //     {
+    //         printf("HMMM?\n");
+    //         break;
+    //     }
+    //     printf("redBlackTreeNode: %14p, edgeOfEdge: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f \n", edgeOfEdgeCurrent,
+    //            currentEdgeOfEdge, currentEdgeOfEdge->first, currentEdgeOfEdge->second, currentEdgeOfEdge->points[0]->point.x, currentEdgeOfEdge->points[0]->point.y);
+    //     edgeOfEdgeCurrent = getNextNodeFromRedBlackTree(treeEdgeOfEdges, edgeOfEdgeCurrent);
+    // }
+    printRedBlackTreeString(treeEdgeOfEdges, printLongEdgeOfEdge);
     printf("\n");
 #endif
 
@@ -503,7 +557,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
     printf("Just before adding new simplexes to triangles tree. \n\npartition->triangles tree:\n");
-    printRedBlackTreeTriangles(partition->triangles);
+    printRedBlackTreeString(partition->triangles, printShortSimplex);
 #endif
 
     LinkedList *simplexList = createSimplexList(edges, point, hilbertDimension);
@@ -529,7 +583,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
     printf("theMostNewInsertPoint function, ended inserting of point: %14p, x: %10.4f, y: %10.4f\n\n", point, point->point.x, point->point.y);
     printf("Triangles:\n");
-    printRedBlackTreeTriangles(partition->triangles);
+    printRedBlackTreeString(partition->triangles, printShortSimplex);
     printf("Vertices:\n");
     printRedBlackTree(partition->vertices);
 #endif

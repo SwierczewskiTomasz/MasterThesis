@@ -34,8 +34,8 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
         simplex = popFromLinkedList(listToAnalyze);
 
 #if DEBUG_TRIANGULATION == 1
-        printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-        printf("theMostNewInsertPoint function - simplex to analyze: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+        printf("File %s, line %i: findTrianglesToModify function.\n", (char *)__FILE__, __LINE__);
+        printf("findTrianglesToModify function - simplex to analyze: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
         printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
                simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
         printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
@@ -52,7 +52,7 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
             pushToLinkedList(trianglesToModify, simplex);
 
 #if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("File %s, line %i: findTrianglesToModify function.\n", (char *)__FILE__, __LINE__);
             printf("This triangle must be later modified. Added to Linked List. Simplex: %14p \n\n", simplex);
 #endif
 
@@ -74,7 +74,7 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
                 if (fromTree == NULL)
                 {
 #if DEBUG_TRIANGULATION == 1
-                    printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                    printf("File %s, line %i: findTrianglesToModify function.\n", (char *)__FILE__, __LINE__);
                     printf("This neighbor must be later analized. Added to Linked List: %14p \n\n", toAdd);
 #endif
                     pushToLinkedList(listToAnalyze, toAdd);

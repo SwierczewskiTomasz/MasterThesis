@@ -11,6 +11,7 @@ void supertriangles(Partition *partition, int hilbertDimension)
 #endif
 }
 
+#if NO_DIM == 2
 void supertriangles2D(Partition *partition, int hilbertDimension)
 {
     // PointId *point1 = (PointId *)malloc(sizeof(PointId));
@@ -70,29 +71,32 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
     insertIntoRedBlackTree(partition->globalVertices, point3);
     insertIntoRedBlackTree(partition->globalVertices, point4);
 }
+#endif
 
 #if NO_DIM == 3
 void supertriangles3D(Partition *partition, int hilbertDimension)
 {
-    printf("1\n");
+    // printf("1\n");
     int n = (int)pow(2, NO_DIM);
-    printf("2\n");
+    // printf("2\n");
     PointId **points = (PointId**)malloc(n * sizeof(PointId*));
-    printf("3\n");
+    // printf("3\n");
 
     printf("Points: %p\n", points);
 
     for(int i = 0; i < n; i++)
     {
         points[i] = (PointId *)malloc(sizeof(PointId));
-        points[i]->point.x = i%2 == 0 ? 0 : 100;
-        points[i]->point.y = (i/2)%2 == 0 ? 0 : 100;
-        points[i]->point.z = (i/4)%2 == 0 ? 0 : 100;
+        points[i] = newPointId(i%2 == 0 ? 0 : 100, (i/2)%2 == 0 ? 0 : 100, (i/4)%2 == 0 ? 0 : 100);
+        // points[i]->point.x = i%2 == 0 ? 0 : 100;
+        // points[i]->point.y = (i/2)%2 == 0 ? 0 : 100;
+        // points[i]->point.z = (i/4)%2 == 0 ? 0 : 100;
     }
 
     for(int i = 0; i < n; i++)
     {
-        printf("Point %i: x: %f, y: %f, z: %f \n", i, points[i]->point.x, points[i]->point.y, points[i]->point.z);
+        // printf("Point %i: x: %f, y: %f, z: %f \n", i, points[i]->point.x, points[i]->point.y, points[i]->point.z);
+        printf("%s\n", printLongPointId(points[i]));
     }
 
     // Number of triangles
@@ -164,7 +168,9 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
         // printRedBlackTreeTriangles(partition->triangles);
     }
 
-    printRedBlackTreeTriangles(partition->triangles);
+    printRedBlackTreeString(partition->triangles, printShortSimplex);
+
+    // printf("1\n");
 }
 #endif
 

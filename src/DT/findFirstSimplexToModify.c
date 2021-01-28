@@ -36,14 +36,14 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
     //         squareRadius = simplex->circumradius * simplex->circumradius;
 
     // #if DEBUG_TRIANGULATION == 1
-    //         printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //         printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
     //         printf("Analyze of simplex - %14p\n\n", simplex);
     // #endif
 
     //         if (squareDistance <= squareRadius)
     //         {
     // #if DEBUG_TRIANGULATION == 1
-    //             printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //             printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
     //             printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
     // #endif
     //             break;
@@ -64,14 +64,14 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
     //             squareRadius = simplex->circumradius * simplex->circumradius;
 
     // #if DEBUG_TRIANGULATION == 1
-    //             printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //             printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
     //             printf("Analyze of simplex - %14p\n\n", simplex);
     // #endif
 
     //             if (squareDistance <= squareRadius)
     //             {
     // #if DEBUG_TRIANGULATION == 1
-    //                 printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //                 printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
     //                 printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
     // #endif
     //                 break;
@@ -96,14 +96,14 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
             squareRadius = simplex->circumradius * simplex->circumradius;
 
 #if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
             printf("Analyze of simplex - %14p\n\n", simplex);
 #endif
 
             if (squareDistance <= squareRadius)
             {
 #if DEBUG_TRIANGULATION == 1
-                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
                 printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
 #endif
                 break;
@@ -121,14 +121,14 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
             squareRadius = simplex->circumradius * simplex->circumradius;
 
 #if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+            printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
             printf("Analyze of simplex - %14p\n\n", simplex);
 #endif
 
             if (squareDistance <= squareRadius)
             {
 #if DEBUG_TRIANGULATION == 1
-                printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+                printf("File %s, line %i: findFirstSimplexToModify function.\n", (char *)__FILE__, __LINE__);
                 printf("Founded simplex to modify - %14p, distance: %10.4f, radius: %10.4f\n\n", simplex, sqrt(squareDistance), sqrt(squareRadius));
 #endif
                 break;

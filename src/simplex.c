@@ -219,7 +219,7 @@ void calculateCircumcircle(Simplex *simplex)
     double by = -determinant(byMatrix, n);
     double bz = determinant(bzMatrix, n);
     double a = determinant(aMatrix, n);
-    double c = -determinant(cMatrix, n);
+    double c = determinant(cMatrix, n);
 
     double x0 = bx / (2 * a);
     double y0 = by / (2 * a);
@@ -231,6 +231,68 @@ void calculateCircumcircle(Simplex *simplex)
     simplex->circumcenter.y = y0;
     simplex->circumcenter.z = z0;
     simplex->circumradius = radius;
+
+    if (isnan(radius))
+    {
+        printf("aMatrix: \n");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                printf("%10.4f ", aMatrix[i][j]);
+            }
+            printf("\n");
+        }
+
+        printf("bxMatrix: \n");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                printf("%10.4f ", bxMatrix[i][j]);
+            }
+            printf("\n");
+        }
+
+        printf("byMatrix: \n");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                printf("%10.4f ", byMatrix[i][j]);
+            }
+            printf("\n");
+        }
+
+        printf("bzMatrix: \n");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                printf("%10.4f ", bzMatrix[i][j]);
+            }
+            printf("\n");
+        }
+
+        printf("cMatrix: \n");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                printf("%10.4f ", cMatrix[i][j]);
+            }
+            printf("\n");
+        }
+
+        printf("n");
+
+        printf("\x1B[31mError\x1B[0m in %s line %i: Circumradius isn't the number! \n", (char *)__FILE__, __LINE__);
+        printf("Points: %s, %s, %s, %s\n", printLongPointId(simplex->vertices[0]), printLongPointId(simplex->vertices[1]), printLongPointId(simplex->vertices[2]), printLongPointId(simplex->vertices[3]));
+        printf("A couple of numbers: bx: %10.4f, by: %10.4f, bz: %10.4f, a: %10.4f, c: %10.4f\n", bx, by, bz, a, c);
+        printf("bx * bx + by * by + bz * bz - 4 * a * c: %10.4f\n", bx * bx + by * by + bz * bz - 4 * a * c);
+        printf("sqrt(...): %10.4f, 2 * fabs(a) \n", sqrt(bx * bx + by * by + bz * bz - 4 * a * c), 2 * fabs(a));
+        printf("Circumcenter: %10.4f, %10.4f, %10.4f \n\n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
+    }
 
     for (int i = 0; i < n; i++)
     {
@@ -421,7 +483,7 @@ double comparePointsVoids(void *p1, void *p2)
 char *printLongSimplex(Simplex *simplex)
 {
     int n = 1000;
-    char *result = (char*)malloc(n * sizeof(char));
+    char *result = (char *)malloc(n * sizeof(char));
 
     return result;
 }
@@ -430,13 +492,13 @@ char *printLongSimplex(Simplex *simplex)
 char *printShortSimplex(Simplex *simplex)
 {
     int n = 300;
-    char *result = (char*)malloc(n * sizeof(char));
+    char *result = (char *)malloc(n * sizeof(char));
 
     char circumcenter[100];
 #if NO_DIM == 2
     sprintf(circumcenter, "x: %10.4f, y: %10.4f", simplex->circumcenter.x, simplex->circumcenter.y);
 #elif NO_DIM == 3
-    sprintf(circumcenter, "x: %10.4f, y: %10.4f", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
+    sprintf(circumcenter, "x: %10.4f, y: %10.4f, z: %10.4f", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
 #else
     for (int i = 0; i < NO_DIM; i++)
     {
@@ -446,13 +508,27 @@ char *printShortSimplex(Simplex *simplex)
     }
 #endif
 
+#if NO_DIM == 2
     sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, boxId: %i, %i, neighbors: ",
             simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension, simplex->boxId[0], simplex->boxId[1]);
+#endif
 
-    for(int i = 0; i < NO_DIM; i++)
+#if NO_DIM == 3
+    sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, boxId: %i, %i, %i, neighbors: ",
+            simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension, simplex->boxId[0], simplex->boxId[1], simplex->boxId[2]);
+#endif
+    for (int i = 0; i < NO_DIM + 1; i++)
     {
         char temp[20];
-        sprintf(temp, ", n%i: %i", i, simplex->neighbors[i] == NULL?-1:simplex->neighbors[i]->id);
+        sprintf(temp, ", n%i: %5i", i, simplex->neighbors[i] == NULL ? -1 : simplex->neighbors[i]->id);
+        strcat(result, temp);
+    }
+
+    strcat(result, " Points: ");
+    for (int i = 0; i < NO_DIM + 1; i++)
+    {
+        char temp[20];
+        sprintf(temp, ", p%i: %5i", i, simplex->vertices == NULL ? -1 : simplex->vertices[i]->id);
         strcat(result, temp);
     }
 
@@ -464,33 +540,33 @@ char *printShortSimplex(Simplex *simplex)
 void calculateBoxId(Simplex *result)
 {
     double *coordsMinMax[NO_DIM];
-    for(int i = 0; i < NO_DIM; i++)
+    for (int i = 0; i < NO_DIM; i++)
     {
-        coordsMinMax[i] = (double*)malloc(2 * sizeof(double));
+        coordsMinMax[i] = (double *)malloc(2 * sizeof(double));
         coordsMinMax[i][0] = 0;
         coordsMinMax[i][1] = 100;
     }
 
 #if NO_DIM == 2
-    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0])/(coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0])/(coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
 #elif NO_DIM == 3
-    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0])/(coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0])/(coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
-    result->boxId[2] = (int)((result->circumcenter.z - coordsMinMax[2][0])/(coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
+    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    result->boxId[2] = (int)((result->circumcenter.z - coordsMinMax[2][0]) / (coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
 #else
-    for(int i = 0; i < NO_DIM; i++)
+    for (int i = 0; i < NO_DIM; i++)
     {
-        result->boxId[i] = (int)((result->circumcenter.coords[i] - coordsMinMax[i][0])/(coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
+        result->boxId[i] = (int)((result->circumcenter.coords[i] - coordsMinMax[i][0]) / (coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
     }
 #endif
-    for(int i = 0; i < NO_DIM; i++)
+    for (int i = 0; i < NO_DIM; i++)
     {
-        if(result->boxId[i] >= result->hilbertDimension)
+        if (result->boxId[i] >= result->hilbertDimension)
         {
             result->boxId[i] = result->hilbertDimension - 1;
         }
-        if(result->boxId[i] < 0)
+        if (result->boxId[i] < 0)
         {
             result->boxId[i] = 0;
         }
