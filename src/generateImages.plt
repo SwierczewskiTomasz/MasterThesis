@@ -7,7 +7,7 @@ set xrange[-10:110]
 set yrange[-10:110]
 set xlabel "x"
 set ylabel "y"
-set title "Punkty w 2D"
+set title "Punkty w 3D"
 plot "./out/outputVertices.txt"
 set output "./out/test_triangles.png"
 plot "./out/test.txt" with lines
@@ -26,14 +26,14 @@ set pm3d nohidden3d
 splot "./out/outputTriangles.txt" using 1:2:3:(rgb($4,$5,$6)) with lines lc rgb variable
 
 
-set terminal gif size 1000,1000 animate delay 5 loop 0 optimize
-set output "./out/rot.gif"
+# set terminal gif size 1000,1000 animate delay 5 loop 0 optimize
+# set output "./out/rot.gif"
 
-n = 1500
-do for [i=1:n] {
-   set view 60, i*360.0/n
-   splot "./out/outputTriangles.txt" using 1:2:3:(rgb($4,$5,$6)) with lines lc rgb variable notitle
-}
+# n = 1500
+# do for [i=1:n] {
+#    set view 60, i*360.0/n
+#    splot "./out/outputTriangles.txt" using 1:2:3:(rgb($4,$5,$6)) with lines lc rgb variable notitle
+# }
 
 # set output "./out/Hilbert_1.png"
 # plot "./out/Hilbert_1.txt" with lines

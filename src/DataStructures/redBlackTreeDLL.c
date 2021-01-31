@@ -548,6 +548,11 @@ void removeFromRedBlackTreeDLL(redBlackTreeDLL *tree, redBlackTreeDLLNode *node)
         return;
     }
 
+    if(node->next != NULL)
+        node->next->prev = node->prev;
+    if(node->prev != NULL)
+        node->prev->next = node->next;
+
     if (node->left != NULL && node->right != NULL)
     {
         // printf("removeFromredBlackTreeDLL function: \n");

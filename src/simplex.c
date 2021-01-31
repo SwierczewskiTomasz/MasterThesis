@@ -290,7 +290,7 @@ void calculateCircumcircle(Simplex *simplex)
         printf("Points: %s, %s, %s, %s\n", printLongPointId(simplex->vertices[0]), printLongPointId(simplex->vertices[1]), printLongPointId(simplex->vertices[2]), printLongPointId(simplex->vertices[3]));
         printf("A couple of numbers: bx: %10.4f, by: %10.4f, bz: %10.4f, a: %10.4f, c: %10.4f\n", bx, by, bz, a, c);
         printf("bx * bx + by * by + bz * bz - 4 * a * c: %10.4f\n", bx * bx + by * by + bz * bz - 4 * a * c);
-        printf("sqrt(...): %10.4f, 2 * fabs(a) \n", sqrt(bx * bx + by * by + bz * bz - 4 * a * c), 2 * fabs(a));
+        printf("sqrt(...): %10.4f, 2 * fabs(a): %10.4f \n", sqrt(bx * bx + by * by + bz * bz - 4 * a * c), 2 * fabs(a));
         printf("Circumcenter: %10.4f, %10.4f, %10.4f \n\n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
     }
 
