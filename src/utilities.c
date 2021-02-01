@@ -5,7 +5,7 @@
 #include "DataStructures/dataStructure.h"
 #include "DataStructures/redBlackTree.h"
 #include "HilbertCurve/hilbertCurve.h"
-#include "serialDT.h"
+#include "DT/serialDT.h"
 
 #if defined(WIND32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #include <time.h>
@@ -43,20 +43,21 @@ void testTIPP()
     dimensions[6] = 64;
     dimensions[7] = 128;
     dimensions[8] = 256;
-    dimensions[9] = 4096;
+    dimensions[9] = 1024;
 
     for (int i = 5; i < 10; i++)
     {
         printf("\ndimensions: %d, %d\n", i, dimensions[i]);
         n = 0;
-        for (int j = 0; j < 60; j++)
+        for (int j = 0; j < 70; j++)
         {
             n = generateNextTestNumberOfPoints(n);
-            TIPP(n, n, dimensions[i]);
+            // if(j >= 60)
+                TIPP(n, n, dimensions[i], true);
         }
     }
 
-    TIPP(32, 32, 1);
+    // TIPP(65536, 65536, 16);
 
     // TIPP(1024*1024*1024, 1024*1024*1024, 32);
 }

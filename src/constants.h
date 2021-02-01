@@ -6,7 +6,7 @@
 #endif
 
 #ifndef MEASURE_TIME
-#define MEASURE_TIME 1
+#define MEASURE_TIME 0
 #endif
 
 #ifndef DEBUG
@@ -21,8 +21,13 @@
 #define FLOATING_POINT_PRECISION double
 #endif
 
-// #ifndef BOOL
-// #define BOOL char
-// #define true 
+#ifndef ID
+#define ID 1
+#define ID_TYPE int
+#endif
+
+#ifndef REDBLACKTREEDLL
+#define REDBLACKTREEDLL 1
+#endif
 
 #endif

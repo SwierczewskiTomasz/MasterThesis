@@ -256,6 +256,76 @@ redBlackTreeNode *getFromRedBlackTreeFirstSmaller(redBlackTree *tree, void *data
     return prevCurrent;
 }
 
+redBlackTreeNode *getFromRedBlackTreeFirstBigger(redBlackTree *tree, void *data)
+{
+#if MEASURE_TIME == 1
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
+#endif
+
+    if (data == NULL)
+    {
+
+#if MEASURE_TIME == 1
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+        redBlackTreeGetTime += endTime - startTime;
+#endif
+
+        return NULL;
+    }
+
+    redBlackTreeNode *current = tree->first;
+    redBlackTreeNode *prevCurrent = NULL;
+
+    while (current != NULL)
+    {
+        if (current->data == data)
+        {
+
+#if MEASURE_TIME == 1
+            struct timeval end;
+            gettimeofday(&end, NULL);
+            long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+            redBlackTreeGetTime += endTime - startTime;
+#endif
+
+            return current;
+        }
+        double result = tree->compare(current->data, data);
+        // prevCurrent = current;
+        if (result > 0)
+        {    
+            // if(current->left != NULL)
+            // {
+            //     prevCurrent = current;
+            // }
+            prevCurrent = current;
+            current = current->left;
+        }
+        else if (result < 0)
+        {    
+            current = current->right;
+        }
+        else
+        {    
+            return current;
+        }
+        //printf("Error in %s line %i: getFromRedBlackTree - situation with exact the same data, but different point in tree shouldn't happen. For this implementation. \n", (char *)__FILE__, __LINE__);
+    }
+
+#if MEASURE_TIME == 1
+    struct timeval end;
+    gettimeofday(&end, NULL);
+    long long endTime = end.tv_sec * 1000000LL + end.tv_usec;
+    redBlackTreeGetTime += endTime - startTime;
+#endif
+    
+    return prevCurrent;
+}
+
 redBlackTreeNode *insertIntoRedBlackTree(redBlackTree *tree, void *data)
 {
 #if MEASURE_TIME == 1

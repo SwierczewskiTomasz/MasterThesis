@@ -2,7 +2,7 @@
 #define SUPERTRIANGLES_H
 
 #include "constants.h"
-#include "serialDT.h"
+#include "DT/serialDT.h"
 
 
 void supertriangles(Partition *partition, int hilbertDimension);
