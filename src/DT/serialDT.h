@@ -10,6 +10,7 @@
 #include "../polygon.h"
 #include "../DataStructures/dataStructure.h"
 #include "../DataStructures/redBlackTree.h"
+#include "../DataStructures/redBlackTreeDLL.h"
 #include "../myMath.h"
 #include "../simplex.h"
 #include "../constants.h"
@@ -32,7 +33,7 @@ typedef struct Partition
     // DoubleLinkedList *triangles;
 
     redBlackTree *vertices;
-    redBlackTree *triangles;
+    redBlackTreeDLL *triangles;
     redBlackTree *globalVertices;
 } Partition;
 

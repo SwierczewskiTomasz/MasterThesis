@@ -50,5 +50,7 @@ redBlackTreeDLLNode* getNextNodeFromRedBlackTreeDLL(redBlackTreeDLL *tree, redBl
 redBlackTreeDLLNode *getPrevNodeFromRedBlackTreeDLL(redBlackTreeDLL *tree, redBlackTreeDLLNode *node);
 redBlackTreeDLLNode *minimumInRedBlackSubTreeDLL(redBlackTreeDLLNode *node);
 
+redBlackTreeDLLNode *getFromRedBlackTreeFirstSmallerDLL(redBlackTreeDLL *tree, void *data);
+redBlackTreeDLLNode *getFromRedBlackTreeFirstBiggerDLL(redBlackTreeDLL *tree, void *data);
 
 #endif

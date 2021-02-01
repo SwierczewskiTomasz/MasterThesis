@@ -27,6 +27,12 @@ long long redBlackTreeRemoveTime = 0;
 long long redBlackTreeNextNodeTime = 0;
 long long redBlackTreePrevNodeTime = 0;
 
+long long redBlackTreeInsertDLLTime = 0;
+long long redBlackTreeGetDLLTime = 0;
+long long redBlackTreeRemoveDLLTime = 0;
+long long redBlackTreeNextNodeDLLTime = 0;
+long long redBlackTreePrevNodeDLLTime = 0;
+
 long long findFirstSimplexTime = 0;
 long long trianglesToModifyTime = 0;
 long long findPolygonTime = 0;
@@ -91,6 +97,11 @@ void TIPP(int k, int n, int hilbertDimension)
     printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
     printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
 
+    printf("redBlackTreeInsertDLLTime: %lld\n", redBlackTreeInsertDLLTime);
+    printf("redBlackTreeGetDLLTime: %lld\n", redBlackTreeGetDLLTime);
+    printf("redBlackTreeRemoveDLLTime: %lld\n", redBlackTreeRemoveDLLTime);
+    printf("redBlackTreeNextNodeDLLTime: %lld\n", redBlackTreeNextNodeDLLTime);
+
     printf("findFirstSimplexTime: %lld\n", findFirstSimplexTime);
     printf("trianglesToModifyTime: %lld\n", trianglesToModifyTime);
     printf("findPolygonTime: %lld\n", findPolygonTime);
@@ -116,12 +127,12 @@ void TIPP(int k, int n, int hilbertDimension)
 
     fp = fopen("./out/outputTriangles.txt", "w+");
 
-    pointer = minimumInRedBlackSubTree(partition->triangles->first);
+    redBlackTreeDLLNode *pointerTriangle = minimumInRedBlackSubTreeDLL(partition->triangles->first);
 
-    while (pointer != NULL)
+    while (pointerTriangle != NULL)
     {
         // printf("Load next triangle\n");
-        Simplex *simplex = (Simplex *)pointer->data;
+        Simplex *simplex = (Simplex *)pointerTriangle->data;
         // printf("Loaded\n");
         // fprintf(fp, "%10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0]->point.x, simplex->vertices[0]->point.y, simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
 #if NO_DIM == 2
@@ -158,7 +169,7 @@ void TIPP(int k, int n, int hilbertDimension)
                     simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b);
         // }
 #endif
-        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+        pointerTriangle = getNextNodeFromRedBlackTreeDLL(partition->triangles, pointerTriangle);
     }
 
     fclose(fp);
@@ -171,14 +182,14 @@ void initializePartition(Partition *partition)
 {
     partition->vertices = newRedBlackTree(comparePointsVoids, free);
     partition->globalVertices = newRedBlackTree(comparePointsVoids, free);
-    partition->triangles = newRedBlackTree(comparePositionOfTwoTrianglesBox, freeSimplex);
+    partition->triangles = newRedBlackTreeDLL(comparePositionOfTwoTrianglesBox, freeSimplex);
 }
 
 void freePartition(Partition *partition)
 {
     removeRedBlackTree(partition->vertices, true);
     removeRedBlackTree(partition->globalVertices, true);
-    removeRedBlackTree(partition->triangles, true);
+    removeRedBlackTreeDLL(partition->triangles, true);
 }
 
 void putPointsToPartitions(Set *partitions, Set *points)

@@ -6,7 +6,7 @@
 #endif
 
 #ifndef MEASURE_TIME
-#define MEASURE_TIME 1
+#define MEASURE_TIME 0
 #endif
 
 #ifndef DEBUG

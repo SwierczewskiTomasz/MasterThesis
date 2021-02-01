@@ -22,8 +22,8 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
     forSearch->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, point->point.x, point->point.y, 0, 100, 0, 100);
     calculateBoxId(forSearch);
     forSearch->circumradius = 0;
-    redBlackTreeNode *pointer = getFromRedBlackTreeFirstSmaller(partition->triangles, forSearch);
-    redBlackTreeNode *pointer2 = pointer;
+    redBlackTreeDLLNode *pointer = getFromRedBlackTreeFirstSmallerDLL(partition->triangles, forSearch);
+    redBlackTreeDLLNode *pointer2 = pointer;
 
     Simplex *simplex = NULL;
     double squareDistance;
@@ -111,7 +111,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
 
             //pointer = getNextNode(pointer);
 
-            pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+            pointer = getNextNodeFromRedBlackTreeDLL(partition->triangles, pointer);
         }
 
         if (pointer2 != NULL)
@@ -135,7 +135,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
             }
 
             //pointer = getNextNode(pointer);
-            pointer2 = getPrevNodeFromRedBlackTree(partition->triangles, pointer2);
+            pointer2 = getPrevNodeFromRedBlackTreeDLL(partition->triangles, pointer2);
         }
     }
 
@@ -160,7 +160,7 @@ Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int
     calculateBoxId(forSearch);
     forSearch->circumradius = 0;
 
-    redBlackTreeNode *pointer;
+    redBlackTreeDLLNode *pointer;
     Simplex *simplex = NULL;
     double squareDistance;
     double squareRadius;
@@ -272,7 +272,7 @@ Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int
 
             //Rozpocznij przeszukiwania w tym boxie, dopóki nadal będziesz tym boxie
 
-            pointer = getFromRedBlackTreeFirstBigger(partition->triangles, temp);
+            pointer = getFromRedBlackTreeFirstBiggerDLL(partition->triangles, temp);
 
             bool boxIdTheSame = true;
             if (pointer == NULL)
@@ -331,7 +331,7 @@ Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int
 
                 //To nie jest poprawny. Weź kolejny.
 
-                pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+                pointer = getNextNodeFromRedBlackTreeDLL(partition->triangles, pointer);
                 if (pointer != NULL)
                 {
                     simplex = (Simplex *)pointer->data;

@@ -11,6 +11,11 @@ long long extern redBlackTreeGetTime;
 long long extern redBlackTreeRemoveTime;
 long long extern redBlackTreeNextNodeTime;
 long long extern redBlackTreePrevNodeTime;
+long long extern redBlackTreeInsertDLLTime;
+long long extern redBlackTreeGetDLLTime;
+long long extern redBlackTreeRemoveDLLTime;
+long long extern redBlackTreeNextNodeDLLTime;
+long long extern redBlackTreePrevNodeDLLTime;
 
 long long extern findFirstSimplexTime;
 long long extern trianglesToModifyTime;

@@ -58,11 +58,11 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
 
     // printRedBlackTree(partition->triangles);
 
-    insertIntoRedBlackTree(partition->triangles, triangle1);
+    insertIntoRedBlackTreeDLL(partition->triangles, triangle1);
 
     // printRedBlackTree(partition->triangles);
 
-    insertIntoRedBlackTree(partition->triangles, triangle2);
+    insertIntoRedBlackTreeDLL(partition->triangles, triangle2);
 
     // printRedBlackTree(partition->triangles);
 
@@ -165,7 +165,7 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
     for (int i = 0; i < m; i++)
     {
         sortPointsInSimplex(triangles[i]);
-        insertIntoRedBlackTree(partition->triangles, triangles[i]);
+        insertIntoRedBlackTreeDLL(partition->triangles, triangles[i]);
 
         // printRedBlackTreeTriangles(partition->triangles);
     }

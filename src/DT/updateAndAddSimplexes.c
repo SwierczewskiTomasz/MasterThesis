@@ -27,7 +27,7 @@ void updateAndAddSimplexes(PolygonList *edges, Partition *partition)
             result->neighbors[i] = currentEdge->edge->neighbors[i - 1]->first;
         }
         sortPointsInSimplex(result);
-        insertIntoRedBlackTree(partition->triangles, result);
+        insertIntoRedBlackTreeDLL(partition->triangles, result);
 
 #if DEBUG_TRIANGULATION == 1
         Simplex *simplex = result;
