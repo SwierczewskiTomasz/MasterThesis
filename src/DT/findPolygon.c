@@ -87,8 +87,13 @@ PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trian
                 printf("partition->triangles Tree:\n");
                 printRedBlackTreeString(partition->triangles, printShortSimplex);
 #endif
-                //removeFromDoubleLinkedList(partition->triangles, current->data);
+//removeFromDoubleLinkedList(partition->triangles, current->data);
+#if REDBLACKTREEDLL == 1
                 redBlackTreeDLLNode *fromTree = getFromRedBlackTreeDLL(partition->triangles, data);
+#else
+                redBlackTreeNode *fromTree = getFromRedBlackTree(partition->triangles, data);
+#endif
+
                 if (fromTree == NULL)
                         fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - Don't found simplex in triangles tree (partition->triangles), which one we want to remove. Simplex: %14p, fromTree: %14p \n", (char *)__FILE__, __LINE__, data, fromTree);
 
@@ -103,8 +108,11 @@ PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trian
                 printf("partition->triangles: \n");
                 printRedBlackTreeString(partition->triangles, printShortSimplex);
 #endif
-
+#if REDBLACKTREEDLL == 1
                 removeFromRedBlackTreeDLL(partition->triangles, fromTree);
+#else
+                removeFromRedBlackTree(partition->triangles, fromTree);
+#endif
 
 #if DEBUG_TRIANGULATION == 1
                 printf("partition->triangles: \n");

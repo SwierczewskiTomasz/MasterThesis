@@ -41,7 +41,7 @@ long long uploadInformationsAboutNeighborsInEdgesTime = 0;
 long long updateAndAddSimplexesTime = 0;
 long long NextNodeAfterAddingTime = 0;
 
-void TIPP(int k, int n, int hilbertDimension)
+void TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
 {
     // putPointsToPartitions(partitions, points);
 
@@ -81,7 +81,15 @@ void TIPP(int k, int n, int hilbertDimension)
     gettimeofday(&te2, NULL);
     long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
 
-    printf("%d, %lld\n", n, time2 - time1);
+    if(onlyCompute)
+    {
+        printf("%lld\n", time2 - time1);
+        return;
+    }
+    else
+    {
+        printf("%d, %lld\n", n, time2 - time1);
+    }
     printf("After DT\n");
     printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
     printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
@@ -127,7 +135,11 @@ void TIPP(int k, int n, int hilbertDimension)
 
     fp = fopen("./out/outputTriangles.txt", "w+");
 
+#if REDBLACKTREEDLL == 1
     redBlackTreeDLLNode *pointerTriangle = minimumInRedBlackSubTreeDLL(partition->triangles->first);
+#else
+    redBlackTreeNode *pointerTriangle = minimumInRedBlackSubTree(partition->triangles->first);
+#endif
 
     while (pointerTriangle != NULL)
     {
@@ -152,24 +164,28 @@ void TIPP(int k, int n, int hilbertDimension)
 
         // if (!(simplex->vertices[0]->id < 8 || simplex->vertices[1]->id < 8 || simplex->vertices[2]->id < 8 || simplex->vertices[3]->id < 8))
         // {
-            fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n",
-                    simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
-                    simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
-                    simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
-                    simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
-                    simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
-                    simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b);
+        fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n",
+                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
+                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b);
 
-            fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n\n",
-                    simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
-                    simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
-                    simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
-                    simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
-                    simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
-                    simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b);
+        fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n\n",
+                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
+                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
+                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
+                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b);
         // }
 #endif
+#if REDBLACKTREEDLL == 1
         pointerTriangle = getNextNodeFromRedBlackTreeDLL(partition->triangles, pointerTriangle);
+#else
+        pointerTriangle = getNextNodeFromRedBlackTree(partition->triangles, pointerTriangle);
+#endif
     }
 
     fclose(fp);
@@ -182,14 +198,22 @@ void initializePartition(Partition *partition)
 {
     partition->vertices = newRedBlackTree(comparePointsVoids, free);
     partition->globalVertices = newRedBlackTree(comparePointsVoids, free);
+#if REDBLACKTREEDLL == 1
     partition->triangles = newRedBlackTreeDLL(comparePositionOfTwoTrianglesBox, freeSimplex);
+#else
+    partition->triangles = newRedBlackTree(comparePositionOfTwoTrianglesBox, freeSimplex);
+#endif
 }
 
 void freePartition(Partition *partition)
 {
     removeRedBlackTree(partition->vertices, true);
     removeRedBlackTree(partition->globalVertices, true);
+#if REDBLACKTREEDLL == 1
     removeRedBlackTreeDLL(partition->triangles, true);
+#else
+    removeRedBlackTree(partition->triangles, true);
+#endif
 }
 
 void putPointsToPartitions(Set *partitions, Set *points)

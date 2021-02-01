@@ -17,8 +17,6 @@
 #include "../edgeOfEdge.h"
 #include "../HilbertCurve/hilbertCurve.h"
 
-
-
 typedef struct Set
 {
     //It can be for example LinkedList, DoubleLinkedList or Binary Tree and other
@@ -33,8 +31,12 @@ typedef struct Partition
     // DoubleLinkedList *triangles;
 
     redBlackTree *vertices;
-    redBlackTreeDLL *triangles;
     redBlackTree *globalVertices;
+#if REDBLACKTREEDLL == 1
+    redBlackTreeDLL *triangles;
+#else
+    redBlackTree *triangles;
+#endif
 } Partition;
 
 typedef struct DelaunayTriangulation
@@ -42,7 +44,7 @@ typedef struct DelaunayTriangulation
     Partition *partitions;
 } DelaunayTriangulation;
 
-void TIPP(int k, int n, int hilbertDimension);
+void TIPP(int k, int n, int hilbertDimension, bool onlyCompute);
 void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimension);
 double comparePositionOfTwoPoints(void *a, void *b);
 void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilbertDimension);
@@ -55,19 +57,17 @@ double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2);
 #endif
 double squareOfDistanceFromPointToPoint(Point point1, Point point2);
 
-
 double comparePositionOfTwoTriangles(void *a, void *b);
 double comparePositionOfTwoTrianglesHilbert(void *a, void *b);
 double comparePositionOfTwoTrianglesBox(void *a, void *b);
 void changePointsInSimplex(PointId *points, void *pointer);
 double comparePointers(void *a, void *b);
 
-
 // void newInsertPoint(PointId *point, Partition *partition);
 void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDimension);
-PointId** combination(PointId* data, int n);
+PointId **combination(PointId *data, int n);
 void printRedBlackTree(redBlackTree *tree);
-void printRedBlackTreeString(redBlackTree *tree, char* (*printData)(void *));
+void printRedBlackTreeString(redBlackTree *tree, char *(*printData)(void *));
 void printRedBlackTreeTriangles(redBlackTree *tree);
 void initializePartition(Partition *partition);
 void freePartition(Partition *partition);
@@ -78,7 +78,7 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point);
 PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trianglesToModify);
 redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges);
 void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *treeEdgeOfEdges);
-LinkedList *createSimplexList(PolygonList *edges, PointId* point, int hilbertDimension);
+LinkedList *createSimplexList(PolygonList *edges, PointId *point, int hilbertDimension);
 void updateAndAddSimplexes(PolygonList *edges, Partition *partition);
 
 #endif

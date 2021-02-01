@@ -27,8 +27,12 @@ void updateAndAddSimplexes(PolygonList *edges, Partition *partition)
             result->neighbors[i] = currentEdge->edge->neighbors[i - 1]->first;
         }
         sortPointsInSimplex(result);
-        insertIntoRedBlackTreeDLL(partition->triangles, result);
-
+#if REDBLACKTREEDLL == 1
+    insertIntoRedBlackTreeDLL(partition->triangles, result);
+#else
+    insertIntoRedBlackTree(partition->triangles, result);
+#endif        
+        
 #if DEBUG_TRIANGULATION == 1
         Simplex *simplex = result;
         printf("File %s, line %i: updateAndAddSimplexes function.\n", (char *)__FILE__, __LINE__);

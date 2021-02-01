@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 #ifndef NO_DIM
-#define NO_DIM 3
+#define NO_DIM 2
 #endif
 
 #ifndef MEASURE_TIME
@@ -26,8 +26,8 @@
 #define ID_TYPE int
 #endif
 
-// #ifndef BOOL
-// #define BOOL char
-// #define true 
+#ifndef REDBLACKTREEDLL
+#define REDBLACKTREEDLL 1
+#endif
 
 #endif
