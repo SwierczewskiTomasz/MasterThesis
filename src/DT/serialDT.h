@@ -44,7 +44,7 @@ typedef struct DelaunayTriangulation
     Partition *partitions;
 } DelaunayTriangulation;
 
-void TIPP(int k, int n, int hilbertDimension, bool onlyCompute);
+long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute);
 void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimension);
 double comparePositionOfTwoPoints(void *a, void *b);
 void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilbertDimension);
@@ -74,6 +74,7 @@ void freePartition(Partition *partition);
 
 Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilbertDimension);
 Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int hilbertDimension);
+Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, int hilbertDimension);
 LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point);
 PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trianglesToModify);
 redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges);

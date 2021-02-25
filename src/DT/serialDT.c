@@ -11,6 +11,21 @@
 
 #include <math.h>
 #include "serialDT.h"
+#include "../validateResult.h"
+
+int findInPolygonListCount = 0;
+
+long long redBlackTreeInsertCount = 0;
+long long redBlackTreeGetCount = 0;
+long long redBlackTreeRemoveCount = 0;
+long long redBlackTreeNextNodeCount = 0;
+long long redBlackTreePrevNodeCount = 0;
+
+long long redBlackTreeInsertDLLCount = 0;
+long long redBlackTreeGetDLLCount = 0;
+long long redBlackTreeRemoveDLLCount = 0;
+long long redBlackTreeNextNodeDLLCount = 0;
+long long redBlackTreePrevNodeDLLCount = 0;
 
 long long doubleLinkedListInsertTime = 0;
 long long doubleLinkedListInsertTime2 = 0;
@@ -41,7 +56,7 @@ long long uploadInformationsAboutNeighborsInEdgesTime = 0;
 long long updateAndAddSimplexesTime = 0;
 long long NextNodeAfterAddingTime = 0;
 
-void TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
+long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
 {
     // putPointsToPartitions(partitions, points);
 
@@ -84,39 +99,69 @@ void TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
     if(onlyCompute)
     {
         printf("%lld\n", time2 - time1);
-        return;
+        return time2 - time1;
     }
     else
     {
         printf("%d, %lld\n", n, time2 - time1);
     }
-    printf("After DT\n");
-    printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
-    printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
-    printf("doubleLinkedListInsertTime2: %lld\n", doubleLinkedListInsertTime2);
+    // printf("After DT\n");
+    // printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
+    // printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);
+    // printf("doubleLinkedListInsertTime2: %lld\n", doubleLinkedListInsertTime2);
 
-    printf("createPolygonTime: %lld\n", createPolygonTime);
-    printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
-    printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
-    printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
+    // printf("createPolygonTime: %lld\n", createPolygonTime);
+    // printf("searchingTrianglesToModifyTime: %lld\n", searchingTrianglesToModifyTime);
+    // printf("searchingTrianglesToModifyTime2: %lld\n", searchingTrianglesToModifyTime2);
+    // printf("createNewTrianglesTime: %lld\n", createNewTrianglesTime);
 
-    printf("redBlackTreeInsertTime: %lld\n", redBlackTreeInsertTime);
-    printf("redBlackTreeGetTime: %lld\n", redBlackTreeGetTime);
-    printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
-    printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
+    // printf("redBlackTreeInsertTime: %lld\n", redBlackTreeInsertTime);
+    // printf("redBlackTreeGetTime: %lld\n", redBlackTreeGetTime);
+    // printf("redBlackTreeRemoveTime: %lld\n", redBlackTreeRemoveTime);
+    // printf("redBlackTreeNextNodeTime: %lld\n", redBlackTreeNextNodeTime);
 
-    printf("redBlackTreeInsertDLLTime: %lld\n", redBlackTreeInsertDLLTime);
-    printf("redBlackTreeGetDLLTime: %lld\n", redBlackTreeGetDLLTime);
-    printf("redBlackTreeRemoveDLLTime: %lld\n", redBlackTreeRemoveDLLTime);
-    printf("redBlackTreeNextNodeDLLTime: %lld\n", redBlackTreeNextNodeDLLTime);
+    // printf("redBlackTreeInsertDLLTime: %lld\n", redBlackTreeInsertDLLTime);
+    // printf("redBlackTreeGetDLLTime: %lld\n", redBlackTreeGetDLLTime);
+    // printf("redBlackTreeRemoveDLLTime: %lld\n", redBlackTreeRemoveDLLTime);
+    // printf("redBlackTreeNextNodeDLLTime: %lld\n", redBlackTreeNextNodeDLLTime);
 
-    printf("findFirstSimplexTime: %lld\n", findFirstSimplexTime);
-    printf("trianglesToModifyTime: %lld\n", trianglesToModifyTime);
-    printf("findPolygonTime: %lld\n", findPolygonTime);
-    printf("createTreeOfEdgeOfEdgesTime: %lld\n", createTreeOfEdgeOfEdgesTime);
-    printf("uploadInformationsAboutNeighborsInEdgesTime: %lld\n", uploadInformationsAboutNeighborsInEdgesTime);
-    printf("updateAndAddSimplexesTime: %lld\n", updateAndAddSimplexesTime);
-    printf("NextNodeAfterAddingTime: %lld\n", NextNodeAfterAddingTime);
+    // printf("findFirstSimplexTime: %lld\n", findFirstSimplexTime);
+    // printf("trianglesToModifyTime: %lld\n", trianglesToModifyTime);
+    // printf("findPolygonTime: %lld\n", findPolygonTime);
+    // printf("createTreeOfEdgeOfEdgesTime: %lld\n", createTreeOfEdgeOfEdgesTime);
+    // printf("uploadInformationsAboutNeighborsInEdgesTime: %lld\n", uploadInformationsAboutNeighborsInEdgesTime);
+    // printf("updateAndAddSimplexesTime: %lld\n", updateAndAddSimplexesTime);
+    // printf("NextNodeAfterAddingTime: %lld\n", NextNodeAfterAddingTime);
+
+    // printf("%lld\n", redBlackTreeInsertTime);
+    // printf("%lld\n", redBlackTreeGetTime);
+    // printf("%lld\n", redBlackTreeRemoveTime);
+    // printf("%lld\n", redBlackTreeNextNodeTime);
+
+    // printf("%lld\n", redBlackTreeInsertDLLTime);
+    // printf("%lld\n", redBlackTreeGetDLLTime);
+    // printf("%lld\n", redBlackTreeRemoveDLLTime);
+    // printf("%lld\n", redBlackTreeNextNodeDLLTime);
+
+    // printf("%lld\n", findFirstSimplexTime);
+    // printf("%lld\n", trianglesToModifyTime);
+    // printf("%lld\n", findPolygonTime);
+    // printf("%lld\n", createTreeOfEdgeOfEdgesTime);
+    // printf("%lld\n", uploadInformationsAboutNeighborsInEdgesTime);
+    // printf("%lld\n", updateAndAddSimplexesTime);
+    // printf("%lld\n", NextNodeAfterAddingTime);
+
+    printf("Counts: \n");
+    printf("%i\n", findInPolygonListCount);
+    printf("%lld\n", redBlackTreeInsertCount);
+    printf("%lld\n", redBlackTreeGetCount);
+    printf("%lld\n", redBlackTreeRemoveCount);
+    printf("%lld\n", redBlackTreeNextNodeCount);
+
+    printf("%lld\n", redBlackTreeInsertDLLCount);
+    printf("%lld\n", redBlackTreeGetDLLCount);
+    printf("%lld\n", redBlackTreeRemoveDLLCount);
+    printf("%lld\n", redBlackTreeNextNodeDLLCount);
 
     FILE *fp;
     fp = fopen("./out/outputVertices.txt", "w+");
@@ -190,8 +235,14 @@ void TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
 
     fclose(fp);
 
+#if VALIDATE_RESULT == 1
+    validateResult(partition);
+#endif
+
     freePartition(partition);
     free(partition);
+
+    return time2 - time1;
 }
 
 void initializePartition(Partition *partition)
@@ -436,7 +487,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
 #endif
 
-    Simplex *simplex = findFirstSimplexToModifyBoxId(point, partition, hilbertDimension);
+    Simplex *simplex = findFirstSimplexToModifyBoxId2(point, partition, hilbertDimension);
 
 #if MEASURE_TIME == 1
     struct timeval end;

@@ -36,7 +36,9 @@ FILES = \
 	supertriangles.h\
 	supertriangles.c\
 	utilities.h\
-	utilities.c
+	utilities.c\
+	validateResult.h\
+	validateResult.c
 
 TESTS = \
 	tests/mainTests.c\

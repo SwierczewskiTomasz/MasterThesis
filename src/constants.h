@@ -2,11 +2,16 @@
 #define CONSTANTS_H
 
 #ifndef NO_DIM
-#define NO_DIM 2
+#define NO_DIM 3
 #endif
 
 #ifndef MEASURE_TIME
-#define MEASURE_TIME 0
+#define MEASURE_TIME 1
+#define MEASURE_CALLS 1
+#endif
+
+#ifndef VALIDATE_RESULT
+#define VALIDATE_RESULT 1
 #endif
 
 #ifndef DEBUG

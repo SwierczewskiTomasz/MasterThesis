@@ -144,6 +144,7 @@ void removePolygonList(PolygonList *list, bool removeData)
 
 PolygonLinkedListNode *findInPolygonList(PolygonList *list, Edge *e)
 {
+    findInPolygonListCount++;
     if (list == NULL || e == NULL)
         return NULL;
 
@@ -164,7 +165,7 @@ PolygonLinkedListNode *findInPolygonList(PolygonList *list, Edge *e)
                edge->points[1]->point.x, edge->points[1]->point.y, edge->first, edge->second,
                edge->secondIndex, edge->neighbors[0], edge->neighbors[1]);
 #endif
-
+        
         if (edgeEquals(node->edge, e) == 1)
             return node;
 

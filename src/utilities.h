@@ -3,6 +3,19 @@
 
 #include "constants.h"
 
+int findInPolygonListCount;
+
+long long extern redBlackTreeInsertCount;
+long long extern redBlackTreeGetCount;
+long long extern redBlackTreeRemoveCount;
+long long extern redBlackTreeNextNodeCount;
+long long extern redBlackTreePrevNodeCount;
+long long extern redBlackTreeInsertDLLCount;
+long long extern redBlackTreeGetDLLCount;
+long long extern redBlackTreeRemoveDLLCount;
+long long extern redBlackTreeNextNodeDLLCount;
+long long extern redBlackTreePrevNodeDLLCount;
+
 long long extern doubleLinkedListInsertTime;
 long long extern doubleLinkedListInsertTime2;
 long long extern doubleLinkedListRemoveTime;

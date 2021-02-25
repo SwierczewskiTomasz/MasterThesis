@@ -661,3 +661,332 @@ void insertPoint(PointId *point, Partition *partition)
     return squareRadius - squareDistance;
 #endif
 }
+
+
+            // if (radius == 0)
+            // {
+            //     j = -1;
+            // }
+
+            // int kFirst = NO_DIM;
+            // int kLast = 0;
+            // for (int i = 0; i < NO_DIM; i++)
+            // {
+            //     if (boxIdCoords[i] == forSearch->boxId[j] - radius || boxIdCoords[i] == forSearch->boxId[j] + radius)
+            //     {
+            //         if (i < kFirst)
+            //         {
+            //             kFirst = i;
+            //         }
+            //         if (i > kLast)
+            //         {
+            //             kLast = i;
+            //         }
+            //     }
+            // }
+
+            // //Znajdzie pierwsze dobre współrzędne
+            // while (j >= 0 && correctCoords == false)
+            // {
+            //     while (!correctCoords && j >= 0)
+            //     {
+            //         correctCoords = true;
+            //         if (kFirst < j)
+            //         {
+            //             //Gdzieś wcześniej znajduje się taka współrzędna, że jest -radius lub +radius. Po prostu musimy iterować te współrzędne cały czas powoli do przodu.
+            //             boxIdCoords[j]++;
+            //             if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                 {
+            //                     if (j > kLast)
+            //                         kLast = j;
+            //                 }
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             if (kFirst == j)
+            //             {
+            //                 if (kLast == j)
+            //                 {
+            //                     if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                     {
+            //                         //Czyli pierwsza sytuacja. Zmień z - na +, a jeśli nie będzie poprawna, znajdź kolejną poprawną.
+            //                         boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //                         if (boxIdCoords[j] >= hilbertDimension)
+            //                         {
+            //                             //Tutaj nie znajdziemy już poprawnej. Doprowadź do stanu początkowego. Możliwe na koniec 2 stany: -radius lub 0. Ten pierwszy jest stanem, który byłby akceptowalny.
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 kLast--;
+            //                                 kFirst--;
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                     }
+            //                     else
+            //                     {
+            //                         if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 kLast--;
+            //                                 kFirst--;
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                         else
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //                             if (boxIdCoords[j] >= hilbertDimension)
+            //                             {
+            //                                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                                 if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                                 {
+            //                                     kLast--;
+            //                                     kFirst--;
+            //                                 }
+            //                                 j--;
+            //                                 correctCoords = false;
+            //                             }
+            //                         }
+            //                     }
+            //                 }
+            //                 else
+            //                 {
+            //                     if (kLast > j)
+            //                     {
+            //                         //Czyli mamy zapewnione, że gdzieś dalej jest jakaś współrzędna -radius lub +radius
+            //                         boxIdCoords[j]++;
+            //                         if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 //W najgorszym przypadku znajdziemy kLast
+            //                                 for (int j1 = j; j1 < NO_DIM; j1++)
+            //                                 {
+            //                                     if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                     {
+            //                                         kFirst = j1;
+            //                                         break;
+            //                                     }
+            //                                 }
+            //                                 if (kFirst == j)
+            //                                 {
+            //                                     // EHHHHH? Dlaczego tego nie znalazłeś?
+            //                                 }
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                         else if (boxIdCoords[j] != forSearch->boxId[j] + radius)
+            //                         {
+            //                             for (int j1 = j; j1 < NO_DIM; j1++)
+            //                             {
+            //                                 if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                 {
+            //                                     kFirst = j1;
+            //                                     break;
+            //                                 }
+            //                             }
+            //                             if (kFirst == j)
+            //                             {
+            //                                 // EHHHHH? Dlaczego tego nie znalazłeś?
+            //                             }
+            //                         }
+            //                     }
+            //                     else
+            //                     {
+            //                         // Ehhh? Czyli kLast < kFirst...
+            //                     }
+            //                 }
+            //             }
+            //             else
+            //             {
+            //                 if (kFirst > j)
+            //                 {
+            //                     boxIdCoords[j]++;
+            //                     if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //                     {
+            //                         kFirst = j;
+            //                     }
+            //                     if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                     {
+            //                         boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                         if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                         {
+            //                             kFirst = j;
+            //                         }
+            //                         j--;
+            //                         correctCoords = false;
+            //                     }
+            //                 }
+            //                 else
+            //                 {
+            //                     // kFirst < j, czyli hulaj dusza, piekła nie ma
+            //                     if (kLast == j)
+            //                     {
+            //                         boxIdCoords[j]++;
+            //                         if (boxIdCoords[j] != forSearch->boxId[j] + radius)
+            //                         {
+            //                             for (int j1 = j; j1 >= 0; j1--)
+            //                             {
+            //                                 if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                 {
+            //                                     kLast = j1;
+            //                                     break;
+            //                                 }
+            //                             }
+            //                             if (kLast == j)
+            //                             {
+            //                                 // Ehh?
+            //                             }
+            //                         }
+            //                         if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 for (int j1 = j; j1 >= 0; j1--)
+            //                                 {
+            //                                     if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                     {
+            //                                         kLast = j1;
+            //                                         break;
+            //                                     }
+            //                                 }
+            //                                 if (kLast == j)
+            //                                 {
+            //                                     // Ehh?
+            //                                 }
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                     }
+            //                     else
+            //                     {
+            //                         if (kLast > j)
+            //                         {
+            //                             // Czyli jesteśmy między kFirst a kLast. Najlepsza sytuacja.
+            //                             boxIdCoords[j]++;
+            //                             if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                             {
+            //                                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                                 j--;
+            //                                 correctCoords = false;
+            //                             }
+            //                         }
+            //                         else
+            //                         {
+            //                             // kLast < j
+            //                             boxIdCoords[j]++;
+            //                             if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //                             {
+            //                                 kLast = j;
+            //                             }
+            //                             if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                             {
+            //                                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                                 if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                                 {
+            //                                     kLast = j;
+            //                                 }
+            //                                 j--;
+            //                                 correctCoords = false;
+            //                             }
+            //                         }
+            //                     }
+            //                 }
+            //             }
+
+            // //Musimy znaleźć nową współrzędną, która będzie miała -radius lub +radius
+            // if (j == k)
+            // {
+            //     if (j == NO_DIM + 1)
+            //     {
+            //         //Jesteśmy na ostatniej współrzędnej.
+            //         if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //         {
+            //             //Czyli pierwsza sytuacja. Zmień z - na +, a jeśli nie będzie poprawna, znajdź kolejną poprawną.
+            //             boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //             if (boxIdCoords[j] >= hilbertDimension)
+            //             {
+            //                 //Tutaj nie znajdziemy już poprawnej. Doprowadź do stanu początkowego. Możliwe na koniec 2 stany: -radius lub 0. Ten pierwszy jest stanem, który byłby akceptowalny.
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 k--;
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //             else
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //                 if (boxIdCoords[j] >= hilbertDimension)
+            //                 {
+            //                     boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                     j--;
+            //                     correctCoords = false;
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     else
+            //     {
+            //         boxIdCoords[j]++;
+            //         if (boxIdCoords[j] < forSearch->boxId[j] + radius)
+            //         {
+            //             if (boxIdCoords[j] >= hilbertDimension)
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //             else
+            //             {
+            //             }
+            //         }
+            //         else
+            //         {
+            //         }
+            //     }
+
+            //     if (boxIdCoords[j] >= hilbertDimension)
+            //     {
+            //         boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //         j--;
+            //         correctCoords = false;
+            //     }
+            // }
+            // else
+            // {
+            //     //Nie powinno się zdarzyć w tej implementacji
+            //     printf("Error\n");
+            //     boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //     k = j;
+            //     if (boxIdCoords[j] >= hilbertDimension)
+            //     {
+            //         boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //         j--;
+            //         correctCoords = false;
+            //     }
+            // }
+            //}
+            // }
