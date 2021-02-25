@@ -84,6 +84,27 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
     result->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, x, y, 0, 100, 0, 100);
 
     calculateBoxId(result);
+
+    result->centroid.x = 0;
+    result->centroid.y = 0;
+#if NO_DIM == 3
+    result->centroid.z = 0;
+#endif
+
+    for (int i = 0; i < NO_DIM + 1; i++)
+    {
+        result->centroid.x += result->vertices[i]->point.x;
+        result->centroid.y += result->vertices[i]->point.y;
+#if NO_DIM == 3
+        result->centroid.z += result->vertices[i]->point.z;
+#endif
+    }
+
+    result->centroid.x /= NO_DIM + 1;
+    result->centroid.y /= NO_DIM + 1;
+#if NO_DIM == 3
+    result->centroid.z /= NO_DIM + 1;
+#endif
 }
 
 void freeSimplex(void *s)
@@ -538,6 +559,42 @@ char *printShortSimplex(Simplex *simplex)
 }
 
 void calculateBoxId(Simplex *result)
+{
+    double *coordsMinMax[NO_DIM];
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        coordsMinMax[i] = (double *)malloc(2 * sizeof(double));
+        coordsMinMax[i][0] = 0;
+        coordsMinMax[i][1] = 100;
+    }
+
+#if NO_DIM == 2
+    result->boxId[0] = (int)((result->centroid.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    result->boxId[1] = (int)((result->centroid.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+#elif NO_DIM == 3
+    result->boxId[0] = (int)((result->centroid.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    result->boxId[1] = (int)((result->centroid.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    result->boxId[2] = (int)((result->centroid.z - coordsMinMax[2][0]) / (coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
+#else
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        result->boxId[i] = (int)((result->centroid.coords[i] - coordsMinMax[i][0]) / (coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
+    }
+#endif
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        if (result->boxId[i] >= result->hilbertDimension)
+        {
+            result->boxId[i] = result->hilbertDimension - 1;
+        }
+        if (result->boxId[i] < 0)
+        {
+            result->boxId[i] = 0;
+        }
+    }
+}
+
+void calculateBoxId2(Simplex *result)
 {
     double *coordsMinMax[NO_DIM];
     for (int i = 0; i < NO_DIM; i++)

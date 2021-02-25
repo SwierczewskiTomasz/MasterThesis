@@ -832,6 +832,25 @@ double comparePositionOfTwoTrianglesBox(void *a, void *b)
     return result;
 }
 
+double comparePositionOfTwoTrianglesBox2(void *a, void *b)
+{
+
+    Simplex *s1 = (Simplex *)a;
+    Simplex *s2 = (Simplex *)b;
+
+    double result;
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        result = s1->boxId[i] - s2->boxId[i];
+        if (result != 0)
+            return result;
+    }
+    
+
+    return result;
+}
+
 double comparePointers(void *a, void *b)
 {
     return (double)((long *)a - (long *)b);

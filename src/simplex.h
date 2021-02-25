@@ -17,6 +17,7 @@ typedef struct Simplex
     //Center point of circumcircle of circumsphere (or other things in other dimensions)
     Point circumcenter;
     double circumradius;
+    Point centroid;
     PointId *vertices[NO_DIM + 1];
     int hilbertId;
     int hilbertDimension;
