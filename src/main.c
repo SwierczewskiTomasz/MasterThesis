@@ -19,6 +19,15 @@ int main(int argc, char **argv)
     // testDoubleLinkedList();
     printInformationsAboutSizeOfStructures();
 
+    // printf("int: %i\n", sizeof(int));
+    // printf("long: %i\n", sizeof(long));
+    // printf("double: %i\n", sizeof(double));
+    // printf("float: %i\n", sizeof(float));
+    // printf("void*: %i\n", sizeof(void*));
+    // printf("Point: %i\n", sizeof(Point));
+    // printf("int[3]: %i\n", sizeof(int[3]));
+    // printf("Simplex*[3]: %i\n", sizeof(struct Simplex*[3]));
+
     // printHilbertCurve(1, "./out/Hilbert_1.txt");
     // printHilbertCurve(2, "./out/Hilbert_2.txt");
     // printHilbertCurve(4, "./out/Hilbert_3.txt");

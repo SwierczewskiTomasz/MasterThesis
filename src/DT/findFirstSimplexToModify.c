@@ -448,6 +448,9 @@ Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, in
     Simplex *forSearch = (Simplex *)malloc(sizeof(Simplex));
     forSearch->circumcenter.x = point->point.x;
     forSearch->circumcenter.y = point->point.y;
+#if NO_DIM == 3
+    forSearch->circumcenter.z = point->point.z;
+#endif
     forSearch->hilbertDimension = hilbertDimension;
     forSearch->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, point->point.x, point->point.y, 0, 100, 0, 100);
     calculateBoxId(forSearch);
@@ -611,6 +614,7 @@ Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, in
 #endif
                     free(forSearch);
                     free(temp);
+                    // printf("%i\n", radius);
                     // printf("boxIdCoords: %i, %i, forSearch boxId: %i, %i, j: %2i, k: %2i, correctCoords: %i, radius: %i - Znalezione\n", boxIdCoords[0], boxIdCoords[1], forSearch->boxId[0], forSearch->boxId[1], j, k, correctCoords, radius);
                     return simplex;
                 }

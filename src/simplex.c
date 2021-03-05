@@ -83,7 +83,7 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
 
     result->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, x, y, 0, 100, 0, 100);
 
-    calculateBoxId(result);
+
 
     result->centroid.x = 0;
     result->centroid.y = 0;
@@ -105,6 +105,10 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
 #if NO_DIM == 3
     result->centroid.z /= NO_DIM + 1;
 #endif
+
+    // printf("%10.4f, %10.4f\n", result->centroid.x, result->centroid.y);
+
+    calculateBoxId(result);
 }
 
 void freeSimplex(void *s)
@@ -558,8 +562,9 @@ char *printShortSimplex(Simplex *simplex)
     return result;
 }
 
-void calculateBoxId(Simplex *result)
+void calculateBoxId2(Simplex *result)
 {
+    // printf("%10.4f, %10.4f\n", result->centroid.x, result->centroid.y);
     double *coordsMinMax[NO_DIM];
     for (int i = 0; i < NO_DIM; i++)
     {
@@ -591,10 +596,12 @@ void calculateBoxId(Simplex *result)
         {
             result->boxId[i] = 0;
         }
+        // printf("%i, ", result->boxId[i]);
     }
+    // printf("\n");
 }
 
-void calculateBoxId2(Simplex *result)
+void calculateBoxId(Simplex *result)
 {
     double *coordsMinMax[NO_DIM];
     for (int i = 0; i < NO_DIM; i++)
@@ -627,6 +634,13 @@ void calculateBoxId2(Simplex *result)
         {
             result->boxId[i] = 0;
         }
+        // printf("%i, ", result->boxId[i]);
+    }
+    // printf("\n");
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        free(coordsMinMax[i]);
     }
 }
 

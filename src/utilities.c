@@ -45,21 +45,24 @@ void testTIPP()
     // dimensions[8] = 256;
     // dimensions[9] = 1024;
 
-    // for (int i = 0; i < 10; i++)
+    // for (int i = 5; i < 10; i++)
     // {
     //     printf("\ndimensions: %d, %d\n", i, dimensions[i]);
     //     n = 0;
-    //     for (int j = 0; j < 80; j++)
+    //     for (int j = 0; j < 70; j++)
     //     {
     //         n = generateNextTestNumberOfPoints(n);
-    //         // if(j >= 60)
-    //         long long time = TIPP(n, n, dimensions[i], true);
-    //         if(time > 10 * 1000 * 1000)
-    //             break;
+    //         if (j >= 62)
+    //         {
+    //             printf("n: %i\n", n);
+    //             long long time = TIPP(n, n, dimensions[i], true);
+    //             if (time > 400 * 1000 * 1000)
+    //                 break;
+    //         }
     //     }
     // }
 
-    TIPP(2*4096, 2*4096, 8, false);
+    TIPP(1024, 1024, 4, false);
 
     // TIPP(1024*1024*1024, 1024*1024*1024, 32);
 }
@@ -173,6 +176,8 @@ void printInformationsAboutSizeOfStructures()
 
     printf("redBlackTree:          %4ld \n", sizeof(redBlackTree));
     printf("redBlackTreeNode:      %4ld \n", sizeof(redBlackTreeNode));
+    printf("redBlackTreeDLL:       %4ld \n", sizeof(redBlackTreeDLL));
+    printf("redBlackTreeNodeDLL:   %4ld \n", sizeof(redBlackTreeDLLNode));
     printf("LinkedList:            %4ld \n", sizeof(LinkedList));
     printf("LinkedListNode:        %4ld \n", sizeof(LinkedListNode));
     printf("PolygonList:           %4ld \n", sizeof(PolygonList));
