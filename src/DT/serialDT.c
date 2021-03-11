@@ -164,7 +164,7 @@ long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
     printf("%lld\n", redBlackTreeNextNodeDLLCount);
 
     FILE *fp;
-    fp = fopen("./out/outputVertices.txt", "w+");
+    fp = fopen("./out/outputVertices2.txt", "w+");
 
     //void *pointer = partition->vertices->first;
     redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
@@ -178,7 +178,7 @@ long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
 
     fclose(fp);
 
-    fp = fopen("./out/outputTriangles.txt", "w+");
+    fp = fopen("./out/outputTriangles2.txt", "w+");
 
 #if REDBLACKTREEDLL == 1
     redBlackTreeDLLNode *pointerTriangle = minimumInRedBlackSubTreeDLL(partition->triangles->first);
@@ -814,7 +814,7 @@ double comparePositionOfTwoTrianglesBox(void *a, void *b)
     Simplex *s1 = (Simplex *)a;
     Simplex *s2 = (Simplex *)b;
 
-    double result;
+    double result = 0.0;
 
     // printf("S1: id: %i, coords: %i, %i, S2: id: %i, coords: %i, %i\n", s1->id, s1->boxId[0], s1->boxId[1], s2->id, s2->boxId[0], s2->boxId[1]);
 

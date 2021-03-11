@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 #ifndef NO_DIM
-#define NO_DIM 3
+#define NO_DIM 2
 #endif
 
 #ifndef MEASURE_TIME

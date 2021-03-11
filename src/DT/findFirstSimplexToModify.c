@@ -747,6 +747,7 @@ Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, in
 
             // printf("boxIdCoords: %i, %i, forSearch boxId: %i, %i, j: %2i, k: %2i, correctCoords: %i, radius: %i - 2\n", boxIdCoords[0], boxIdCoords[1], forSearch->boxId[0], forSearch->boxId[1], j, k, correctCoords, radius);
             //}
+            free(temp);
         }
 
         //Jeśli j < 0, to znaczy, że w tej odległości radius od punktu nie znaleźliśmy boxa. Trzeba szukać dalej, przy większym radius

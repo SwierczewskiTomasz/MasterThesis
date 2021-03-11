@@ -25,8 +25,8 @@ then
 elif [ $valgrind == 1 ];
 then
     make main
-    valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose out/DT &> out/output1.txt
-    gnuplot "generateImages.plt"
+    valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose out/DT &> out/valgrind.txt
+    # gnuplot "generateImages.plt"
 else
     make main
     out/DT
