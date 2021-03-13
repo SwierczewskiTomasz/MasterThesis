@@ -35,13 +35,9 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
 
 #if DEBUG_TRIANGULATION == 1
         printf("File %s, line %i: findTrianglesToModify function.\n", (char *)__FILE__, __LINE__);
-        printf("findTrianglesToModify function - simplex to analyze: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-        printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
-               simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
-        printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-
-        // printf("Tree (tree with simplexes anytime added to analyze): \n");
-        // printRedBlackTreeTriangles(tree);
+        char *string = printLongSimplex(simplex);
+        printf("Simplex to analyze:  %s\n\n", string);
+        free(string);
 #endif
 
         double squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);

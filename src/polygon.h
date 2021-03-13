@@ -46,9 +46,6 @@ PolygonLinkedListNode *findInPolygonList(PolygonList *list, Edge *e);
 void insertIntoPolygonList(PolygonList *list, Edge *e);
 void removeFromPolygonList(PolygonList *list, PolygonLinkedListNode *node);
 
-char* printLongEdge(Edge *edge);
-#if ID == 1
-char* printShortEdge(Edge *edge);
-#endif 
+
 
 #endif

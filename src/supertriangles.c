@@ -14,27 +14,10 @@ void supertriangles(Partition *partition, int hilbertDimension)
 #if NO_DIM == 2
 void supertriangles2D(Partition *partition, int hilbertDimension)
 {
-    // PointId *point1 = (PointId *)malloc(sizeof(PointId));
-    // PointId *point2 = (PointId *)malloc(sizeof(PointId));
-    // PointId *point3 = (PointId *)malloc(sizeof(PointId));
-    // PointId *point4 = (PointId *)malloc(sizeof(PointId));
-
-    // point1->point.x = 0;
-    // point1->point.y = 0;
-
-    // point2->point.x = 100;
-    // point2->point.y = 0;
-
-    // point3->point.x = 0;
-    // point3->point.y = 100;
-
-    // point4->point.x = 100;
-    // point4->point.y = 100;
-
-    PointId *point1 = newPointId(0, 0);
-    PointId *point2 = newPointId(100, 0);
-    PointId *point3 = newPointId(0, 100);
-    PointId *point4 = newPointId(100, 100);
+    PointId *point1 = newPointId2D(0, 0);
+    PointId *point2 = newPointId2D(100, 0);
+    PointId *point3 = newPointId2D(0, 100);
+    PointId *point4 = newPointId2D(100, 100);
 
     PointId *triangle1Points[3] = {point1, point2, point3};
     Simplex *triangle1 = (Simplex *)malloc(sizeof(Simplex));
@@ -43,6 +26,9 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
     PointId *triangle2Points[3] = {point2, point3, point4};
     Simplex *triangle2 = (Simplex *)malloc(sizeof(Simplex));
     createNewSimplex(triangle2, triangle2Points, hilbertDimension);
+
+    // printf("1\n");
+    // printRedBlackTreeDLLString(partition->triangles, printShortSimplex);
 
     for (int i = 0; i < 3; i++)
     {
@@ -76,6 +62,8 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
     insertIntoRedBlackTree(partition->globalVertices, point2);
     insertIntoRedBlackTree(partition->globalVertices, point3);
     insertIntoRedBlackTree(partition->globalVertices, point4);
+
+    // printRedBlackTreeDLLString(partition->triangles, printShortSimplex);
 }
 #endif
 

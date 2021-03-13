@@ -25,6 +25,8 @@ FILES = \
 	DT/uploadInformationsAboutNeighborsInEdges.c\
 	HilbertCurve/hilbertCurve.h\
 	HilbertCurve/hilbertCurve.c\
+	Logs/Log.h\
+	Logs/Log.c\
 	edgeOfEdge.h\
 	edgeOfEdge.c\
 	myMath.h\

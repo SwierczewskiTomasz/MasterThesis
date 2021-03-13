@@ -66,19 +66,33 @@ PointId **removePointFromArray(PointId **array, int n, int k)
     return result;
 }
 
-#if NO_DIM == 2
-bool pointEquals(PointId *p1, PointId *p2)
-{
-    return p1->point.x == p2->point.x && p1->point.y == p2->point.y;
-}
-#endif
+// #if NO_DIM == 2
+// bool pointEquals(PointId *p1, PointId *p2)
+// {
+//     return p1->point.x == p2->point.x && p1->point.y == p2->point.y;
+// }
+// #endif
 
-#if NO_DIM == 3
+// #if NO_DIM == 3
+// bool pointEquals(PointId *p1, PointId *p2)
+// {
+//     return p1->point.x == p2->point.x && p1->point.y == p2->point.y && p1->point.z == p2->point.z;
+// }
+// #endif
+
 bool pointEquals(PointId *p1, PointId *p2)
 {
-    return p1->point.x == p2->point.x && p1->point.y == p2->point.y && p1->point.z == p2->point.z;
+    bool equal = true;;
+    for(int i = 0; i < NO_DIM; i++)
+    {
+        if(p1->point.coords[i] != p2->point.coords[i])
+        {
+            equal = false;
+            break;
+        }
+    }
+    return equal;
 }
-#endif
 
 bool edgeEquals(Edge *e1, Edge *e2)
 {
@@ -211,76 +225,3 @@ void removeFromPolygonList(PolygonList *list, PolygonLinkedListNode *node)
     }
     free(node);
 }
-
-char *printLongEdge(Edge *edge)
-{
-    int n = 600;
-    char *result = (char *)malloc(n * sizeof(char));
-
-    sprintf(result, "Edge: %14p, points: ", edge);
-
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        char *temp = printLongPointId(edge->points[i]);
-        int length = strlen(temp) + 10;
-        char *temp2 = (char *)malloc(length * sizeof(char));
-        sprintf(temp2, ", p%i: %s", i, temp);
-        strcat(result, temp2);
-        free(temp);
-        free(temp2);
-    }
-
-    char *printFirst = printLongSimplex(edge->first);
-    char *printSecond = printLongSimplex(edge->second);
-
-    char temp[300];
-    sprintf(temp, ", first: %s, second: %s, secondIndex: %i, neighbors: ", printFirst, printSecond, edge->secondIndex);
-    strcat(result, temp);
-
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        char temp2[20];
-        sprintf(temp2, ", n%i: %14p", i, edge->neighbors[i]);
-        strcat(result, temp2);
-    }
-
-    strcat(result, "\n");
-
-    free(printFirst);
-    free(printSecond);
-
-    return result;
-}
-
-#if ID == 1
-char *printShortEdge(Edge *edge)
-{
-    int n = 600;
-    char *result = (char *)malloc(n * sizeof(char));
-    sprintf(result, "Edge: %3i, points: ", edge->id);
-
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        char temp[10];
-        sprintf(temp, ", p%i: %3i", i, edge->points[i]->id);
-        strcat(result, temp);
-    }
-
-    char temp[300];
-    sprintf(temp, ", first: %3i, second: %3i, secondIndex: %3i, neighbors: ", edge->first == NULL ? -1 : edge->first->id,
-            edge->second == NULL ? -1 : edge->second->id, edge->secondIndex);
-    strcat(result, temp);
-
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        char temp2[20];
-        sprintf(temp2, ", n%i: %3i", i, edge->neighbors[i] == NULL ? -1 : edge->neighbors[i]->id);
-        strcat(result, temp2);
-    }
-
-    strcat(result, "\n");
-
-    return result;
-}
-
-#endif

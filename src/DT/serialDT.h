@@ -16,6 +16,7 @@
 #include "../constants.h"
 #include "../edgeOfEdge.h"
 #include "../HilbertCurve/hilbertCurve.h"
+#include "../Logs/Log.h"
 
 typedef struct Set
 {
@@ -68,13 +69,14 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
 PointId **combination(PointId *data, int n);
 void printRedBlackTree(redBlackTree *tree);
 void printRedBlackTreeString(redBlackTree *tree, char *(*printData)(void *));
+void printRedBlackTreeDLLString(redBlackTreeDLL *tree, char *(*printData)(void *));
 void printRedBlackTreeTriangles(redBlackTree *tree);
 void initializePartition(Partition *partition);
 void freePartition(Partition *partition);
 
 Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilbertDimension);
-Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int hilbertDimension);
-Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, int hilbertDimension);
+// Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int hilbertDimension);
+// Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, int hilbertDimension);
 LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point);
 PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trianglesToModify);
 redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges);

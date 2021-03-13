@@ -31,7 +31,7 @@ else
     make main
     out/DT
     out/DT &> out/output1.txt
-    gnuplot "generateImages.plt"
+    # gnuplot "generateImages.plt"
 fi
 
 # make all

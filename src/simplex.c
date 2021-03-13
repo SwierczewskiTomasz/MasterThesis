@@ -4,48 +4,6 @@
 ID_TYPE SimplexIdCount = 0;
 #endif
 
-// PointId cw(Simplex *simplex, PointId vertex)
-// {
-//     for(int i = 0; i < NO_DIM + 1; i++)
-//     {
-//         if(memcmp(&simplex->vertices[i], &vertex, sizeof(PointId) == 0))
-//             return simplex->vertices[(i + 1) % (NO_DIM + 1)];
-//     }
-// }
-
-// PointId ccw(Simplex *simplex, PointId vertex)
-// {
-//     for(int i = 0; i < NO_DIM + 1; i++)
-//     {
-//         if(memcmp(&simplex->vertices[i], &vertex, sizeof(PointId) == 0))
-//             return simplex->vertices[(i - 1) < 0 ? (i - 1) + (NO_DIM + 1) : (i - 1)];
-//     }
-// }
-
-// PointId cw_i(Simplex *simplex, int i)
-// {
-//     return simplex->vertices[(i + 1) % (NO_DIM + 1)];
-// }
-
-// PointId ccw_i(Simplex *simplex, int i)
-// {
-//     return simplex->vertices[(i - 1) < 0 ? (i - 1) + (NO_DIM + 1) : (i - 1)];
-// }
-
-// Edge neighbor(Simplex *simplex, PointId vertex)
-// {
-//     for(int i = 0; i < NO_DIM + 1; i++)
-//     {
-//         if(memcmp(&simplex->vertices[i], &vertex, sizeof(PointId) == 0))
-//             return simplex->edges[i];
-//     }
-// }
-
-// Edge neighbor_i(Simplex *simplex, int i)
-// {
-//     return simplex->edges[i];
-// }
-
 Simplex *neighborOfSimplex(Simplex *simplex, int i)
 {
     return simplex->neighbors[i];
@@ -54,7 +12,6 @@ Simplex *neighborOfSimplex(Simplex *simplex, int i)
 void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertDimension)
 {
     int n = NO_DIM + 1;
-    //Trzeba nadać unikanlne id
 
 #if ID == 1
     result->id = SimplexIdCount++;
@@ -62,20 +19,18 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
 
     memcpy(result->vertices, points, n * sizeof(PointId *));
 
-    // for(int i = 0; i < n; i++)
-    // {
-    //     printf("Vertex %i: x: %10.4f, y: %10.4f, z: %10.4f \n", i, points[i]->point.x, points[i]->point.y, points[i]->point.z);
-    // }
-
     calculateCircumcircle(result);
     result->hilbertDimension = hilbertDimension;
 
+    calculateBoxId(result);
+
+    // Funkcjonalność do PeanoHilbert
     double x = 0.0;
     double y = 0.0;
     for (int i = 0; i < n; i++)
     {
-        x += points[i]->point.x;
-        y += points[i]->point.y;
+        x += points[i]->point.coords[0];
+        y += points[i]->point.coords[1];
     }
 
     x /= n;
@@ -83,32 +38,39 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
 
     result->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, x, y, 0, 100, 0, 100);
 
+    // Funkcjonalność do centroid:
 
+    //     result->centroid.x = 0;
+    //     result->centroid.y = 0;
+    // #if NO_DIM == 3
+    //     result->centroid.z = 0;
+    // #endif
 
-    result->centroid.x = 0;
-    result->centroid.y = 0;
-#if NO_DIM == 3
-    result->centroid.z = 0;
-#endif
+    //     for (int i = 0; i < NO_DIM + 1; i++)
+    //     {
+    //         result->centroid.x += result->vertices[i]->point.x;
+    //         result->centroid.y += result->vertices[i]->point.y;
+    // #if NO_DIM == 3
+    //         result->centroid.z += result->vertices[i]->point.z;
+    // #endif
+    //     }
 
-    for (int i = 0; i < NO_DIM + 1; i++)
-    {
-        result->centroid.x += result->vertices[i]->point.x;
-        result->centroid.y += result->vertices[i]->point.y;
-#if NO_DIM == 3
-        result->centroid.z += result->vertices[i]->point.z;
-#endif
-    }
+    //     result->centroid.x /= NO_DIM + 1;
+    //     result->centroid.y /= NO_DIM + 1;
+    // #if NO_DIM == 3
+    //     result->centroid.z /= NO_DIM + 1;
+    // #endif
+}
 
-    result->centroid.x /= NO_DIM + 1;
-    result->centroid.y /= NO_DIM + 1;
-#if NO_DIM == 3
-    result->centroid.z /= NO_DIM + 1;
-#endif
+void createNewSimplexToSearch(Simplex *simplex, Point *point, int hilbertDimension)
+{
+    for (int i = 0; i < NO_DIM; i++)
+        simplex->vertices[i] = NULL;
 
-    // printf("%10.4f, %10.4f\n", result->centroid.x, result->centroid.y);
+    memcpy(&simplex->circumcenter, point, sizeof(Point));
+    simplex->circumradius = 0;
 
-    calculateBoxId(result);
+    calculateBoxId(simplex);
 }
 
 void freeSimplex(void *s)
@@ -119,221 +81,221 @@ void freeSimplex(void *s)
 
 void calculateCircumcircle(Simplex *simplex)
 {
-#if NO_DIM == 2
-    int n = NO_DIM + 1;
+    // #if NO_DIM == 2
+    //     int n = NO_DIM + 1;
 
-    double r[NO_DIM + 1];
-    for (int i = 0; i < n; i++)
-    {
-        r[i] = simplex->vertices[i]->point.x * simplex->vertices[i]->point.x + simplex->vertices[i]->point.y * simplex->vertices[i]->point.y;
-    }
+    //     double r[NO_DIM + 1];
+    //     for (int i = 0; i < n; i++)
+    //     {
+    //         r[i] = simplex->vertices[i]->point.coords[0] * simplex->vertices[i]->point.coords[0] + simplex->vertices[i]->point.coords[1] * simplex->vertices[i]->point.coords[1];
+    //     }
 
-    double **bxMatrix = (double **)malloc(n * sizeof(double *));
-    double **byMatrix = (double **)malloc(n * sizeof(double *));
-    double **aMatrix = (double **)malloc(n * sizeof(double *));
-    double **cMatrix = (double **)malloc(n * sizeof(double *));
+    //     double **bxMatrix = (double **)malloc(n * sizeof(double *));
+    //     double **byMatrix = (double **)malloc(n * sizeof(double *));
+    //     double **aMatrix = (double **)malloc(n * sizeof(double *));
+    //     double **cMatrix = (double **)malloc(n * sizeof(double *));
 
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i] = (double *)malloc(n * sizeof(double));
-        byMatrix[i] = (double *)malloc(n * sizeof(double));
-        aMatrix[i] = (double *)malloc(n * sizeof(double));
-        cMatrix[i] = (double *)malloc(n * sizeof(double));
-    }
+    //     for (int i = 0; i < n; i++)
+    //     {
+    //         bxMatrix[i] = (double *)malloc(n * sizeof(double));
+    //         byMatrix[i] = (double *)malloc(n * sizeof(double));
+    //         aMatrix[i] = (double *)malloc(n * sizeof(double));
+    //         cMatrix[i] = (double *)malloc(n * sizeof(double));
+    //     }
 
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i][0] = r[i];
-        bxMatrix[i][1] = simplex->vertices[i]->point.y;
-        bxMatrix[i][2] = 1;
+    //     for (int i = 0; i < n; i++)
+    //     {
+    //         bxMatrix[i][0] = r[i];
+    //         bxMatrix[i][1] = simplex->vertices[i]->point.coords[1];
+    //         bxMatrix[i][2] = 1;
 
-        byMatrix[i][0] = r[i];
-        byMatrix[i][1] = simplex->vertices[i]->point.x;
-        byMatrix[i][2] = 1;
+    //         byMatrix[i][0] = r[i];
+    //         byMatrix[i][1] = simplex->vertices[i]->point.coords[0];
+    //         byMatrix[i][2] = 1;
 
-        aMatrix[i][0] = simplex->vertices[i]->point.x;
-        aMatrix[i][1] = simplex->vertices[i]->point.y;
-        aMatrix[i][2] = 1;
+    //         aMatrix[i][0] = simplex->vertices[i]->point.coords[0];
+    //         aMatrix[i][1] = simplex->vertices[i]->point.coords[1];
+    //         aMatrix[i][2] = 1;
 
-        cMatrix[i][0] = r[i];
-        cMatrix[i][1] = simplex->vertices[i]->point.x;
-        cMatrix[i][2] = simplex->vertices[i]->point.y;
-    }
+    //         cMatrix[i][0] = r[i];
+    //         cMatrix[i][1] = simplex->vertices[i]->point.coords[0];
+    //         cMatrix[i][2] = simplex->vertices[i]->point.coords[1];
+    //     }
 
-    double bx = -determinant(bxMatrix, n);
-    double by = determinant(byMatrix, n);
-    double a = determinant(aMatrix, n);
-    double c = -determinant(cMatrix, n);
+    //     double bx = -determinant(bxMatrix, n);
+    //     double by = determinant(byMatrix, n);
+    //     double a = determinant(aMatrix, n);
+    //     double c = -determinant(cMatrix, n);
 
-    double x0 = -bx / (2 * a);
-    double y0 = -by / (2 * a);
+    //     double x0 = -bx / (2 * a);
+    //     double y0 = -by / (2 * a);
 
-    //Zastanowić się, czy potrzebujemy radius, czy wystarczy nam radius^2. Wtedy jedna operacja sqrt mniej.
-    double radius = sqrt(bx * bx + by * by - 4 * a * c) / (2 * fabs(a));
+    //     //Zastanowić się, czy potrzebujemy radius, czy wystarczy nam radius^2. Wtedy jedna operacja sqrt mniej.
+    //     double radius = sqrt(bx * bx + by * by - 4 * a * c) / (2 * fabs(a));
 
-    simplex->circumcenter.x = x0;
-    simplex->circumcenter.y = y0;
-    simplex->circumradius = radius;
+    //     simplex->circumcenter.coords[0] = x0;
+    //     simplex->circumcenter.coords[1] = y0;
+    //     simplex->circumradius = radius;
 
-    for (int i = 0; i < n; i++)
-    {
-        free(bxMatrix[i]);
-        free(byMatrix[i]);
-        free(aMatrix[i]);
-        free(cMatrix[i]);
-    }
+    //     for (int i = 0; i < n; i++)
+    //     {
+    //         free(bxMatrix[i]);
+    //         free(byMatrix[i]);
+    //         free(aMatrix[i]);
+    //         free(cMatrix[i]);
+    //     }
 
-    free(bxMatrix);
-    free(byMatrix);
-    free(aMatrix);
-    free(cMatrix);
+    //     free(bxMatrix);
+    //     free(byMatrix);
+    //     free(aMatrix);
+    //     free(cMatrix);
 
-#elif NO_DIM == 3
-    int n = NO_DIM + 1;
+    // #elif NO_DIM == 3
+        // int n = NO_DIM + 1;
 
-    double r[NO_DIM + 1];
-    for (int i = 0; i < n; i++)
-    {
-        r[i] = simplex->vertices[i]->point.x * simplex->vertices[i]->point.x + simplex->vertices[i]->point.y * simplex->vertices[i]->point.y + simplex->vertices[i]->point.z * simplex->vertices[i]->point.z;
-    }
+        // double r[NO_DIM + 1];
+        // for (int i = 0; i < n; i++)
+        // {
+        //     r[i] = simplex->vertices[i]->point.coords[0] * simplex->vertices[i]->point.coords[0] + simplex->vertices[i]->point.coords[1] * simplex->vertices[i]->point.coords[1] + simplex->vertices[i]->point.coords[2] * simplex->vertices[i]->point.coords[2];
+        // }
 
-    double **bxMatrix = (double **)malloc(n * sizeof(double *));
-    double **byMatrix = (double **)malloc(n * sizeof(double *));
-    double **bzMatrix = (double **)malloc(n * sizeof(double *));
-    double **aMatrix = (double **)malloc(n * sizeof(double *));
-    double **cMatrix = (double **)malloc(n * sizeof(double *));
+        // double **bxMatrix = (double **)malloc(n * sizeof(double *));
+        // double **byMatrix = (double **)malloc(n * sizeof(double *));
+        // double **bzMatrix = (double **)malloc(n * sizeof(double *));
+        // double **aMatrix = (double **)malloc(n * sizeof(double *));
+        // double **cMatrix = (double **)malloc(n * sizeof(double *));
 
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i] = (double *)malloc(n * sizeof(double));
-        byMatrix[i] = (double *)malloc(n * sizeof(double));
-        bzMatrix[i] = (double *)malloc(n * sizeof(double));
-        aMatrix[i] = (double *)malloc(n * sizeof(double));
-        cMatrix[i] = (double *)malloc(n * sizeof(double));
-    }
+        // for (int i = 0; i < n; i++)
+        // {
+        //     bxMatrix[i] = (double *)malloc(n * sizeof(double));
+        //     byMatrix[i] = (double *)malloc(n * sizeof(double));
+        //     bzMatrix[i] = (double *)malloc(n * sizeof(double));
+        //     aMatrix[i] = (double *)malloc(n * sizeof(double));
+        //     cMatrix[i] = (double *)malloc(n * sizeof(double));
+        // }
 
-    for (int i = 0; i < n; i++)
-    {
-        bxMatrix[i][0] = r[i];
-        bxMatrix[i][1] = simplex->vertices[i]->point.y;
-        bxMatrix[i][2] = simplex->vertices[i]->point.z;
-        bxMatrix[i][3] = 1;
+        // for (int i = 0; i < n; i++)
+        // {
+        //     bxMatrix[i][0] = r[i];
+        //     bxMatrix[i][1] = simplex->vertices[i]->point.coords[1];
+        //     bxMatrix[i][2] = simplex->vertices[i]->point.coords[2];
+        //     bxMatrix[i][3] = 1;
 
-        byMatrix[i][0] = r[i];
-        byMatrix[i][1] = simplex->vertices[i]->point.x;
-        byMatrix[i][2] = simplex->vertices[i]->point.z;
-        byMatrix[i][3] = 1;
+        //     byMatrix[i][0] = r[i];
+        //     byMatrix[i][1] = simplex->vertices[i]->point.coords[0];
+        //     byMatrix[i][2] = simplex->vertices[i]->point.coords[2];
+        //     byMatrix[i][3] = 1;
 
-        bzMatrix[i][0] = r[i];
-        bzMatrix[i][1] = simplex->vertices[i]->point.x;
-        bzMatrix[i][2] = simplex->vertices[i]->point.y;
-        bzMatrix[i][3] = 1;
+        //     bzMatrix[i][0] = r[i];
+        //     bzMatrix[i][1] = simplex->vertices[i]->point.coords[0];
+        //     bzMatrix[i][2] = simplex->vertices[i]->point.coords[1];
+        //     bzMatrix[i][3] = 1;
 
-        aMatrix[i][0] = simplex->vertices[i]->point.x;
-        aMatrix[i][1] = simplex->vertices[i]->point.y;
-        aMatrix[i][2] = simplex->vertices[i]->point.z;
-        aMatrix[i][3] = 1;
+        //     aMatrix[i][0] = simplex->vertices[i]->point.coords[0];
+        //     aMatrix[i][1] = simplex->vertices[i]->point.coords[1];
+        //     aMatrix[i][2] = simplex->vertices[i]->point.coords[2];
+        //     aMatrix[i][3] = 1;
 
-        cMatrix[i][0] = r[i];
-        cMatrix[i][1] = simplex->vertices[i]->point.x;
-        cMatrix[i][2] = simplex->vertices[i]->point.y;
-        cMatrix[i][3] = simplex->vertices[i]->point.z;
-    }
+        //     cMatrix[i][0] = r[i];
+        //     cMatrix[i][1] = simplex->vertices[i]->point.coords[0];
+        //     cMatrix[i][2] = simplex->vertices[i]->point.coords[1];
+        //     cMatrix[i][3] = simplex->vertices[i]->point.coords[2];
+        // }
 
-    double bx = determinant(bxMatrix, n);
-    double by = -determinant(byMatrix, n);
-    double bz = determinant(bzMatrix, n);
-    double a = determinant(aMatrix, n);
-    double c = determinant(cMatrix, n);
+        // double bx = determinant(bxMatrix, n);
+        // double by = -determinant(byMatrix, n);
+        // double bz = determinant(bzMatrix, n);
+        // double a = determinant(aMatrix, n);
+        // double c = determinant(cMatrix, n);
 
-    double x0 = bx / (2 * a);
-    double y0 = by / (2 * a);
-    double z0 = bz / (2 * a);
+        // double x0 = bx / (2 * a);
+        // double y0 = by / (2 * a);
+        // double z0 = bz / (2 * a);
 
-    double radius = sqrt(bx * bx + by * by + bz * bz - 4 * a * c) / (2 * fabs(a));
+        // double radius = sqrt(bx * bx + by * by + bz * bz - 4 * a * c) / (2 * fabs(a));
 
-    simplex->circumcenter.x = x0;
-    simplex->circumcenter.y = y0;
-    simplex->circumcenter.z = z0;
-    simplex->circumradius = radius;
+        // simplex->circumcenter.coords[0] = x0;
+        // simplex->circumcenter.coords[1] = y0;
+        // simplex->circumcenter.coords[2] = z0;
+        // simplex->circumradius = radius;
 
-    if (isnan(radius))
-    {
-        printf("aMatrix: \n");
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                printf("%10.4f ", aMatrix[i][j]);
-            }
-            printf("\n");
-        }
+        // if (isnan(radius))
+        // {
+        //     printf("aMatrix: \n");
+        //     for (int i = 0; i < n; i++)
+        //     {
+        //         for (int j = 0; j < n; j++)
+        //         {
+        //             printf("%10.4f ", aMatrix[i][j]);
+        //         }
+        //         printf("\n");
+        //     }
 
-        printf("bxMatrix: \n");
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                printf("%10.4f ", bxMatrix[i][j]);
-            }
-            printf("\n");
-        }
+        //     printf("bxMatrix: \n");
+        //     for (int i = 0; i < n; i++)
+        //     {
+        //         for (int j = 0; j < n; j++)
+        //         {
+        //             printf("%10.4f ", bxMatrix[i][j]);
+        //         }
+        //         printf("\n");
+        //     }
 
-        printf("byMatrix: \n");
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                printf("%10.4f ", byMatrix[i][j]);
-            }
-            printf("\n");
-        }
+        //     printf("byMatrix: \n");
+        //     for (int i = 0; i < n; i++)
+        //     {
+        //         for (int j = 0; j < n; j++)
+        //         {
+        //             printf("%10.4f ", byMatrix[i][j]);
+        //         }
+        //         printf("\n");
+        //     }
 
-        printf("bzMatrix: \n");
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                printf("%10.4f ", bzMatrix[i][j]);
-            }
-            printf("\n");
-        }
+        //     printf("bzMatrix: \n");
+        //     for (int i = 0; i < n; i++)
+        //     {
+        //         for (int j = 0; j < n; j++)
+        //         {
+        //             printf("%10.4f ", bzMatrix[i][j]);
+        //         }
+        //         printf("\n");
+        //     }
 
-        printf("cMatrix: \n");
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                printf("%10.4f ", cMatrix[i][j]);
-            }
-            printf("\n");
-        }
+        //     printf("cMatrix: \n");
+        //     for (int i = 0; i < n; i++)
+        //     {
+        //         for (int j = 0; j < n; j++)
+        //         {
+        //             printf("%10.4f ", cMatrix[i][j]);
+        //         }
+        //         printf("\n");
+        //     }
 
-        printf("n");
+        //     printf("n");
 
-        printf("\x1B[31mError\x1B[0m in %s line %i: Circumradius isn't the number! \n", (char *)__FILE__, __LINE__);
-        printf("Points: %s, %s, %s, %s\n", printLongPointId(simplex->vertices[0]), printLongPointId(simplex->vertices[1]), printLongPointId(simplex->vertices[2]), printLongPointId(simplex->vertices[3]));
-        printf("A couple of numbers: bx: %10.4f, by: %10.4f, bz: %10.4f, a: %10.4f, c: %10.4f\n", bx, by, bz, a, c);
-        printf("bx * bx + by * by + bz * bz - 4 * a * c: %10.4f\n", bx * bx + by * by + bz * bz - 4 * a * c);
-        printf("sqrt(...): %10.4f, 2 * fabs(a): %10.4f \n", sqrt(bx * bx + by * by + bz * bz - 4 * a * c), 2 * fabs(a));
-        printf("Circumcenter: %10.4f, %10.4f, %10.4f \n\n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
-    }
+        //     printf("\x1B[31mError\x1B[0m in %s line %i: Circumradius isn't the number! \n", (char *)__FILE__, __LINE__);
+        //     printf("Points: %s, %s, %s, %s\n", printLongPointId(simplex->vertices[0]), printLongPointId(simplex->vertices[1]), printLongPointId(simplex->vertices[2]), printLongPointId(simplex->vertices[3]));
+        //     printf("A couple of numbers: bx: %10.4f, by: %10.4f, bz: %10.4f, a: %10.4f, c: %10.4f\n", bx, by, bz, a, c);
+        //     printf("bx * bx + by * by + bz * bz - 4 * a * c: %10.4f\n", bx * bx + by * by + bz * bz - 4 * a * c);
+        //     printf("sqrt(...): %10.4f, 2 * fabs(a): %10.4f \n", sqrt(bx * bx + by * by + bz * bz - 4 * a * c), 2 * fabs(a));
+        //     printf("Circumcenter: %10.4f, %10.4f, %10.4f \n\n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
+        // }
 
-    for (int i = 0; i < n; i++)
-    {
-        free(bxMatrix[i]);
-        free(byMatrix[i]);
-        free(bzMatrix[i]);
-        free(aMatrix[i]);
-        free(cMatrix[i]);
-    }
+        // for (int i = 0; i < n; i++)
+        // {
+        //     free(bxMatrix[i]);
+        //     free(byMatrix[i]);
+        //     free(bzMatrix[i]);
+        //     free(aMatrix[i]);
+        //     free(cMatrix[i]);
+        // }
 
-    free(bxMatrix);
-    free(byMatrix);
-    free(bzMatrix);
-    free(aMatrix);
-    free(cMatrix);
-#else
+        // free(bxMatrix);
+        // free(byMatrix);
+        // free(bzMatrix);
+        // free(aMatrix);
+        // free(cMatrix);
+    // #else
     int n = NO_DIM + 1;
 
     double r[NO_DIM + 1];
@@ -372,7 +334,7 @@ void calculateCircumcircle(Simplex *simplex)
             bMatrix[j][i][0] = r[i];
             for (int k = 0; k < j; k++)
             {
-                bMatrix[j][i][k] = simplex->vertices[i]->point.coords[k];
+                bMatrix[j][i][k + 1] = simplex->vertices[i]->point.coords[k];
             }
             for (int k = j + 1; k < NO_DIM; k++)
             {
@@ -385,12 +347,12 @@ void calculateCircumcircle(Simplex *simplex)
         {
             aMatrix[i][j] = simplex->vertices[i]->point.coords[j];
         }
-        aMatrix[i][2] = 1;
+        aMatrix[i][n - 1] = 1;
 
         cMatrix[i][0] = r[i];
         for (int j = 0; j < NO_DIM; j++)
         {
-            aMatrix[i][j + 1] = simplex->vertices[i]->point.coords[j];
+            cMatrix[i][j + 1] = simplex->vertices[i]->point.coords[j];
         }
     }
 
@@ -400,7 +362,20 @@ void calculateCircumcircle(Simplex *simplex)
         b[i] = (i % 2 == 0 ? 1 : -1) * determinant(bMatrix[i], n);
     }
     double a = determinant(aMatrix, n);
-    double c = -determinant(cMatrix, n);
+    double c = determinant(cMatrix, n);
+
+    // printf("a: %10.4f, c: %10.4f \n", a, c);
+    // for(int i = 0; i < NO_DIM; i++)
+    // {
+    //     printf("b%i: %10.4f \n", i, b[i]);
+    // }
+    // printMatrix(aMatrix, n);
+    // printMatrix(cMatrix, n);
+    // for(int i = 0; i < NO_DIM; i++)
+    // {
+    //     printf("%i\n", i);
+    //     printMatrix(bMatrix[i], n);
+    // }
 
     double *coords = (double *)malloc(NO_DIM * sizeof(double));
     for (int i = 0; i < NO_DIM; i++)
@@ -411,11 +386,12 @@ void calculateCircumcircle(Simplex *simplex)
     double square = 0;
     for (int i = 0; i < NO_DIM; i++)
     {
-        square = coords[i] * coords[i];
+        square += b[i] * b[i];
     }
 
     //Zastanowić się, czy potrzebujemy radius, czy wystarczy nam radius^2. Wtedy jedna operacja sqrt mniej.
     double radius = sqrt(square - 4 * a * c) / (2 * fabs(a));
+    // printf("Radius: %10.4f\n", radius);
 
     for (int i = 0; i < NO_DIM; i++)
     {
@@ -441,7 +417,7 @@ void calculateCircumcircle(Simplex *simplex)
     free(bMatrix);
     free(aMatrix);
     free(cMatrix);
-#endif
+    // #endif
 }
 
 void sortPointsInSimplex(Simplex *simplex)
@@ -467,25 +443,25 @@ void sortPointsInSimplex(Simplex *simplex)
 
 double comparePoints(Point p1, Point p2)
 {
-#if NO_DIM == 2
-    double result = p1.x - p2.x;
-    if (result == 0)
-        return p1.y - p2.y;
-    else
-        return result;
-#elif NO_DIM == 3
-    double result = p1.x - p2.x;
-    if (result == 0)
-    {
-        result = p1.y - p2.y;
-        if (result == 0)
-            return p1.z - p2.z;
-        else
-            return result;
-    }
-    else
-        return result;
-#else
+    // #if NO_DIM == 2
+    //     double result = p1.x - p2.x;
+    //     if (result == 0)
+    //         return p1.y - p2.y;
+    //     else
+    //         return result;
+    // #elif NO_DIM == 3
+    //     double result = p1.x - p2.x;
+    //     if (result == 0)
+    //     {
+    //         result = p1.y - p2.y;
+    //         if (result == 0)
+    //             return p1.z - p2.z;
+    //         else
+    //             return result;
+    //     }
+    //     else
+    //         return result;
+    // #else
 
     for (int i = 0; i < NO_DIM; i++)
     {
@@ -495,7 +471,7 @@ double comparePoints(Point p1, Point p2)
     }
 
     return 0;
-#endif
+    // #endif
 }
 
 double comparePointsVoids(void *p1, void *p2)
@@ -505,62 +481,7 @@ double comparePointsVoids(void *p1, void *p2)
     return comparePoints(point1->point, point2->point);
 }
 
-char *printLongSimplex(Simplex *simplex)
-{
-    int n = 1000;
-    char *result = (char *)malloc(n * sizeof(char));
 
-    return result;
-}
-
-#if ID == 1
-char *printShortSimplex(Simplex *simplex)
-{
-    int n = 300;
-    char *result = (char *)malloc(n * sizeof(char));
-
-    char circumcenter[100];
-#if NO_DIM == 2
-    sprintf(circumcenter, "x: %10.4f, y: %10.4f", simplex->circumcenter.x, simplex->circumcenter.y);
-#elif NO_DIM == 3
-    sprintf(circumcenter, "x: %10.4f, y: %10.4f, z: %10.4f", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumcenter.z);
-#else
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        char temp[20];
-        sprintf(temp, ", c%i: %10.4f", i, simplex->circumcenter.coords[i]);
-        strcat(circumcenter, temp);
-    }
-#endif
-
-#if NO_DIM == 2
-    sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, boxId: %i, %i, neighbors: ",
-            simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension, simplex->boxId[0], simplex->boxId[1]);
-#endif
-
-#if NO_DIM == 3
-    sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, boxId: %i, %i, %i, neighbors: ",
-            simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension, simplex->boxId[0], simplex->boxId[1], simplex->boxId[2]);
-#endif
-    for (int i = 0; i < NO_DIM + 1; i++)
-    {
-        char temp[20];
-        sprintf(temp, ", n%i: %5i", i, simplex->neighbors[i] == NULL ? -1 : simplex->neighbors[i]->id);
-        strcat(result, temp);
-    }
-
-    strcat(result, " Points: ");
-    for (int i = 0; i < NO_DIM + 1; i++)
-    {
-        char temp[20];
-        sprintf(temp, ", p%i: %5i", i, simplex->vertices == NULL ? -1 : simplex->vertices[i]->id);
-        strcat(result, temp);
-    }
-
-    strcat(result, "\n");
-
-    return result;
-}
 
 void calculateBoxId2(Simplex *result)
 {
@@ -573,19 +494,19 @@ void calculateBoxId2(Simplex *result)
         coordsMinMax[i][1] = 100;
     }
 
-#if NO_DIM == 2
-    result->boxId[0] = (int)((result->centroid.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    result->boxId[1] = (int)((result->centroid.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
-#elif NO_DIM == 3
-    result->boxId[0] = (int)((result->centroid.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    result->boxId[1] = (int)((result->centroid.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
-    result->boxId[2] = (int)((result->centroid.z - coordsMinMax[2][0]) / (coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
-#else
+    // #if NO_DIM == 2
+    //     result->boxId[0] = (int)((result->centroid.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    //     result->boxId[1] = (int)((result->centroid.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    // #elif NO_DIM == 3
+    //     result->boxId[0] = (int)((result->centroid.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    //     result->boxId[1] = (int)((result->centroid.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    //     result->boxId[2] = (int)((result->centroid.z - coordsMinMax[2][0]) / (coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
+    // #else
     for (int i = 0; i < NO_DIM; i++)
     {
         result->boxId[i] = (int)((result->centroid.coords[i] - coordsMinMax[i][0]) / (coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
     }
-#endif
+    // #endif
     for (int i = 0; i < NO_DIM; i++)
     {
         if (result->boxId[i] >= result->hilbertDimension)
@@ -611,19 +532,19 @@ void calculateBoxId(Simplex *result)
         coordsMinMax[i][1] = 100;
     }
 
-#if NO_DIM == 2
-    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
-#elif NO_DIM == 3
-    result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
-    result->boxId[2] = (int)((result->circumcenter.z - coordsMinMax[2][0]) / (coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
-#else
+    // #if NO_DIM == 2
+    //     result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    //     result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    // #elif NO_DIM == 3
+    //     result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
+    //     result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
+    //     result->boxId[2] = (int)((result->circumcenter.z - coordsMinMax[2][0]) / (coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
+    // #else
     for (int i = 0; i < NO_DIM; i++)
     {
         result->boxId[i] = (int)((result->circumcenter.coords[i] - coordsMinMax[i][0]) / (coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
     }
-#endif
+    // #endif
     for (int i = 0; i < NO_DIM; i++)
     {
         if (result->boxId[i] >= result->hilbertDimension)
@@ -643,5 +564,3 @@ void calculateBoxId(Simplex *result)
         free(coordsMinMax[i]);
     }
 }
-
-#endif

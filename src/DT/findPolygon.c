@@ -29,7 +29,7 @@ PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trian
                 // printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
                 //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
                 // printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-                printf("Creating polygon. Analyze of simplex: %s \n\n", printShortSimplex(simplex));
+                printf("Creating polygon. Analyze of simplex: %s \n\n", printLongSimplex(simplex));
 #endif
 
                 for (int i = 0; i < NO_DIM + 1; i++)
@@ -85,7 +85,7 @@ PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trian
 
 #if DEBUG_TRIANGULATION == 1
                 printf("partition->triangles Tree:\n");
-                printRedBlackTreeString(partition->triangles, printShortSimplex);
+                printRedBlackTreeDLLString(partition->triangles, printLongSimplex);
 #endif
 //removeFromDoubleLinkedList(partition->triangles, current->data);
 #if REDBLACKTREEDLL == 1
@@ -104,9 +104,9 @@ PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trian
                 // printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f, Neighbors: n1: %14p, n2: %14p, n3: %14p\n\n",
                 //        simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
                 //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y, simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-                printf("Simplex: %s\n", printShortSimplex(simplex));
+                printf("Simplex: %s\n", printLongSimplex(simplex));
                 printf("partition->triangles: \n");
-                printRedBlackTreeString(partition->triangles, printShortSimplex);
+                printRedBlackTreeString(partition->triangles, printLongSimplex);
 #endif
 #if REDBLACKTREEDLL == 1
                 removeFromRedBlackTreeDLL(partition->triangles, fromTree);
@@ -116,7 +116,7 @@ PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trian
 
 #if DEBUG_TRIANGULATION == 1
                 printf("partition->triangles: \n");
-                printRedBlackTreeString(partition->triangles, printShortSimplex);
+                printRedBlackTreeString(partition->triangles, printLongSimplex);
 #endif
 
                 //Potencjalnie niebezpieczne

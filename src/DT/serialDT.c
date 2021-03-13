@@ -74,8 +74,8 @@ long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
 #if DEBUG_TRIANGULATION == 1
     printf("Trójkąty: \n");
 
-    //printRedBlackTreeString(partition->triangles, printShortSimplex);
-    printRedBlackTreeString(partition->triangles, printShortSimplex);
+    //printRedBlackTreeString(partition->triangles, printLongSimplex);
+    printRedBlackTreeDLLString(partition->triangles, printLongSimplex);
 
     printf("Wierzchołki: \n");
 
@@ -172,7 +172,7 @@ long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
     while (pointer != NULL)
     {
         PointId *point = (PointId *)pointer->data;
-        fprintf(fp, "%10.4f, %10.4f \n", point->point.x, point->point.y);
+        // fprintf(fp, "%10.4f, %10.4f \n", point->point.x, point->point.y);
         pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
     }
 
@@ -193,13 +193,13 @@ long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
         // printf("Loaded\n");
         // fprintf(fp, "%10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0]->point.x, simplex->vertices[0]->point.y, simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
 #if NO_DIM == 2
-        fprintf(fp, "%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n",
-                simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
-                simplex->vertices[1]->point.x, simplex->vertices[1]->point.y,
-                simplex->vertices[1]->point.x, simplex->vertices[1]->point.y,
-                simplex->vertices[2]->point.x, simplex->vertices[2]->point.y,
-                simplex->vertices[2]->point.x, simplex->vertices[2]->point.y,
-                simplex->vertices[0]->point.x, simplex->vertices[0]->point.y);
+        // fprintf(fp, "%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n%10.4f, %10.4f\n%10.4f, %10.4f\n\n",
+        //         simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
+        //         simplex->vertices[1]->point.x, simplex->vertices[1]->point.y,
+        //         simplex->vertices[1]->point.x, simplex->vertices[1]->point.y,
+        //         simplex->vertices[2]->point.x, simplex->vertices[2]->point.y,
+        //         simplex->vertices[2]->point.x, simplex->vertices[2]->point.y,
+        //         simplex->vertices[0]->point.x, simplex->vertices[0]->point.y);
 #elif NO_DIM == 3
         int r = rand() % 200;
         int g = rand() % 200;
@@ -209,21 +209,21 @@ long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute)
 
         // if (!(simplex->vertices[0]->id < 8 || simplex->vertices[1]->id < 8 || simplex->vertices[2]->id < 8 || simplex->vertices[3]->id < 8))
         // {
-        fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n",
-                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
-                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
-                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
-                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
-                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
-                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b);
+        // fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n",
+        //         simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
+        //         simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+        //         simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+        //         simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+        //         simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+        //         simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b);
 
-        fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n\n",
-                simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
-                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
-                simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
-                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
-                simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
-                simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b);
+        // fprintf(fp, "%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n%10.4f, %10.4f, %10.4f, %i, %i, %i\n\n\n",
+        //         simplex->vertices[0]->point.x + e, simplex->vertices[0]->point.y + e, simplex->vertices[0]->point.z + e, r, g, b,
+        //         simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
+        //         simplex->vertices[1]->point.x + e, simplex->vertices[1]->point.y + e, simplex->vertices[1]->point.z + e, r, g, b,
+        //         simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b,
+        //         simplex->vertices[2]->point.x + e, simplex->vertices[2]->point.y + e, simplex->vertices[2]->point.z + e, r, g, b,
+        //         simplex->vertices[3]->point.x + e, simplex->vertices[3]->point.y + e, simplex->vertices[3]->point.z + e, r, g, b);
         // }
 #endif
 #if REDBLACKTREEDLL == 1
@@ -339,13 +339,13 @@ void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimens
         coords[i] = (double)rand() / (double)(RAND_MAX)*100;
     }
 
-#if NO_DIM == 2
-    pointFirst = newPointId(coords[0], coords[1]);
-#elif NO_DIM == 3
-    pointFirst = newPointId(coords[0], coords[1], coords[2]);
-#else
+// #if NO_DIM == 2
+//     pointFirst = newPointId(coords[0], coords[1]);
+// #elif NO_DIM == 3
+//     pointFirst = newPointId(coords[0], coords[1], coords[2]);
+// #else
     pointFirst = newPointId(coords);
-#endif
+// #endif
 
     insertIntoRedBlackTree(partition->vertices, pointFirst);
 
@@ -370,13 +370,13 @@ void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimens
             coords[i] = (double)rand() / (double)(RAND_MAX)*100;
         }
 
-#if NO_DIM == 2
-        point = newPointId(coords[0], coords[1]);
-#elif NO_DIM == 3
-        point = newPointId(coords[0], coords[1], coords[2]);
-#else
+// #if NO_DIM == 2
+//         point = newPointId(coords[0], coords[1]);
+// #elif NO_DIM == 3
+//         point = newPointId(coords[0], coords[1], coords[2]);
+// #else
         point = newPointId(coords);
-#endif
+// #endif
 
         // insertIntoDoubleLinkedList(partition->vertices, first, point, comparePositionOfTwoPoints);
         insertIntoRedBlackTree(partition->vertices, point);
@@ -423,13 +423,13 @@ void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimens
     // printRedBlackTree(tree);
 }
 
-double comparePositionOfTwoPoints(void *a, void *b)
-{
-    PointId *s1 = (PointId *)a;
-    PointId *s2 = (PointId *)b;
+// double comparePositionOfTwoPoints(void *a, void *b)
+// {
+//     PointId *s1 = (PointId *)a;
+//     PointId *s2 = (PointId *)b;
 
-    return s1->point.x - s2->point.x;
-}
+//     return s1->point.x - s2->point.x;
+// }
 
 void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilbertDimension)
 {
@@ -487,7 +487,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
 #endif
 
-    Simplex *simplex = findFirstSimplexToModifyBoxId2(point, partition, hilbertDimension);
+    Simplex *simplex = findFirstSimplexToModify(point, partition, hilbertDimension);
 
 #if MEASURE_TIME == 1
     struct timeval end;
@@ -508,7 +508,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     // printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
     //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
     // printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-    printf("theMostNewInsertPoint function - founded simplex to modify: %s\n\n", printShortSimplex(simplex));
+    printf("theMostNewInsertPoint function - founded simplex to modify: %s\n\n", printLongSimplex(simplex));
 #endif
 
 #if MEASURE_TIME == 1
@@ -536,7 +536,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
         // printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
         //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
         // printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-        printf("Founded simplex to modify: %s \n\n", printShortSimplex(simplex));
+        printf("Founded simplex to modify: %s \n\n", printLongSimplex(simplex));
         current = current->next;
     }
     current = trianglesToModify->first;
@@ -646,7 +646,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
     printf("Just before adding new simplexes to triangles tree. \n\npartition->triangles tree:\n");
-    printRedBlackTreeString(partition->triangles, printShortSimplex);
+    printRedBlackTreeDLLString(partition->triangles, printLongSimplex);
 #endif
 
     LinkedList *simplexList = createSimplexList(edges, point, hilbertDimension);
@@ -670,9 +670,9 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
-    printf("theMostNewInsertPoint function, ended inserting of point: %14p, x: %10.4f, y: %10.4f\n\n", point, point->point.x, point->point.y);
+    printf("theMostNewInsertPoint function, ended inserting of point: %s\n\n", printLongPointId(point));
     printf("Triangles:\n");
-    printRedBlackTreeString(partition->triangles, printShortSimplex);
+    printRedBlackTreeDLLString(partition->triangles, printLongSimplex);
     printf("Vertices:\n");
     printRedBlackTree(partition->vertices);
 #endif
@@ -697,18 +697,18 @@ PointId **combination(PointId *data, int n)
     return result;
 }
 
-double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2)
-{
-    double A = point2.y - point1.y;
-    double B = point2.x - point1.x;
-    double C = point2.x * point1.y - point1.x * point2.y;
+// double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2)
+// {
+//     double A = point2.y - point1.y;
+//     double B = point2.x - point1.x;
+//     double C = point2.x * point1.y - point1.x * point2.y;
 
-    // printf("A: %10.4f, B: %10.4f, C: %10.4f\n", A, B, C);
+//     // printf("A: %10.4f, B: %10.4f, C: %10.4f\n", A, B, C);
 
-    double temp = A * point.x + B * point.y + C;
-    double squareOfDistance = temp * temp / (A * A + B * B);
-    return squareOfDistance;
-}
+//     double temp = A * point.x + B * point.y + C;
+//     double squareOfDistance = temp * temp / (A * A + B * B);
+//     return squareOfDistance;
+// }
 
 // #if NO_DIM == 3
 // double squareOfDistanceFromPointToPlane(Point point, Point point1, Point point2, Point point3)
@@ -767,46 +767,53 @@ double squareOfDistanceFromPointToLine(Point point, Point point1, Point point2)
 
 double squareOfDistanceFromPointToPoint(Point point1, Point point2)
 {
-    double dx = point1.x - point2.x;
-    double dy = point1.y - point2.y;
-#if NO_DIM == 2
-    return dx * dx + dy * dy;
-#else
-    double dz = point1.z - point2.z;
-    return dx * dx + dy * dy + dz * dz;
-#endif
-}
-
-double comparePositionOfTwoTriangles(void *a, void *b)
-{
-    // printf("Compare position of two triangles\n");
-    Simplex *s1 = (Simplex *)a;
-    Simplex *s2 = (Simplex *)b;
-    // double r = s2->circumcenter.x;
-    // printf("Data loaded\n");
-    double result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
-    // printf("Result computed\n");
-    if (result == 0)
-        return pointsArrayEquals(s1->vertices, s2->vertices, NO_DIM + 1);
+//     double dx = point1.x - point2.x;
+//     double dy = point1.y - point2.y;
+// #if NO_DIM == 2
+//     return dx * dx + dy * dy;
+// #else
+//     double dz = point1.z - point2.z;
+//     return dx * dx + dy * dy + dz * dz;
+// #endif
+    double result = 0;
+    for(int i = 0; i < NO_DIM; i++)
+    {
+        double d = point1.coords[i] - point2.coords[i];
+        result += d*d;
+    }
     return result;
 }
 
-double comparePositionOfTwoTrianglesHilbert(void *a, void *b)
-{
-    // printf("Compare position of two triangles\n");
-    Simplex *s1 = (Simplex *)a;
-    Simplex *s2 = (Simplex *)b;
-    // double r = s2->circumcenter.x;
-    // printf("Data loaded\n");
-    double result = s1->hilbertId - s2->hilbertId;
-    if (result != 0)
-        return result;
-    result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
-    // printf("Result computed\n");
-    if (result == 0)
-        return pointsArrayEquals(s1->vertices, s2->vertices, NO_DIM + 1);
-    return result;
-}
+// double comparePositionOfTwoTriangles(void *a, void *b)
+// {
+//     // printf("Compare position of two triangles\n");
+//     Simplex *s1 = (Simplex *)a;
+//     Simplex *s2 = (Simplex *)b;
+//     // double r = s2->circumcenter.x;
+//     // printf("Data loaded\n");
+//     double result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
+//     // printf("Result computed\n");
+//     if (result == 0)
+//         return pointsArrayEquals(s1->vertices, s2->vertices, NO_DIM + 1);
+//     return result;
+// }
+
+// double comparePositionOfTwoTrianglesHilbert(void *a, void *b)
+// {
+//     // printf("Compare position of two triangles\n");
+//     Simplex *s1 = (Simplex *)a;
+//     Simplex *s2 = (Simplex *)b;
+//     // double r = s2->circumcenter.x;
+//     // printf("Data loaded\n");
+//     double result = s1->hilbertId - s2->hilbertId;
+//     if (result != 0)
+//         return result;
+//     result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
+//     // printf("Result computed\n");
+//     if (result == 0)
+//         return pointsArrayEquals(s1->vertices, s2->vertices, NO_DIM + 1);
+//     return result;
+// }
 
 double comparePositionOfTwoTrianglesBox(void *a, void *b)
 {
@@ -825,7 +832,7 @@ double comparePositionOfTwoTrianglesBox(void *a, void *b)
             return result;
     }
 
-    result = s1->circumcenter.x + s1->circumradius - (s2->circumcenter.x + s2->circumradius);
+    result = s1->circumcenter.coords[0] + s1->circumradius - (s2->circumcenter.coords[0] + s2->circumradius);
 
     if (result == 0)
         return pointsArrayEquals(s1->vertices, s2->vertices, NO_DIM + 1);
@@ -873,7 +880,7 @@ void printRedBlackTree(redBlackTree *tree)
     while (node != NULL)
     {
         PointId *point = (PointId *)node->data;
-        printf("Node: %14p, Data: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s, x: %10.4f, y: %10.4f\n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black", point->point.x, point->point.y);
+        printf("Node: %14p, Data: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s, Point: %s\n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black", printLongPointId(point));
         node = getNextNodeFromRedBlackTree(tree, node);
     }
     printf("\n\n");
@@ -893,6 +900,22 @@ void printRedBlackTreeString(redBlackTree *tree, char *(*printData)(void *))
     printf("\n\n");
 }
 
+void printRedBlackTreeDLLString(redBlackTreeDLL *tree, char *(*printData)(void *))
+{
+    printf("\nRed-Black Tree:\n");
+    redBlackTreeDLLNode *node = minimumInRedBlackSubTreeDLL(tree->first);
+    printf("tree->first: %14p\n", tree->first);
+
+    while (node != NULL)
+    {
+        char* temp = printData(node->data);
+        printf("Node: %14p, Data: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s, %s\n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black", temp);
+        free(temp);
+        node = getNextNodeFromRedBlackTreeDLL(tree, node);
+    }
+    printf("\n\n");
+}
+
 void printRedBlackTreeTriangles(redBlackTree *tree)
 {
     printf("\nRed-Black Tree:\n");
@@ -904,9 +927,9 @@ void printRedBlackTreeTriangles(redBlackTree *tree)
         Simplex *simplex = (Simplex *)node->data;
         printf("Node: %14p, Data: %14p, Parent: %14p, Left: %14p, Right: %14p, Colour: %s \n", node, node->data, node->parent, node->left, node->right, node->colour == Red ? "Red  " : "Black");
 #if NO_DIM == 2
-        printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f, Neighbors: n1: %14p, n2: %14p, n3: %14p\n",
-               simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
-               simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y, simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+        // printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f, Neighbors: n1: %14p, n2: %14p, n3: %14p\n",
+        //        simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
+        //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y, simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
 #endif
 #if NO_DIM == 3
         printf("Simplex: circumcenter: x: %10.4f, y: %10.4f, z: %10.4f, circumradius: %10.4f, Points: p1: x: %10.4f, y: %10.4f, z: %10.4f, p2: x: %10.4f, y: %10.4f, z: %10.4f, \

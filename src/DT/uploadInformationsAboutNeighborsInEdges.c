@@ -23,7 +23,8 @@ void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *t
 
 #if DEBUG_TRIANGULATION == 1
             printf("File %s, line %i: uploadInformationsAboutNeighborsInEdges function.\n", (char *)__FILE__, __LINE__);
-            printf("Created edge of edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0]->point.x, e->points[0]->point.y);
+            printf("Created edge of edge: %s\n", printLongEdgeOfEdge(e));
+            // printf("Created edge of edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n\n", e, e->first, e->second, e->points[0]->point.x, e->points[0]->point.y);
 #endif
 
             redBlackTreeNode *nodeFromTree = getFromRedBlackTree(treeEdgeOfEdges, e);
@@ -38,7 +39,8 @@ void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *t
             printf("File %s, line %i: uploadInformationsAboutNeighborsInEdges function.\n", (char *)__FILE__, __LINE__);
             printf("NodeFromTree: %14p ", nodeFromTree);
             if (nodeFromTree != NULL)
-                printf("fromTree: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f", fromTree, fromTree->first, fromTree->second, fromTree->points[0]->point.x, fromTree->points[0]->point.y);
+                printf("fromTree: %s\n", printLongEdgeOfEdge(fromTree));
+                // printf("fromTree: %14p, first: %14p, second: %14p, Points: p1: x: %10.4f, y: %10.4f", fromTree, fromTree->first, fromTree->second, fromTree->points[0]->point.x, fromTree->points[0]->point.y);
             printf("\n\n");
 #endif
 
@@ -80,9 +82,10 @@ void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *t
 
 #if DEBUG_TRIANGULATION == 1
                 printf("File %s, line %i: uploadInformationsAboutNeighborsInEdges function.\n", (char *)__FILE__, __LINE__);
-                printf("Current edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n", currentEdge->edge, currentEdge->edge->first, currentEdge->edge->second, currentEdge->edge->points[0]->point.x, currentEdge->edge->points[0]->point.y);
-                printf("i: %d, Neighbors: n1: %14p, n2: %14p \n", i, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
-                printf("Edge of Edge fromTree: %14p, first: %14p, second: %14p\n\n", fromTree, fromTree->first, fromTree->second);
+                printf("Current edge: \n", printShortEdge(currentEdge->edge));
+                // printf("Current edge: %14p, first: %14p, second: %14p, p1: x: %10.4f, y: %10.4f\n", currentEdge->edge, currentEdge->edge->first, currentEdge->edge->second, currentEdge->edge->points[0]->point.x, currentEdge->edge->points[0]->point.y);
+                // printf("i: %d, Neighbors: n1: %14p, n2: %14p \n", i, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
+                // printf("Edge of Edge fromTree: %14p, first: %14p, second: %14p\n\n", fromTree, fromTree->first, fromTree->second);
 #endif
 
                 //                 if (fromTree->second != NULL)

@@ -62,113 +62,113 @@ void testTIPP()
     //     }
     // }
 
-    TIPP(1024*1024, 1024*1024, 128, false);
+    TIPP(2, 2, 1, false);
 
     // TIPP(1024*1024*1024, 1024*1024*1024, 32);
 }
 
-void testRedBlackTreeUtilities()
-{
-    srand(0);
+// void testRedBlackTreeUtilities()
+// {
+//     srand(0);
 
-    int n = 0;
+//     int n = 0;
 
-    for (int i = 0; i < 20; i++)
-    {
-        redBlackTreeInsertTime = 0;
-        redBlackTreeRemoveTime = 0;
-        redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
-        tree->first = NULL;
-        tree->compare = comparePositionOfTwoPoints;
+//     for (int i = 0; i < 20; i++)
+//     {
+//         redBlackTreeInsertTime = 0;
+//         redBlackTreeRemoveTime = 0;
+//         redBlackTree *tree = (redBlackTree *)malloc(sizeof(redBlackTree));
+//         tree->first = NULL;
+//         tree->compare = comparePositionOfTwoPoints;
 
-        n = generateNextTestNumberOfPoints(n);
+//         n = generateNextTestNumberOfPoints(n);
 
-        PointId **array = (PointId **)calloc(n, sizeof(PointId **));
+//         PointId **array = (PointId **)calloc(n, sizeof(PointId **));
 
-        for (int i = 0; i < n; i++)
-        {
-            PointId *point = (PointId *)malloc(sizeof(PointId));
+//         for (int i = 0; i < n; i++)
+//         {
+//             PointId *point = (PointId *)malloc(sizeof(PointId));
 
-            // double x = (double)rand() / (double)(RAND_MAX)*100.0;
-            // double y = (double)rand() / (double)(RAND_MAX)*100.0;
-            int x, y;
+//             // double x = (double)rand() / (double)(RAND_MAX)*100.0;
+//             // double y = (double)rand() / (double)(RAND_MAX)*100.0;
+//             int x, y;
 
-            do
-            {
-                x = rand() % n;
-                y = rand() % n;
-            } while (array[x] != NULL);
+//             do
+//             {
+//                 x = rand() % n;
+//                 y = rand() % n;
+//             } while (array[x] != NULL);
 
-            point->point.x = x;
-            point->point.y = y;
+//             point->point.x = x;
+//             point->point.y = y;
 
-            array[x] = point;
+//             array[x] = point;
 
-            insertIntoRedBlackTree(tree, point);
-        }
-        printf("InsertTime: %d, %lld\n", n, redBlackTreeInsertTime);
+//             insertIntoRedBlackTree(tree, point);
+//         }
+//         printf("InsertTime: %d, %lld\n", n, redBlackTreeInsertTime);
 
-        //removeRedBlackTree(tree, true);
-        for (int i = 0; i < n; i++)
-        {
-            // double x = (double)rand() / (double)(RAND_MAX)*100.0;
-            // double y = (double)rand() / (double)(RAND_MAX)*100.0;
-            int x;
+//         //removeRedBlackTree(tree, true);
+//         for (int i = 0; i < n; i++)
+//         {
+//             // double x = (double)rand() / (double)(RAND_MAX)*100.0;
+//             // double y = (double)rand() / (double)(RAND_MAX)*100.0;
+//             int x;
 
-            do
-            {
-                x = rand() % n;
-            } while (array[x] == NULL);
+//             do
+//             {
+//                 x = rand() % n;
+//             } while (array[x] == NULL);
 
-            redBlackTreeNode *node = getFromRedBlackTree(tree, array[x]);
-            removeFromRedBlackTree(tree, node);
-            array[x] = NULL;
+//             redBlackTreeNode *node = getFromRedBlackTree(tree, array[x]);
+//             removeFromRedBlackTree(tree, node);
+//             array[x] = NULL;
 
-            // insertIntoRedBlackTree(tree, point);
-        }
+//             // insertIntoRedBlackTree(tree, point);
+//         }
 
-        printf("RemoveTime: %d, %lld\n", n, redBlackTreeRemoveTime);
+//         printf("RemoveTime: %d, %lld\n", n, redBlackTreeRemoveTime);
 
-        // if(i > 60)
-        //     sleep(2);
-    }
-}
+//         // if(i > 60)
+//         //     sleep(2);
+//     }
+// }
 
-void testDoubleLinkedList()
-{
-    srand(0);
+// void testDoubleLinkedList()
+// {
+//     srand(0);
 
-    int n = 0;
-    for (int i = 0; i < 55; i++)
-    {
-        doubleLinkedListInsertTime = 0;
-        DoubleLinkedList *list = (DoubleLinkedList *)malloc(sizeof(DoubleLinkedList));
-        DoubleLinkedListNode *first = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
+//     int n = 0;
+//     for (int i = 0; i < 55; i++)
+//     {
+//         doubleLinkedListInsertTime = 0;
+//         DoubleLinkedList *list = (DoubleLinkedList *)malloc(sizeof(DoubleLinkedList));
+//         DoubleLinkedListNode *first = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
 
-        PointId *pointFirst = (PointId *)malloc(sizeof(PointId));
-        double x = (double)rand() / (double)(RAND_MAX)*100;
-        double y = (double)rand() / (double)(RAND_MAX)*100;
-        pointFirst->point.x = x;
-        pointFirst->point.y = y;
-        list->first = first;
-        first->data = pointFirst;
+//         PointId *pointFirst = (PointId *)malloc(sizeof(PointId));
+//         double x = (double)rand() / (double)(RAND_MAX)*100;
+//         double y = (double)rand() / (double)(RAND_MAX)*100;
+//         pointFirst->point.x = x;
+//         pointFirst->point.y = y;
+//         list->first = first;
+//         first->data = pointFirst;
 
-        n = generateNextTestNumberOfPoints(n);
+//         n = generateNextTestNumberOfPoints(n);
 
-        for (int i = 0; i < n; i++)
-        {
-            PointId *point = (PointId *)malloc(sizeof(PointId));
+//         for (int i = 0; i < n; i++)
+//         {
+//             PointId *point = (PointId *)malloc(sizeof(PointId));
 
-            double x = (double)rand() / (double)(RAND_MAX)*100;
-            double y = (double)rand() / (double)(RAND_MAX)*100;
+//             double x = (double)rand() / (double)(RAND_MAX)*100;
+//             double y = (double)rand() / (double)(RAND_MAX)*100;
 
-            point->point.x = x;
-            point->point.y = y;
-            insertIntoDoubleLinkedList(list, first, point, comparePositionOfTwoPoints);
-        }
-        printf("%d, %lld\n", n, doubleLinkedListInsertTime);
-    }
-}
+//             point->point.x = x;
+//             point->point.y = y;
+//             insertIntoDoubleLinkedList(list, first, point, comparePositionOfTwoPoints);
+//         }
+//         printf("%d, %lld\n", n, doubleLinkedListInsertTime);
+//     }
+// }
 
 void printInformationsAboutSizeOfStructures()
 {

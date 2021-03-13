@@ -38,6 +38,7 @@ typedef struct Simplex
 Simplex *neighborOfSimplex(Simplex *simplex, int i);
 
 void createNewSimplex(Simplex *simplex, PointId *points[NO_DIM + 1], int hilbertDimension);
+void createNewSimplexToSearch(Simplex *simplex, Point *point, int hilbertDimension);
 void freeSimplex(void *s);
 
 void calculateCircumcircle(Simplex *simplex);
@@ -47,9 +48,6 @@ double comparePointsVoids(void *p1, void *p2);
 
 void calculateBoxId(Simplex *result);
 
-char* printLongSimplex(Simplex *simplex);
-#if ID == 1
-char* printShortSimplex(Simplex *simplex);
-#endif 
+
 
 #endif
