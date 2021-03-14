@@ -23,7 +23,6 @@ void updateAndAddSimplexes(PolygonList *edges, Partition *partition)
 
         for (int i = 1; i < NO_DIM + 1; i++)
         {
-            //result->neighbors[i] = currentEdge->edge->neighbors[i - 1]->first;
             result->neighbors[i] = currentEdge->edge->neighbors[i - 1]->first;
         }
         sortPointsInSimplex(result);
@@ -35,21 +34,12 @@ void updateAndAddSimplexes(PolygonList *edges, Partition *partition)
         
 #if DEBUG_TRIANGULATION == 1
         Simplex *simplex = result;
-        printf("File %s, line %i: updateAndAddSimplexes function.\n", (char *)__FILE__, __LINE__);
-        // printf("Created new simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
-        // printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0]->point.x, simplex->vertices[0]->point.y,
-        //        simplex->vertices[1]->point.x, simplex->vertices[1]->point.y, simplex->vertices[2]->point.x, simplex->vertices[2]->point.y);
-        // printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
-        printf("Created new simplex: %s\n\n", printLongSimplex(simplex));
-        // printf("Current Edge: %14p, Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, first: %14p, second: %14p, secondIndex: %d, neighbors: n1: %14p, n2: %14p \n\n",
-        //        currentEdge->edge, currentEdge->edge->points[0]->point.x, currentEdge->edge->points[0]->point.y,
-        //        currentEdge->edge->points[1]->point.x, currentEdge->edge->points[1]->point.y, currentEdge->edge->first, currentEdge->edge->second,
-        //        currentEdge->edge->secondIndex, currentEdge->edge->neighbors[0], currentEdge->edge->neighbors[1]);
-        printf("Current Edge: %s\n\n", printShortEdge(currentEdge->edge));
+
+        saveToLogs((char *)__FILE__, __LINE__, "Created new simplex: ", printLongSimplex, simplex);
+        saveToLogs((char *)__FILE__, __LINE__, "Current Edge: ", printShortEdge, currentEdge->edge);
+        
         printf("Triangles tree: \n");
         printRedBlackTreeDLLString(partition->triangles, printLongSimplex);
-        // printf("Tadam\n");
-        // sleep(2);
 #endif
         currentEdge = currentEdge->next;
         //insertIntoDoubleLinkedList2(partition->triangles, result, comparePositionOfTwoTriangles);

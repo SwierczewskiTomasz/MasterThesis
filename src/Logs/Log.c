@@ -1,25 +1,33 @@
 #include "Log.h"
+#include <stdarg.h>
 
-char *printLongPoint(Point point)
+char *printLongPoint(void *data)
 {
+    Point *point = (Point *)data;
     int n = NO_DIM * 25;
-    char *result = (char*)malloc(n * sizeof(char));
+    char *result = (char *)malloc(n * sizeof(char));
 
     for (int i = 0; i < NO_DIM; i++)
     {
         char temp[20];
-        sprintf(temp, ", c%i: %10.4f", i, point.coords[i]);
+        sprintf(temp, ", c%i: %10.4f", i, point->coords[i]);
         strcat(result, temp);
     }
 
     return result;
 }
 
-char *printLongPointId(PointId *point)
+char *printLongPointId(void *data)
 {
+    PointId *point = (PointId *)data;
     int n = NO_DIM * 20 + 40;
     char *result = (char *)malloc(n * sizeof(char));
+
+#if ID == 1
+    sprintf(result, "%i", point->id);
+#else
     sprintf(result, "%14p", point);
+#endif
 
     for (int i = 0; i < NO_DIM; i++)
     {
@@ -31,48 +39,63 @@ char *printLongPointId(PointId *point)
     return result;
 }
 
-char *printLongEdge(Edge *edge)
+char *printLongEdge(void *data)
 {
+    Edge *edge = (Edge *)data;
+
     int n = 600;
     char *result = (char *)malloc(n * sizeof(char));
 
+#if ID == 1
+    sprintf(result, "Edge: %6i, points: ", edge->id);
+#else
     sprintf(result, "Edge: %14p, points: ", edge);
+#endif
 
     for (int i = 0; i < NO_DIM; i++)
     {
         char *temp = printLongPointId(edge->points[i]);
         int length = strlen(temp) + 10;
         char *temp2 = (char *)malloc(length * sizeof(char));
-        sprintf(temp2, ", p%i: %s", i, temp);
+        if (i == 0)
+            sprintf(temp2, "p%i: %s", i, temp);
+        else
+            sprintf(temp2, ", p%i: %s", i, temp);
         strcat(result, temp2);
         free(temp);
         free(temp2);
     }
-
-    char *printFirst = printLongSimplex(edge->first);
-    char *printSecond = printLongSimplex(edge->second);
-
+    
     char temp[300];
-    sprintf(temp, ", first: %s, second: %s, secondIndex: %i, neighbors: ", printFirst, printSecond, edge->secondIndex);
+    sprintf(temp, ", first: %i, second: %i, secondIndex: %i, neighbors: ", edge->first == NULL ? -1 : edge->first->id, edge->second == NULL? -1 : edge->second->id, edge->secondIndex);
     strcat(result, temp);
-
+    
     for (int i = 0; i < NO_DIM; i++)
     {
         char temp2[20];
-        sprintf(temp2, ", n%i: %14p", i, edge->neighbors[i]);
+#if ID == 1
+        if (i == 0)
+            sprintf(temp2, "n%i: %6i", i, edge->neighbors[i] == NULL ? -1 : edge->neighbors[i]->id);
+        else
+            sprintf(temp2, ", n%i: %6i", i, edge->neighbors[i] == NULL ? -1 : edge->neighbors[i]->id);
+#else
+        if (i == 0)
+            sprintf(temp2, "n%i: %14p", i, edge->neighbors[i]);
+        else
+            sprintf(temp2, ", n%i: %14p", i, edge->neighbors[i]);
+#endif
         strcat(result, temp2);
     }
 
     strcat(result, "\n");
 
-    free(printFirst);
-    free(printSecond);
-
     return result;
 }
 
-char *printShortEdge(Edge *edge)
+char *printShortEdge(void *data)
 {
+    Edge *edge = (Edge *)data;
+
     int n = 600;
     char *result = (char *)malloc(n * sizeof(char));
     sprintf(result, "Edge: %3i, points: ", edge->id);
@@ -80,7 +103,10 @@ char *printShortEdge(Edge *edge)
     for (int i = 0; i < NO_DIM; i++)
     {
         char temp[10];
-        sprintf(temp, ", p%i: %3i", i, edge->points[i]->id);
+        if (i == 0)
+            sprintf(temp, "p%i: %3i", i, edge->points[i]->id);
+        else
+            sprintf(temp, ", p%i: %3i", i, edge->points[i]->id);
         strcat(result, temp);
     }
 
@@ -92,7 +118,10 @@ char *printShortEdge(Edge *edge)
     for (int i = 0; i < NO_DIM; i++)
     {
         char temp2[20];
-        sprintf(temp2, ", n%i: %3i", i, edge->neighbors[i] == NULL ? -1 : edge->neighbors[i]->id);
+        if (i == 0)
+            sprintf(temp2, "n%i: %3i", i, edge->neighbors[i] == NULL ? -1 : edge->neighbors[i]->id);
+        else
+            sprintf(temp2, ", n%i: %3i", i, edge->neighbors[i] == NULL ? -1 : edge->neighbors[i]->id);
         strcat(result, temp2);
     }
 
@@ -101,19 +130,34 @@ char *printShortEdge(Edge *edge)
     return result;
 }
 
-
-char *printLongEdgeOfEdge(EdgeOfEdge *edge)
+char *printLongEdgeOfEdge(void *data)
 {
+    EdgeOfEdge *edge = (EdgeOfEdge *)data;
+
     int n = (NO_DIM * 20 + 20) * NO_DIM + 200;
     char *result = (char *)malloc(n * sizeof(char));
 
-    sprintf(result, "EdgeOfEdge: %14p, first: %14p, second: %14p", edge, edge->first, edge->second);
-    for (int i = 0; i < NO_DIM; i++)
+    if(data == NULL)
+    {
+        sprintf(result, "EdgeOfEdge is NULL: %14p\n", edge);
+        return result;
+    }
+
+#if ID == 1
+    sprintf(result, "EdgeOfEdge: %6i, first: %6i, second: %6i ", edge == NULL ? -1 : edge->id, edge->first == NULL ? -1 : edge->first->id, edge->second == NULL ? -1 : edge->second->id);
+#else
+    sprintf(result, "EdgeOfEdge: %14p, first: %14p, second: %14p ", edge, edge->first, edge->second);
+#endif
+
+    for (int i = 0; i < NO_DIM - 1; i++)
     {
         int n = NO_DIM * 20 + 30;
         char *temp = (char *)malloc(n * sizeof(char));
         char *pointIdString = printLongPointId(edge->points[i]);
-        sprintf(temp, ", p%i: %s", i, pointIdString);
+        if (i == 0)
+            sprintf(temp, "p%i: %s", i, pointIdString);
+        else
+            sprintf(temp, ", p%i: %s", i, pointIdString);
         strcat(result, temp);
         free(pointIdString);
         free(temp);
@@ -123,48 +167,102 @@ char *printLongEdgeOfEdge(EdgeOfEdge *edge)
     return result;
 }
 
-
-char *printShortEdgeOfEdge(EdgeOfEdge *edge)
+char *printShortEdgeOfEdge(void *data)
 {
-    int n = 300;
-    char *result = (char*)malloc(n * sizeof(char));
-    sprintf(result, "EdgeOfEdge: %i, first: %i, second: %i", edge->id, edge->first == NULL?-1:edge->first->id, edge->second == NULL?-1:edge->second->id);
+    EdgeOfEdge *edge = (EdgeOfEdge *)data;
 
-    for(int i = 0; i < NO_DIM; i++)
+    int n = 300;
+    char *result = (char *)malloc(n * sizeof(char));
+    sprintf(result, "EdgeOfEdge: %i, first: %i, second: %i", edge->id, edge->first == NULL ? -1 : edge->first->id, edge->second == NULL ? -1 : edge->second->id);
+
+    for (int i = 0; i < NO_DIM - 1; i++)
     {
         char temp[10];
-        sprintf(temp, ", p%i: %i", i, edge->points[i]->id);
+        if (i == 0)
+            sprintf(temp, "p%i: %i", i, edge->points[i]->id);
+        else
+            sprintf(temp, ", p%i: %i", i, edge->points[i]->id);
         strcat(result, temp);
     }
     strcat(result, "\n");
     return result;
 }
 
-char *printLongSimplex(Simplex *simplex)
+char *printLongSimplex(void *data)
 {
+    Simplex *simplex = (Simplex *)data;
+
     int n = NO_DIM * (25 + 20 + 20 + 10 + 25 * (NO_DIM + 1)) + 200;
-    printf("PrintLongSimplex n size: %i \n", n);
+
     char *result = (char *)malloc(n * sizeof(char));
 
-    char *circumcenter = printLongPoint(simplex->circumcenter);
-
-    sprintf(result, "Simplex: %i, circumcenter: %s, circumradius: %10.4f, hilbertId: %i, hilbertDimension: %i, boxId: ",
-            simplex->id, circumcenter, simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension);
+    char *circumcenter = (char *)malloc(25 * NO_DIM * sizeof(char));
 
     for (int i = 0; i < NO_DIM; i++)
     {
-        char temp[20];
-        sprintf(temp, ", %i", simplex->boxId[i]);
+        char *temp = (char *)malloc(25 * sizeof(char));
+        if (i == 0)
+        {
+            sprintf(circumcenter, "c%i: %10.4f", i, simplex->circumcenter.coords[i]);
+        }
+        else
+        {
+            sprintf(temp, ", c%i: %10.4f", i, simplex->circumcenter.coords[i]);
+            strcat(circumcenter, temp);
+        }
+        free(temp);
+    }
+
+    sprintf(result, "Simplex: %4i, circumcenter: ", simplex->id);
+    strcat(result, circumcenter);
+
+    char *result2 = (char *)malloc(n * sizeof(char));
+    sprintf(result2, " circumradius: %10.4f, hilbertId: %4i, hilbertDimension: %4i, boxId: ",
+            simplex->circumradius, simplex->hilbertId, simplex->hilbertDimension);
+    strcat(result, result2);
+    free(result2);
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        char *temp = (char *)malloc(20 * sizeof(char));
+        if (i == 0)
+            sprintf(temp, "%6i", simplex->boxId[i]);
+        else
+            sprintf(temp, ", %6i", simplex->boxId[i]);
         strcat(result, temp);
+        free(temp);
     }
 
     strcat(result, "\n Neighbors: ");
 
-    for (int i = 0; i < NO_DIM; i++)
+    for (int i = 0; i < NO_DIM + 1; i++)
     {
-        char temp[20];
-        sprintf(temp, ", %i: %i", i, simplex->neighbors[i]);
+        char *temp = (char *)malloc(20 * sizeof(char));
+        if (i == 0)
+        {
+            if (simplex->neighbors[i] == NULL)
+            {
+                sprintf(temp, "%i:   NULL", i);
+            }
+            else
+            {
+                sprintf(temp, "%i: %6i", i, simplex->neighbors[i]->id);
+            }
+        }
+        else
+        {
+            if (simplex->neighbors[i] == NULL)
+            {
+                sprintf(temp, ", %i:   NULL", i);
+            }
+            else
+            {
+                sprintf(temp, ", %i: %6i", i, simplex->neighbors[i]->id);
+            }
+        }
+
         strcat(result, temp);
+        free(temp);
     }
 
     strcat(result, "\n Vertices: ");
@@ -172,7 +270,10 @@ char *printLongSimplex(Simplex *simplex)
     {
         char *temp = printLongPointId(simplex->vertices[i]);
         char *temp1 = (char *)malloc((10 + strlen(temp)) * sizeof(char));
-        sprintf(temp1, ", %i: %s", i, temp);
+        if (i == 0)
+            sprintf(temp1, "%i: %s", i, temp);
+        else
+            sprintf(temp1, ", %i: %s", i, temp);
         strcat(result, temp1);
         free(temp);
         free(temp1);
@@ -181,12 +282,13 @@ char *printLongSimplex(Simplex *simplex)
     strcat(result, "\n");
 
     free(circumcenter);
-
     return result;
 }
 
-char *printShortSimplex(Simplex *simplex)
+char *printShortSimplex(void *data)
 {
+    Simplex *simplex = (Simplex *)data;
+
     int n = 500;
     char *result = (char *)malloc(n * sizeof(char));
 
@@ -233,10 +335,31 @@ char *printShortSimplex(Simplex *simplex)
     return result;
 }
 
-void saveToLogs(char* file, int line, char* additionalInformation, char* (*printData)(void *), void* data)
+void saveToLogs(char *file, int line, char *additionalInformation, char *(*printData)(void *), void *data)
 {
-    sprintf(stdout, "File %s, line %i: %s \n", file, line, additionalInformation);
-    char* temp = printData(data);
-    sprintf("%s \n", temp);
+    printf("File %s, line %i: %s \n", file, line, additionalInformation);
+    char *temp = printData(data);
+    printf("%s \n", temp);
+    free(temp);
+}
+
+void saveToLogsWithFormat(char *file, int line, const char *additionalInformationFormat, ...)
+{
+    printf("File %s, line %i: ", file, line);
+    va_list args;
+    va_start(args, additionalInformationFormat);
+    vprintf(additionalInformationFormat, args);
+    va_end(args);
+}
+
+void saveToLogsWithFormatWithData(char *file, int line, char *(*printData)(void *), void *data, const char *additionalInformationFormat, ...)
+{
+    printf("File %s, line %i: ", file, line);
+    va_list args;
+    va_start(args, additionalInformationFormat);
+    vprintf(additionalInformationFormat, args);
+    va_end(args);
+    char *temp = printData(data);
+    printf("%s \n", temp);
     free(temp);
 }

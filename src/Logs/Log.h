@@ -4,17 +4,19 @@
 #include "../DT/serialDT.h"
 #include <stdio.h>
 
-char *printLongPoint(Point point);
-char* printLongPointId(PointId *point);
+char *printLongPoint(void *data);
+char* printLongPointId(void *data);
 
-char* printLongEdge(Edge *edge);
-char* printShortEdge(Edge *edge);
+char* printLongEdge(void *data);
+char* printShortEdge(void *data);
 
-char* printLongEdgeOfEdge(EdgeOfEdge *edge);
-char* printShortEdgeOfEdge(EdgeOfEdge *edge);
+char* printLongEdgeOfEdge(void *data);
+char* printShortEdgeOfEdge(void *data);
 
-char* printLongSimplex(Simplex *simplex);
-char* printShortSimplex(Simplex *simplex);
+char* printLongSimplex(void *data);
+char* printShortSimplex(void *data);
 
 void saveToLogs(char* file, int line, char* additionalInformation, char* (*printData)(void *), void* data);
+void saveToLogsWithFormat(char *file, int line, const char *additionalInformationFormat, ...);
+void saveToLogsWithFormatWithData(char *file, int line, char *(*printData)(void *), void *data, const char *additionalInformationFormat, ...);
 #endif

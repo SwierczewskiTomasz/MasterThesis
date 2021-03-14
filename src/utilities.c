@@ -55,16 +55,16 @@ void testTIPP()
     //         if (j >= 62)
     //         {
     //             printf("n: %i\n", n);
-    //             long long time = TIPP(n, n, dimensions[i], true);
+    //             long long time = serialDT(n, n, dimensions[i], true);
     //             if (time > 400 * 1000 * 1000)
     //                 break;
     //         }
     //     }
     // }
 
-    TIPP(2, 2, 1, false);
+    serialDT(2, 2, 1, false);
 
-    // TIPP(1024*1024*1024, 1024*1024*1024, 32);
+    // serialDT(1024*1024*1024, 1024*1024*1024, 32);
 }
 
 // void testRedBlackTreeUtilities()

@@ -33,8 +33,8 @@ void validateResult(Partition *partition)
                 {
                     count++;
                     fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Point is inside other triangle, but isn't in vertices of this triangle. \n", (char *)__FILE__, __LINE__);
-                    printLongPointId(point);
-                    printShortSimplex(simplex);
+                    saveToLogs((char *)__FILE__, __LINE__, "Point: ", printLongPointId, point);
+                    saveToLogs((char *)__FILE__, __LINE__, "Simplex: ", printLongSimplex, simplex);
                 }
             }
 

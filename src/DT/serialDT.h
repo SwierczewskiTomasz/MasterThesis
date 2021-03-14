@@ -45,7 +45,7 @@ typedef struct DelaunayTriangulation
     Partition *partitions;
 } DelaunayTriangulation;
 
-long long TIPP(int k, int n, int hilbertDimension, bool onlyCompute);
+long long serialDT(int k, int n, int hilbertDimension, bool onlyCompute);
 void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimension);
 double comparePositionOfTwoPoints(void *a, void *b);
 void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilbertDimension);
@@ -70,7 +70,7 @@ PointId **combination(PointId *data, int n);
 void printRedBlackTree(redBlackTree *tree);
 void printRedBlackTreeString(redBlackTree *tree, char *(*printData)(void *));
 void printRedBlackTreeDLLString(redBlackTreeDLL *tree, char *(*printData)(void *));
-void printRedBlackTreeTriangles(redBlackTree *tree);
+// void printRedBlackTreeTriangles(redBlackTree *tree);
 void initializePartition(Partition *partition);
 void freePartition(Partition *partition);
 

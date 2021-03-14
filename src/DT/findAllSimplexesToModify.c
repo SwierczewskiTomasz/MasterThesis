@@ -34,10 +34,7 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
         simplex = popFromLinkedList(listToAnalyze);
 
 #if DEBUG_TRIANGULATION == 1
-        printf("File %s, line %i: findTrianglesToModify function.\n", (char *)__FILE__, __LINE__);
-        char *string = printLongSimplex(simplex);
-        printf("Simplex to analyze:  %s\n\n", string);
-        free(string);
+        saveToLogs((char *)__FILE__, __LINE__, "Simplex to analyze: ", printLongSimplex, simplex);
 #endif
 
         double squareDistance = squareOfDistanceFromPointToPoint(simplex->circumcenter, point->point);
@@ -48,8 +45,7 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
             pushToLinkedList(trianglesToModify, simplex);
 
 #if DEBUG_TRIANGULATION == 1
-            printf("File %s, line %i: findTrianglesToModify function.\n", (char *)__FILE__, __LINE__);
-            printf("This triangle must be later modified. Added to Linked List. Simplex: %14p \n\n", simplex);
+            saveToLogs((char *)__FILE__, __LINE__, "This triangle must be later modified. Added to Linked List.", printLongSimplex, simplex);
 #endif
 
             for (int i = 0; i < NO_DIM + 1; i++)
@@ -70,8 +66,7 @@ LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point)
                 if (fromTree == NULL)
                 {
 #if DEBUG_TRIANGULATION == 1
-                    printf("File %s, line %i: findTrianglesToModify function.\n", (char *)__FILE__, __LINE__);
-                    printf("This neighbor must be later analized. Added to Linked List: %14p \n\n", toAdd);
+                    saveToLogs((char *)__FILE__, __LINE__, "This neighbor must be later analized. Added to Linked List:", printLongSimplex, toAdd);
 #endif
                     pushToLinkedList(listToAnalyze, toAdd);
                     insertIntoRedBlackTree(tree, toAdd);
