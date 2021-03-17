@@ -3,7 +3,7 @@
 
 #include "../DT/serialDT.h"
 
-long long DTFE(Partition partition);
+long long DTFE(Partition *partition);
 double CayleyMengerDeterminant(Simplex *simplex);
 
 #endif

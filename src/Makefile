@@ -23,6 +23,10 @@ FILES = \
 	DT/serialDT.h\
 	DT/updateAndAddSimplexes.c\
 	DT/uploadInformationsAboutNeighborsInEdges.c\
+	DTFE/densityOfTriangles.c\
+	DTFE/DTFE.c\
+	DTFE/DTFE.h\
+	DTFE/MonteCarlo.c\
 	HilbertCurve/hilbertCurve.h\
 	HilbertCurve/hilbertCurve.c\
 	Logs/Log.h\

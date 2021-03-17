@@ -12,6 +12,7 @@
 #include <math.h>
 #include "serialDT.h"
 #include "../validateResult.h"
+#include "../DTFE/DTFE.h"
 
 int findInPolygonListCount = 0;
 
@@ -75,6 +76,8 @@ printf("1\n");
     struct timeval te;
     gettimeofday(&te, NULL);
     long long time1 = te.tv_sec * 1000000LL + te.tv_usec;
+
+    DTFE(partition);
 
     computeDelaunayTriangulation(partition, n, hilbertDimension);
 

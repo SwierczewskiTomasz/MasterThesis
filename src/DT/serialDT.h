@@ -18,6 +18,7 @@
 #include "../HilbertCurve/hilbertCurve.h"
 #include "../Logs/Log.h"
 
+
 typedef struct Set
 {
     //It can be for example LinkedList, DoubleLinkedList or Binary Tree and other
