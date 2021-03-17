@@ -45,6 +45,12 @@ double CayleyMengerDeterminant(Simplex *simplex)
 
     double m = m1 * m1 * m2;
 
-    double result =  l / m * det;
+    double result = l / m * det;
+
+    for (int i = 0; i < n; i++)
+        free(matrix[i]);
+
+    free(matrix);
+
     return pow(result, 0.5);
 }
