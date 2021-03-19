@@ -81,7 +81,7 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
     for (int i = 0; i < n; i++)
     {
         points[i] = (PointId *)malloc(sizeof(PointId));
-        points[i] = newPointId(i % 2 == 0 ? 0 : 100, (i / 2) % 2 == 0 ? 0 : 100, (i / 4) % 2 == 0 ? 0 : 100);
+        points[i] = newPointId3D(i % 2 == 0 ? 0 : 100, (i / 2) % 2 == 0 ? 0 : 100, (i / 4) % 2 == 0 ? 0 : 100);
         // points[i]->point.x = i%2 == 0 ? 0 : 100;
         // points[i]->point.y = (i/2)%2 == 0 ? 0 : 100;
         // points[i]->point.z = (i/4)%2 == 0 ? 0 : 100;

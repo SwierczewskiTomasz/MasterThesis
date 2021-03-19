@@ -87,7 +87,7 @@ double PALUdecomposition(double **matrix, int n)
         memcpy(data[i], matrix[i], n * sizeof(double));
     }
 
-    double min = pow(2, -20);
+    double min = pow(2, -1000);
     int degenerade = 0;
 
     if (n == 1)
@@ -129,6 +129,7 @@ double PALUdecomposition(double **matrix, int n)
         if (maxA < min)
         {
             // printf("Matrix is close to degenerate! \n");
+            // printf("%14.4f \n", maxA);
             degenerade = 1;
             break;
         }
@@ -182,6 +183,8 @@ double PALUdecomposition(double **matrix, int n)
         //     }
         //     printf("\n");
         // }
+        // printf("Uj\n");
+        // printMatrix(data, n);
         return laplaceExpansion(matrix, n);
     }
     else

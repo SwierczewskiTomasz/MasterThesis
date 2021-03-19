@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -O3 -Wall -ggdb3
-LIBS = -lm
+LIBS = -lm -lgsl -lgslcblas
 
 FILES = \
 	constants.h\

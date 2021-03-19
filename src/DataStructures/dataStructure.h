@@ -19,6 +19,9 @@ typedef struct PointId
     ID_TYPE id;
 #endif
     Point point;
+    int count;
+    double density;
+    double mass;
 } PointId;
 
 // typedef struct DataStructure
@@ -33,6 +36,7 @@ void* getNextNode(void *node);
 void* getDataFromNode(void *node);
 
 PointId* newPointId2D(FLOATING_POINT_PRECISION x, FLOATING_POINT_PRECISION y);
+PointId* newPointId3D(FLOATING_POINT_PRECISION x, FLOATING_POINT_PRECISION y, FLOATING_POINT_PRECISION z);
 PointId* newPointId(FLOATING_POINT_PRECISION coords[NO_DIM]);
 
 #endif

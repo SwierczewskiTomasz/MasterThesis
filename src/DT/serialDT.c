@@ -77,23 +77,27 @@ printf("1\n");
     gettimeofday(&te, NULL);
     long long time1 = te.tv_sec * 1000000LL + te.tv_usec;
 
-    DTFE(partition);
-
     computeDelaunayTriangulation(partition, n, hilbertDimension);
 
     struct timeval te2;
     gettimeofday(&te2, NULL);
     long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
 
+    long long time3 = DTFE(partition);
+
     if(onlyCompute)
     {
         printf("%lld\n", time2 - time1);
+        printf("%lld\n", time3);
         return time2 - time1;
     }
     else
     {
         printf("%d, %lld\n", n, time2 - time1);
+        printf("%d, %lld\n", n, time3);
     }
+
+    
     // printf("After DT\n");
     // printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
     // printf("doubleLinkedListInsertTime: %lld\n", doubleLinkedListInsertTime);

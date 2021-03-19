@@ -6,12 +6,12 @@
 #endif
 
 #ifndef MEASURE_TIME
-#define MEASURE_TIME 1
+#define MEASURE_TIME 0
 #define MEASURE_CALLS 1
 #endif
 
 #ifndef VALIDATE_RESULT
-#define VALIDATE_RESULT 1
+#define VALIDATE_RESULT 0
 #endif
 
 #ifndef DEBUG

@@ -36,6 +36,28 @@ PointId *newPointId2D(FLOATING_POINT_PRECISION x, FLOATING_POINT_PRECISION y)
     result->point.coords[0] = x;
     result->point.coords[1] = y;
 
+    result->count = 0;
+    result->density = 0;
+    result->mass = (double)rand() / (double)(RAND_MAX)*100;
+
+    return result;
+}
+
+PointId *newPointId3D(FLOATING_POINT_PRECISION x, FLOATING_POINT_PRECISION y, FLOATING_POINT_PRECISION z)
+{
+    PointId *result = (PointId *)malloc(sizeof(PointId));
+#if ID == 1
+    result->id = PointIdCount++;
+#endif
+
+    result->point.coords[0] = x;
+    result->point.coords[1] = y;
+    result->point.coords[2] = z;
+
+    result->count = 0;
+    result->density = 0;
+    result->mass = (double)rand() / (double)(RAND_MAX)*100;
+
     return result;
 }
 
@@ -52,6 +74,10 @@ PointId *newPointId(FLOATING_POINT_PRECISION coords[NO_DIM])
     {
         result->point.coords[i] = coords[i];
     }
+
+    result->count = 0;
+    result->density = 0;
+    result->mass = (double)rand() / (double)(RAND_MAX)*100;
 
     return result;
 }
