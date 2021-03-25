@@ -1,0 +1,992 @@
+// void newInsertPoint(PointId *point, Partition *partition)
+// {
+//     int count = partition->triangles->count;
+//     DoubleLinkedListNode *pointer = partition->triangles->first;
+//     DoubleLinkedList list;
+//     DoubleLinkedListNode *current;
+//     current = list.first;
+//     list.first = NULL;
+//     int c = 0;
+
+//     struct timeval te1;
+//     gettimeofday(&te1, NULL);
+//     long long time1 = te1.tv_sec * 1000000LL + te1.tv_usec;
+
+//     // printf("Inserting point in newInsertPoint\n");
+
+//     while (pointer != NULL)
+//     {
+
+//         Simplex *data = (Simplex *)getDataFromNode(pointer);
+//         double squareDistance = squareOfDistanceFromPointToPoint(data->circumcenter, point->point);
+//         double squareRadius = data->circumradius * data->circumradius;
+
+//         if (squareDistance <= squareRadius)
+//         {
+//             struct timeval te3;
+//             gettimeofday(&te3, NULL);
+//             long long time3 = te3.tv_sec * 1000000LL + te3.tv_usec;
+//             if (c == 0)
+//             {
+//                 current = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
+//                 current->data = pointer;
+//                 list.first = current;
+//                 current->next = NULL;
+//                 current->prev = NULL;
+//             }
+//             else
+//             {
+//                 DoubleLinkedListNode *newNode = (DoubleLinkedListNode *)malloc(sizeof(DoubleLinkedListNode));
+//                 newNode->data = pointer;
+//                 current->next = newNode;
+//                 newNode->next = NULL;
+//                 newNode->prev = current;
+//                 current = newNode;
+//             }
+//             c++;
+//             Simplex *result = data;
+//             // printf("Triangle founded to modify: %f, %f, %f, %f, %f, %f, %f, %f, %f \n", result->circumcenter.x, result->circumcenter.y, result->circumradius, result->vertices[0].point.x, result->vertices[0].point.y, result->vertices[1].point.x, result->vertices[1].point.y, result->vertices[2].point.x, result->vertices[2].point.y);
+//             struct timeval te4;
+//             gettimeofday(&te4, NULL);
+//             long long time4 = te4.tv_sec * 1000000LL + te4.tv_usec;
+//             searchingTrianglesToModifyTime2 += time4 - time3;
+//         }
+
+//         pointer = getNextNode(pointer);
+//     }
+//     // printf("Searched %d triangles to modify.\n", c);
+
+//     struct timeval te2;
+//     gettimeofday(&te2, NULL);
+//     long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
+//     searchingTrianglesToModifyTime += time2 - time1;
+
+//     current = list.first;
+
+//     PolygonList *edges = (PolygonList *)malloc(sizeof(PolygonList));
+//     PolygonList *removedEdges = (PolygonList *)malloc(sizeof(PolygonList));
+
+//     while (current != NULL)
+//     {
+//         DoubleLinkedListNode *fromCurrent = (DoubleLinkedListNode *)getDataFromNode(current);
+//         Simplex *data = fromCurrent->data;
+
+//         Edge *currentEdges[3];
+//         currentEdges[0] = createNewEdge(data->vertices[0], data->vertices[1]);
+//         currentEdges[1] = createNewEdge(data->vertices[1], data->vertices[2]);
+//         currentEdges[2] = createNewEdge(data->vertices[2], data->vertices[0]);
+
+//         for (int i = 0; i < 3; i++)
+//         {
+//             PolygonLinkedListNode *founded = findInPolygonList(edges, currentEdges[i]);
+//             if (founded == NULL)
+//             {
+//                 founded = findInPolygonList(removedEdges, currentEdges[i]);
+//                 if (founded == NULL)
+//                 {
+//                     insertIntoPolygonList(edges, currentEdges[i]);
+//                     // printf("Edge inserted to list: P1: %f, %f; P2: %f, %f\n", currentEdges[i]->points[0].point.x, currentEdges[i]->points[0].point.y,
+//                     //        currentEdges[i]->points[1].point.x, currentEdges[i]->points[1].point.y);
+//                 }
+//             }
+//             else
+//             {
+//                 removeFromPolygonList(edges, founded);
+//                 insertIntoPolygonList(removedEdges, founded->edge);
+//                 // printf("Edge removed: P1: %f, %f; P2: %f, %f\n", currentEdges[i]->points[0].point.x, currentEdges[i]->points[0].point.y,
+//                 //        currentEdges[i]->points[1].point.x, currentEdges[i]->points[1].point.y);
+//             }
+//         }
+//         removeFromDoubleLinkedList(partition->triangles, current->data);
+//         current = current->next;
+//     }
+//     current = list.first;
+
+//     struct timeval te3;
+//     gettimeofday(&te3, NULL);
+//     long long time3 = te3.tv_sec * 1000000LL + te3.tv_usec;
+//     createPolygonTime += time3 - time2;
+
+//     PolygonLinkedListNode *currentNode = edges->first;
+
+//     while (currentNode != NULL)
+//     {
+//         Simplex *result = (Simplex *)malloc(sizeof(Simplex));
+//         PointId points[3] = {*point, currentNode->edge->points[0], currentNode->edge->points[1]};
+//         createNewSimplex(result, points);
+
+//         insertIntoDoubleLinkedList2(partition->triangles, result, comparePositionOfTwoTriangles);
+//         // printf("Triangle inserted: %f, %f, %f, %f, %f, %f, %f, %f, %f \n", result->circumcenter.x, result->circumcenter.y, result->circumradius, result->vertices[0].point.x, result->vertices[0].point.y, result->vertices[1].point.x, result->vertices[1].point.y, result->vertices[2].point.x, result->vertices[2].point.y);
+
+//         currentNode = currentNode->next;
+//     }
+
+//     struct timeval te4;
+//     gettimeofday(&te4, NULL);
+//     long long time4 = te4.tv_sec * 1000000LL + te4.tv_usec;
+//     createNewTrianglesTime += time4 - time3;
+
+//     // while(current != NULL)
+//     // {
+//     //     DoubleLinkedListNode *fromCurrent = (DoubleLinkedListNode*)getDataFromNode(current);
+//     //     //Simplex *data = (Simplex *)getDataFromNode(current);
+//     //     Simplex *data = fromCurrent->data;
+//     //     Simplex *simplex = data;
+//     //     printf("Triangle to modify: %f, %f, %f, %f, %f, %f, %f, %f, %f \n", simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y, simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+
+//     //     int c1 = 0;
+//     //     DoubleLinkedListNode *f = partition->triangles->first;
+//     //     while(f != NULL)
+//     //     {
+//     //         c1++;
+//     //         f = f->next;
+//     //     }
+//     //     printf("Jest %d trójkątów w partition->triangles \n", c1);
+
+//     //     void *newPointer = removeFromDoubleLinkedList(partition->triangles, current->data);
+
+//     //     c1 = 0;
+//     //     f = partition->triangles->first;
+//     //     while(f != NULL)
+//     //     {
+//     //         c1++;
+//     //         f = f->next;
+//     //     }
+//     //     printf("Jest %d trójkątów w partition->triangles \n", c1);
+//     //     //void *newPointer = current;
+//     //     //printf("Triangle removed \n");
+//     //     PointId *pointsForCombination = (PointId*)malloc((NO_DIM + 2)*sizeof(PointId));
+//     //     pointsForCombination[0] = *point;
+//     //     for(int i = 0; i < NO_DIM + 1; i++)
+//     //     {
+//     //         pointsForCombination[i + 1] = data->vertices[i];
+//     //     }
+
+//     //     // printf("Before combo\n");
+
+//     //     Point **combo = combination(pointsForCombination, NO_DIM + 2);
+
+//     //     // printf("After combo\n");
+
+//     //     for(int i = 0; i < NO_DIM + 1; i++)
+//     //     {
+//     //         PointId *points = combo[i];
+//     //         Simplex *result = (Simplex *)malloc(sizeof(Simplex));
+//     //         createNewSimplex(result, points);
+//     //         double squareDistance = squareOfDistanceFromPointToPoint(result->circumcenter, data->vertices[i].point);
+//     //         double squareRadius = result->circumradius * result->circumradius;
+//     //         if (squareDistance > squareRadius)
+//     //         {
+//     //             // newPointer = insertIntoDoubleLinkedList(partition->triangles, newPointer, result, comparePositionOfTwoTriangles);
+//     //             insertIntoDoubleLinkedList2(partition->triangles, result, comparePositionOfTwoTriangles);
+//     //             printf("Triangle inserted: %f, %f, %f, %f, %f, %f, %f, %f, %f \n", result->circumcenter.x, result->circumcenter.y, result->circumradius, result->vertices[0].point.x, result->vertices[0].point.y, result->vertices[1].point.x, result->vertices[1].point.y, result->vertices[2].point.x, result->vertices[2].point.y);
+
+//     //             // printf("Next triangle inserted \n");
+//     //         }
+//     //     }
+
+//     //     current = getNextNode(current);
+//     // }
+// }
+
+
+void insertPoint(PointId *point, Partition *partition)
+{
+    int count = partition->triangles->count;
+    DoubleLinkedListNode *pointer = partition->triangles->first;
+
+    while (pointer != NULL)
+    {
+        Simplex *data = (Simplex *)getDataFromNode(pointer);
+
+        Simplex *simplex = data;
+        printf("Trying to find good simplex: %f, %f, %f, %f, %f, %f, %f, %f, %f \n", simplex->circumcenter.x, simplex->circumcenter.y,
+               simplex->circumradius, simplex->vertices[0].point.x, simplex->vertices[0].point.y, simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+
+        double squareDistance = squareOfDistanceFromPointToPoint(data->circumcenter, point->point);
+        double squareRadius = data->circumradius * data->circumradius;
+        if (squareDistance == squareRadius)
+        {
+            printf("Equal distance and radius\n");
+
+            // Now we have situation, when the inserting point is on circumcircle of triangle (or circumsphere of tetrahedron).
+            // In 2D we have one from 3 situations - (I name here the points from triangle A, B and C). 1. New point is between A and B.
+            // 2. New point is between B and C. 3. New point is between C and A. I will check this by finding minimal distance to every
+            // edge. In 3D we have 4 cases and I will check distance to faces (planes).
+
+            Simplex *result = (Simplex *)malloc(sizeof(Simplex));
+
+#if NO_DIM == 2
+            double distanceAB = squareOfDistanceFromPointToLine(point->point, data->vertices[0].point, data->vertices[1].point);
+            double distanceBC = squareOfDistanceFromPointToLine(point->point, data->vertices[1].point, data->vertices[2].point);
+            double distanceCA = squareOfDistanceFromPointToLine(point->point, data->vertices[2].point, data->vertices[0].point);
+
+            if (distanceAB < distanceBC)
+            {
+                if (distanceAB < distanceCA)
+                {
+                    PointId points[3] = {*point, data->vertices[0], data->vertices[1]};
+                    createNewSimplex(result, points);
+                }
+                else
+                {
+                    PointId points[3] = {*point, data->vertices[0], data->vertices[2]};
+                    createNewSimplex(result, points);
+                }
+            }
+            else
+            {
+                PointId points[3] = {*point, data->vertices[1], data->vertices[2]};
+                createNewSimplex(result, points);
+            }
+#else
+            double distanceABC = squareOfDistanceFromPointToPlane(point.point, data->vertices[0].point, data->vertices[1].point, data->vertices[2].point);
+            double distanceABD = squareOfDistanceFromPointToPlane(point.point, data->vertices[0].point, data->vertices[1].point, data->vertices[3].point);
+            double distanceACD = squareOfDistanceFromPointToPlane(point.point, data->vertices[0].point, data->vertices[2].point, data->vertices[3].point);
+            double distanceBCD = squareOfDistanceFromPointToPlane(point.point, data->vertices[1].point, data->vertices[2].point, data->vertices[3].point);
+
+            if (distanceABC < distanceABD)
+            {
+                if (distanceABC < distanceACD)
+                {
+                    if (distanceABC < distanceBCD)
+                    {
+                        PointId points[4] = {point, data->vertices[0], data->vertices[1], data->vertices[2]};
+                        result = createNewSimplex(points);
+                    }
+                    else
+                    {
+                        PointId points[4] = {point, data->vertices[1], data->vertices[2], data->vertices[3]};
+                        result = createNewSimplex(points);
+                    }
+                }
+                else
+                {
+                    PointId points[4] = {point, data->vertices[0], data->vertices[2], data->vertices[3]};
+                    result = createNewSimplex(points);
+                }
+            }
+            else
+            {
+                PointId points[4] = {point, data->vertices[0], data->vertices[1], data->vertices[3]};
+                result = createNewSimplex(points);
+            }
+#endif
+            insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
+            //return;
+        }
+        else if (squareDistance < squareRadius)
+        {
+            printf("Distance smaller than radius\n");
+            Simplex *result = (Simplex *)malloc(sizeof(Simplex));
+
+#if NO_DIM == 2
+            double distanceAB = squareOfDistanceFromPointToLine(point->point, data->vertices[0].point, data->vertices[1].point);
+            double distanceBC = squareOfDistanceFromPointToLine(point->point, data->vertices[1].point, data->vertices[2].point);
+            double distanceCA = squareOfDistanceFromPointToLine(point->point, data->vertices[2].point, data->vertices[0].point);
+
+            printf("Point: x: %f, y: %f\n", point->point.x, point->point.y);
+            printf("Point[0]: x: %f, y: %f\n", data->vertices[0].point.x, data->vertices[0].point.y);
+            printf("Point[1]: x: %f, y: %f\n", data->vertices[1].point.x, data->vertices[1].point.y);
+            printf("Point[2]: x: %f, y: %f\n", data->vertices[2].point.x, data->vertices[2].point.y);
+
+            printf("distanceAB: %f\n", distanceAB);
+            printf("distanceBC: %f\n", distanceBC);
+            printf("distanceCA: %f\n", distanceCA);
+
+            if (distanceAB < distanceBC)
+            {
+                if (distanceAB < distanceCA)
+                {
+                    printf("AB\n");
+                    PointId points[3] = {*point, data->vertices[1], data->vertices[2]};
+                    createNewSimplex(result, points);
+
+                    printf("Inserting first triangle to Double Linked List:\n");
+
+                    insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
+
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                    PointId modifiedPoints[3] = {*point, data->vertices[0], data->vertices[2]};
+
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                    changePointsInSimplex(modifiedPoints, data);
+
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                    printf("Remove triangle from DoubleLinkedList\n");
+
+                    void *newPointer = removeFromDoubleLinkedList(partition->triangles, pointer);
+
+                    printf("Inserting second triangle to Double Linked List\n");
+
+                    insertIntoDoubleLinkedList(partition->triangles, newPointer, data, comparePositionOfTwoTriangles);
+
+                    printf("Triangles inserted to Double Linked List\n");
+                }
+                else
+                {
+                    printf("CA\n");
+                    PointId points[3] = {*point, data->vertices[1], data->vertices[2]};
+                    createNewSimplex(result, points);
+
+                    printf("Inserting first triangle to Double Linked List:\n");
+
+                    insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
+
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                    PointId modifiedPoints[3] = {*point, data->vertices[0], data->vertices[1]};
+
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                    changePointsInSimplex(modifiedPoints, data);
+
+                    printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                    printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                    printf("Remove triangle from DoubleLinkedList\n");
+
+                    void *newPointer = removeFromDoubleLinkedList(partition->triangles, pointer);
+
+                    printf("Inserting second triangle to Double Linked List\n");
+
+                    insertIntoDoubleLinkedList(partition->triangles, newPointer, data, comparePositionOfTwoTriangles);
+
+                    printf("Triangles inserted to Double Linked List\n");
+                }
+            }
+            else
+            {
+                printf("BC\n");
+                PointId points[3] = {*point, data->vertices[0], data->vertices[2]};
+                createNewSimplex(result, points);
+
+                printf("Inserting first triangle to Double Linked List:\n");
+
+                insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
+
+                // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                PointId modifiedPoints[3] = {*point, data->vertices[0], data->vertices[1]};
+
+                // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                changePointsInSimplex(modifiedPoints, data);
+
+                // printf("partition->vertices->first->prev: %p\n", partition->vertices->first->prev);
+                // printf("partition->triangles->first->prev: %p\n", partition->triangles->first->prev);
+
+                printf("Remove triangle from DoubleLinkedList\n");
+
+                void *newPointer = removeFromDoubleLinkedList(partition->triangles, pointer);
+
+                printf("Inserting second triangle to Double Linked List\n");
+
+                insertIntoDoubleLinkedList(partition->triangles, newPointer, data, comparePositionOfTwoTriangles);
+
+                printf("Triangles inserted to Double Linked List\n");
+            }
+#else
+            // double distanceABC = squareOfDistanceFromPointToPlane(point.point, data->vertices[0].point, data->vertices[1].point, data->vertices[2].point);
+            // double distanceABD = squareOfDistanceFromPointToPlane(point.point, data->vertices[0].point, data->vertices[1].point, data->vertices[3].point);
+            // double distanceACD = squareOfDistanceFromPointToPlane(point.point, data->vertices[0].point, data->vertices[2].point, data->vertices[3].point);
+            // double distanceBCD = squareOfDistanceFromPointToPlane(point.point, data->vertices[1].point, data->vertices[2].point, data->vertices[3].point);
+
+            // if (distanceABC < distanceABD)
+            // {
+            //     if (distanceABC < distanceACD)
+            //     {
+            //         if (distanceABC < distanceBCD)
+            //         {
+            //             PointId points[4] = {point, data->vertices[0], data->vertices[1], data->vertices[2]};
+            //             result = createNewSimplex(points);
+            //             PointId modifiedPoints[4] = {point, data->vertices[0], data->vertices[2], data->vertices[2]};
+            //             changePointsInSimplex(modifiedPoints, pointer);
+            //         }
+            //         else
+            //         {
+            //             PointId points[4] = {point, data->vertices[1], data->vertices[2], data->vertices[3]};
+            //             result = createNewSimplex(points);
+            //             PointId modifiedPoints[4] = {point, data->vertices[0], data->vertices[2], data->vertices[3]};
+            //             changePointsInSimplex(modifiedPoints, pointer);
+            //         }
+            //     }
+            //     else
+            //     {
+            //         PointId points[4] = {point, data->vertices[0], data->vertices[2], data->vertices[3]};
+            //         result = createNewSimplex(points);
+            //         PointId modifiedPoints[4] = {point, data->vertices[0], data->vertices[2], data->vertices[3]};
+            //         changePointsInSimplex(modifiedPoints, pointer);
+            //     }
+            // }
+            // else
+            // {
+            //     PointId points[4] = {point, data->vertices[0], data->vertices[1], data->vertices[3]};
+            //     result = createNewSimplex(points);
+            //     PointId modifiedPoints[4] = {point, data->vertices[0], data->vertices[2], data->vertices[3]};
+            //     changePointsInSimplex(modifiedPoints, pointer);
+            // }
+
+            PointId pointsBCDE[4] = {data->vertices[1], data->vertices[2], data->vertices[3], point};
+            PointId pointsACDE[4] = {data->vertices[0], data->vertices[2], data->vertices[3], point};
+            PointId pointsABDE[4] = {data->vertices[0], data->vertices[1], data->vertices[3], point};
+            PointId pointsABCE[4] = {data->vertices[0], data->vertices[1], data->vertices[2], point};
+
+            double pointAInsideBCDE = pointInsideCircumcircle(data->vertices[0].point, pointsBCDE);
+            double pointBInsideACDE = pointInsideCircumcircle(data->vertices[1].point, pointsACDE);
+            double pointCInsideABDE = pointInsideCircumcircle(data->vertices[2].point, pointsABDE);
+            double pointDInsideABCE = pointInsideCircumcircle(data->vertices[3].point, pointsABCE);
+
+            if (pointAInsideBCDE < 0)
+            {
+                PointId points[4] = pointsBCDE;
+                result = createNewSimplex(points);
+            }
+            else if (pointBInsideACDE < 0)
+            {
+                PointId points[4] = pointsACDE;
+                result = createNewSimplex(points);
+            }
+            else if (pointCInsideABDE < 0)
+            {
+                PointId points[4] = pointsABDE;
+                result = createNewSimplex(points);
+            }
+            else if (pointDInsideABCE < 0)
+            {
+                PointId points[4] = pointsABCE;
+                result = createNewSimplex(points);
+            }
+
+            if (pointDInsideABCE < 0)
+            {
+                PointId modifiedPoints[4] = pointsABCE;
+                changePointsInSimplex(modifiedPoints, pointer);
+            }
+            else if (pointCInsideABDE < 0)
+            {
+                PointId modifiedPoints[4] = pointsABDE;
+                changePointsInSimplex(modifiedPoints, pointer);
+            }
+            else if (pointBInsideACDE < 0)
+            {
+                PointId modifiedPoints[4] = pointsACDE;
+                changePointsInSimplex(modifiedPoints, pointer);
+            }
+            else if (pointAInsideBCDE < 0)
+            {
+                PointId modifiedPoints[4] = pointsBCDE;
+                changePointsInSimplex(modifiedPoints, pointer);
+            }
+
+#endif
+            // printf("Inserting first triangle to Double Linked List:\n");
+            //insertIntoDoubleLinkedList(partition->triangles, pointer, result, comparePositionOfTwoTriangles);
+            // printf("Inserting second triangle to Double Linked List\n");
+            // void *newPointer = removeFromDoubleLinkedList(partition->triangles, pointer);
+            // insertIntoDoubleLinkedList(partition->triangles, newPointer, pointer, comparePositionOfTwoTriangles);
+            // printf("Triangles inserted to Double Linked List\n");
+            //return;
+        }
+        //printf("This isn't this triangle \n");
+        pointer = getNextNode(pointer);
+    }
+}
+
+
+    // #if DEBUG_TRIANGULATION == 1
+    //     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
+    //     printf("Printing all of the triangles tree, but with details: \n\n");
+
+    //     while (pointer != NULL)
+    //     {
+    //         simplex = pointer->data;
+    //         printf("Creating polygon. Analyze of simplex: %14p, center: x: %10.4f, y: %10.4f, radius: %10.4f\n", simplex, simplex->circumcenter.x, simplex->circumcenter.y, simplex->circumradius);
+    //         printf("Points: p1: x: %10.4f, y: %10.4f, p2: x: %10.4f, y: %10.4f, p3: x: %10.4f, y: %10.4f\n", simplex->vertices[0].point.x, simplex->vertices[0].point.y,
+    //                simplex->vertices[1].point.x, simplex->vertices[1].point.y, simplex->vertices[2].point.x, simplex->vertices[2].point.y);
+    //         printf("Neighbors: 0: %14p, 1: %14p, 2: %14p\n\n", simplex->neighbors[0], simplex->neighbors[1], simplex->neighbors[2]);
+
+    //         pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+    //     }
+    //     pointer = minimumInRedBlackSubTree(partition->triangles->first);
+
+    //     printf("End of printing triangles. \n\n");
+
+    // #endif
+
+
+    double pointInsideCircumcircle(Point point, PointId points[NO_DIM + 1])
+{
+    //If >0, point inside
+    Simplex simplex;
+    memcpy(simplex.vertices, points, (NO_DIM + 1) * sizeof(PointId));
+
+#if NO_DIM == 2
+    int n = NO_DIM + 1;
+
+    double r[NO_DIM + 1];
+    for (int i = 0; i < n; i++)
+    {
+        r[i] = simplex.vertices[i].point.x * simplex.vertices[i].point.x + simplex.vertices[i].point.y * simplex.vertices[i].point.y;
+    }
+
+    double **bxMatrix = (double **)malloc(n * sizeof(double *));
+    double **byMatrix = (double **)malloc(n * sizeof(double *));
+    double **aMatrix = (double **)malloc(n * sizeof(double *));
+    double **cMatrix = (double **)malloc(n * sizeof(double *));
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i] = (double *)malloc(n * sizeof(double));
+        byMatrix[i] = (double *)malloc(n * sizeof(double));
+        aMatrix[i] = (double *)malloc(n * sizeof(double));
+        cMatrix[i] = (double *)malloc(n * sizeof(double));
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i][0] = r[i];
+        bxMatrix[i][1] = simplex.vertices[i].point.y;
+        bxMatrix[i][2] = 1;
+
+        byMatrix[i][0] = r[i];
+        byMatrix[i][1] = simplex.vertices[i].point.x;
+        byMatrix[i][2] = 1;
+
+        aMatrix[i][0] = simplex.vertices[i].point.x;
+        aMatrix[i][1] = simplex.vertices[i].point.y;
+        aMatrix[i][2] = 1;
+
+        cMatrix[i][0] = r[i];
+        cMatrix[i][1] = simplex.vertices[i].point.x;
+        cMatrix[i][2] = simplex.vertices[i].point.y;
+    }
+
+    double bx = -determinant(bxMatrix, n);
+    double by = determinant(byMatrix, n);
+    double a = determinant(aMatrix, n);
+    double c = -determinant(cMatrix, n);
+
+    double x0 = -bx / (2 * a);
+    double y0 = -by / (2 * a);
+
+    //Zastanowić się, czy potrzebujemy radius, czy wystarczy nam radius^2. Wtedy jedna operacja sqrt mniej.
+    double radius = sqrt(bx * bx + by * by - 4 * a * c) / (2 * abs(a));
+
+    simplex.circumcenter.x = x0;
+    simplex.circumcenter.y = y0;
+    simplex.circumradius = radius;
+#else
+    int n = NO_DIM + 1;
+
+    double r[NO_DIM + 1];
+    for (int i = 0; i < n; i++)
+    {
+        r[i] = simplex.vertices[i].point.x * simplex.vertices[i].point.x + simplex.vertices[i].point.y * simplex.vertices[i].point.y + simplex.vertices[i].point.z * simplex.vertices[i].point.z;
+    }
+
+    double **bxMatrix = (double **)malloc(n * sizeof(double *));
+    double **byMatrix = (double **)malloc(n * sizeof(double *));
+    double **bzMatrix = (double **)malloc(n * sizeof(double *));
+    double **aMatrix = (double **)malloc(n * sizeof(double *));
+    double **cMatrix = (double **)malloc(n * sizeof(double *));
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i] = (double *)malloc(n * sizeof(double));
+        byMatrix[i] = (double *)malloc(n * sizeof(double));
+        bzMatrix[i] = (double *)malloc(n * sizeof(double));
+        aMatrix[i] = (double *)malloc(n * sizeof(double));
+        cMatrix[i] = (double *)malloc(n * sizeof(double));
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        bxMatrix[i][0] = r[i];
+        bxMatrix[i][1] = simplex.vertices[i].point.y;
+        bxMatrix[i][2] = simplex.vertices[i].point.z;
+        bxMatrix[i][3] = 1;
+
+        byMatrix[i][0] = r[i];
+        byMatrix[i][1] = simplex.vertices[i].point.x;
+        byMatrix[i][2] = simplex.vertices[i].point.z;
+        byMatrix[i][3] = 1;
+
+        bzMatrix[i][0] = r[i];
+        bzMatrix[i][1] = simplex.vertices[i].point.x;
+        bzMatrix[i][2] = simplex.vertices[i].point.y;
+        bzMatrix[i][3] = 1;
+
+        aMatrix[i][0] = simplex.vertices[i].point.x;
+        aMatrix[i][1] = simplex.vertices[i].point.y;
+        aMatrix[i][2] = simplex.vertices[i].point.z;
+        aMatrix[i][3] = 1;
+
+        cMatrix[i][0] = r[i];
+        cMatrix[i][1] = simplex.vertices[i].point.x;
+        cMatrix[i][2] = simplex.vertices[i].point.y;
+        cMatrix[i][3] = simplex.vertices[i].point.z;
+    }
+
+    double bx = determinant(bxMatrix, n);
+    double by = -determinant(byMatrix, n);
+    double bz = determinant(bzMatrix, n);
+    double a = determinant(aMatrix, n);
+    double c = -determinant(cMatrix, n);
+
+    double x0 = bx / (2 * a);
+    double y0 = by / (2 * a);
+    double z0 = bz / (2 * a);
+
+    double radius = sqrt(bx * bx + by * by + bz * bz - 4 * a * c) / (2 * abs(a));
+
+    simplex.circumcenter.x = x0;
+    simplex.circumcenter.y = y0;
+    simplex.circumcenter.z = z0;
+    simplex.circumradius = radius;
+
+    double squareDistance = squareOfDistanceFromPointToPoint(simplex.circumcenter, point);
+    double squareRadius = simplex.circumradius * simplex.circumradius;
+
+    return squareRadius - squareDistance;
+#endif
+}
+
+
+            // if (radius == 0)
+            // {
+            //     j = -1;
+            // }
+
+            // int kFirst = NO_DIM;
+            // int kLast = 0;
+            // for (int i = 0; i < NO_DIM; i++)
+            // {
+            //     if (boxIdCoords[i] == forSearch->boxId[j] - radius || boxIdCoords[i] == forSearch->boxId[j] + radius)
+            //     {
+            //         if (i < kFirst)
+            //         {
+            //             kFirst = i;
+            //         }
+            //         if (i > kLast)
+            //         {
+            //             kLast = i;
+            //         }
+            //     }
+            // }
+
+            // //Znajdzie pierwsze dobre współrzędne
+            // while (j >= 0 && correctCoords == false)
+            // {
+            //     while (!correctCoords && j >= 0)
+            //     {
+            //         correctCoords = true;
+            //         if (kFirst < j)
+            //         {
+            //             //Gdzieś wcześniej znajduje się taka współrzędna, że jest -radius lub +radius. Po prostu musimy iterować te współrzędne cały czas powoli do przodu.
+            //             boxIdCoords[j]++;
+            //             if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                 {
+            //                     if (j > kLast)
+            //                         kLast = j;
+            //                 }
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             if (kFirst == j)
+            //             {
+            //                 if (kLast == j)
+            //                 {
+            //                     if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                     {
+            //                         //Czyli pierwsza sytuacja. Zmień z - na +, a jeśli nie będzie poprawna, znajdź kolejną poprawną.
+            //                         boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //                         if (boxIdCoords[j] >= hilbertDimension)
+            //                         {
+            //                             //Tutaj nie znajdziemy już poprawnej. Doprowadź do stanu początkowego. Możliwe na koniec 2 stany: -radius lub 0. Ten pierwszy jest stanem, który byłby akceptowalny.
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 kLast--;
+            //                                 kFirst--;
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                     }
+            //                     else
+            //                     {
+            //                         if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 kLast--;
+            //                                 kFirst--;
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                         else
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //                             if (boxIdCoords[j] >= hilbertDimension)
+            //                             {
+            //                                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                                 if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                                 {
+            //                                     kLast--;
+            //                                     kFirst--;
+            //                                 }
+            //                                 j--;
+            //                                 correctCoords = false;
+            //                             }
+            //                         }
+            //                     }
+            //                 }
+            //                 else
+            //                 {
+            //                     if (kLast > j)
+            //                     {
+            //                         //Czyli mamy zapewnione, że gdzieś dalej jest jakaś współrzędna -radius lub +radius
+            //                         boxIdCoords[j]++;
+            //                         if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 //W najgorszym przypadku znajdziemy kLast
+            //                                 for (int j1 = j; j1 < NO_DIM; j1++)
+            //                                 {
+            //                                     if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                     {
+            //                                         kFirst = j1;
+            //                                         break;
+            //                                     }
+            //                                 }
+            //                                 if (kFirst == j)
+            //                                 {
+            //                                     // EHHHHH? Dlaczego tego nie znalazłeś?
+            //                                 }
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                         else if (boxIdCoords[j] != forSearch->boxId[j] + radius)
+            //                         {
+            //                             for (int j1 = j; j1 < NO_DIM; j1++)
+            //                             {
+            //                                 if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                 {
+            //                                     kFirst = j1;
+            //                                     break;
+            //                                 }
+            //                             }
+            //                             if (kFirst == j)
+            //                             {
+            //                                 // EHHHHH? Dlaczego tego nie znalazłeś?
+            //                             }
+            //                         }
+            //                     }
+            //                     else
+            //                     {
+            //                         // Ehhh? Czyli kLast < kFirst...
+            //                     }
+            //                 }
+            //             }
+            //             else
+            //             {
+            //                 if (kFirst > j)
+            //                 {
+            //                     boxIdCoords[j]++;
+            //                     if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //                     {
+            //                         kFirst = j;
+            //                     }
+            //                     if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                     {
+            //                         boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                         if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                         {
+            //                             kFirst = j;
+            //                         }
+            //                         j--;
+            //                         correctCoords = false;
+            //                     }
+            //                 }
+            //                 else
+            //                 {
+            //                     // kFirst < j, czyli hulaj dusza, piekła nie ma
+            //                     if (kLast == j)
+            //                     {
+            //                         boxIdCoords[j]++;
+            //                         if (boxIdCoords[j] != forSearch->boxId[j] + radius)
+            //                         {
+            //                             for (int j1 = j; j1 >= 0; j1--)
+            //                             {
+            //                                 if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                 {
+            //                                     kLast = j1;
+            //                                     break;
+            //                                 }
+            //                             }
+            //                             if (kLast == j)
+            //                             {
+            //                                 // Ehh?
+            //                             }
+            //                         }
+            //                         if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                         {
+            //                             boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                             if (boxIdCoords[j] != forSearch->boxId[j] - radius)
+            //                             {
+            //                                 for (int j1 = j; j1 >= 0; j1--)
+            //                                 {
+            //                                     if (boxIdCoords[j1] == forSearch->boxId[j1] - radius || boxIdCoords[j1] == forSearch->boxId[j1] + radius)
+            //                                     {
+            //                                         kLast = j1;
+            //                                         break;
+            //                                     }
+            //                                 }
+            //                                 if (kLast == j)
+            //                                 {
+            //                                     // Ehh?
+            //                                 }
+            //                             }
+            //                             j--;
+            //                             correctCoords = false;
+            //                         }
+            //                     }
+            //                     else
+            //                     {
+            //                         if (kLast > j)
+            //                         {
+            //                             // Czyli jesteśmy między kFirst a kLast. Najlepsza sytuacja.
+            //                             boxIdCoords[j]++;
+            //                             if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                             {
+            //                                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                                 j--;
+            //                                 correctCoords = false;
+            //                             }
+            //                         }
+            //                         else
+            //                         {
+            //                             // kLast < j
+            //                             boxIdCoords[j]++;
+            //                             if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //                             {
+            //                                 kLast = j;
+            //                             }
+            //                             if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+            //                             {
+            //                                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                                 if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //                                 {
+            //                                     kLast = j;
+            //                                 }
+            //                                 j--;
+            //                                 correctCoords = false;
+            //                             }
+            //                         }
+            //                     }
+            //                 }
+            //             }
+
+            // //Musimy znaleźć nową współrzędną, która będzie miała -radius lub +radius
+            // if (j == k)
+            // {
+            //     if (j == NO_DIM + 1)
+            //     {
+            //         //Jesteśmy na ostatniej współrzędnej.
+            //         if (boxIdCoords[j] == forSearch->boxId[j] - radius)
+            //         {
+            //             //Czyli pierwsza sytuacja. Zmień z - na +, a jeśli nie będzie poprawna, znajdź kolejną poprawną.
+            //             boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //             if (boxIdCoords[j] >= hilbertDimension)
+            //             {
+            //                 //Tutaj nie znajdziemy już poprawnej. Doprowadź do stanu początkowego. Możliwe na koniec 2 stany: -radius lub 0. Ten pierwszy jest stanem, który byłby akceptowalny.
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 k--;
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             if (boxIdCoords[j] == forSearch->boxId[j] + radius)
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //             else
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //                 if (boxIdCoords[j] >= hilbertDimension)
+            //                 {
+            //                     boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                     j--;
+            //                     correctCoords = false;
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     else
+            //     {
+            //         boxIdCoords[j]++;
+            //         if (boxIdCoords[j] < forSearch->boxId[j] + radius)
+            //         {
+            //             if (boxIdCoords[j] >= hilbertDimension)
+            //             {
+            //                 boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //                 j--;
+            //                 correctCoords = false;
+            //             }
+            //             else
+            //             {
+            //             }
+            //         }
+            //         else
+            //         {
+            //         }
+            //     }
+
+            //     if (boxIdCoords[j] >= hilbertDimension)
+            //     {
+            //         boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //         j--;
+            //         correctCoords = false;
+            //     }
+            // }
+            // else
+            // {
+            //     //Nie powinno się zdarzyć w tej implementacji
+            //     printf("Error\n");
+            //     boxIdCoords[j] = forSearch->boxId[j] + radius;
+            //     k = j;
+            //     if (boxIdCoords[j] >= hilbertDimension)
+            //     {
+            //         boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
+            //         j--;
+            //         correctCoords = false;
+            //     }
+            // }
+            //}
+            // }

@@ -1,30 +1,64 @@
 CC = gcc
-CFLAGS = -O3
+CFLAGS = -O3 -Wall -ggdb3
 LIBS = -lm
 
 FILES = \
-	dataStructure.h\
-	dataStructure.c\
+	constants.h\
+	DataStructures/dataStructure.h\
+	DataStructures/dataStructure.c\
+	DataStructures/redBlackTree.h\
+	DataStructures/redBlackTree.c\
+	DataStructures/redBlackTreeDLL.h\
+	DataStructures/redBlackTreeDLL.c\
+	DataStructures/doubleLinkedList.h\
+	DataStructures/doubleLinkedList.c\
+	DataStructures/linkedList.h\
+	DataStructures/linkedList.c\
+	DT/createSimplexList.c\
+	DT/createTreeOfEdgeOfEdges.c\
+	DT/findAllSimplexesToModify.c\
+	DT/findFirstSimplexToModify.c\
+	DT/findPolygon.c\
+	DT/serialDT.c\
+	DT/serialDT.h\
+	DT/updateAndAddSimplexes.c\
+	DT/uploadInformationsAboutNeighborsInEdges.c\
+	HilbertCurve/hilbertCurve.h\
+	HilbertCurve/hilbertCurve.c\
+	edgeOfEdge.h\
+	edgeOfEdge.c\
 	myMath.h\
 	myMath.c\
 	polygon.h\
 	polygon.c\
-	serialDT.c\
-	serialDT.h\
-	redBlackTree.c\
-	redBlackTree.h\
+	simplex.h\
+	simplex.c\
+	supertriangles.h\
+	supertriangles.c\
 	utilities.h\
-	utilities.c
+	utilities.c\
+	validateResult.h\
+	validateResult.c
 
-OUT = out/DT.exe
+TESTS = \
+	tests/mainTests.c\
+	tests/mainTests.h\
+	tests/testRedBlackTree.c\
+	tests/testRedBlackTree.h\
+
+MAIN_FILE = \
+	main.c
+
+OUT = out/DT
 
 all: main
 
-main : 
-	$(CC) $(FILES) $(CFLAGS) $(LIBS) -o $(OUT)
+main: 
+	$(CC) $(FILES) $(MAIN_FILE) $(CFLAGS) $(LIBS) -o $(OUT)
 
-
+test:
+	$(CC) $(FILES) $(TESTS) $(CFLAGS) $(LIBS) -o $(OUT)
 
 clean: 
-	rm -f out/DT.exe
+	rm -f out/DT
 	rm -f out/*.o

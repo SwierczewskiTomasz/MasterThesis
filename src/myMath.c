@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "myMath.h"
 
 double determinant(double **data, int n)
@@ -240,6 +241,11 @@ double laplaceExpansion(double **data, int n)
         // }
         double wsp = i % 2 == 0 ? 1 : -1;
         det += wsp * data[0][i] * laplaceExpansion(minor, n - 1);
+    }
+
+    for(int i = 0; i < n - 1; i++)
+    {
+        free(minor[i]);
     }
 
     free(minor);
