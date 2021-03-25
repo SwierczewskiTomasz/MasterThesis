@@ -15,9 +15,9 @@ void supertriangles(Partition *partition, int hilbertDimension)
 void supertriangles2D(Partition *partition, int hilbertDimension)
 {
     PointId *point1 = newPointId2D(0, 0);
-    PointId *point2 = newPointId2D(100, 0);
-    PointId *point3 = newPointId2D(0, 100);
-    PointId *point4 = newPointId2D(100, 100);
+    PointId *point2 = newPointId2D(10000000, 0);
+    PointId *point3 = newPointId2D(0, 10000000);
+    PointId *point4 = newPointId2D(10000000, 10000000);
 
     PointId *triangle1Points[3] = {point1, point2, point3};
     Simplex *triangle1 = (Simplex *)malloc(sizeof(Simplex));
@@ -58,6 +58,11 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
 
     // printRedBlackTree(partition->triangles);
 
+    point1->mass = 1;
+    point2->mass = 1;
+    point3->mass = 1;
+    point4->mass = 1;
+
     insertIntoRedBlackTree(partition->globalVertices, point1);
     insertIntoRedBlackTree(partition->globalVertices, point2);
     insertIntoRedBlackTree(partition->globalVertices, point3);
@@ -81,10 +86,12 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
     for (int i = 0; i < n; i++)
     {
         points[i] = (PointId *)malloc(sizeof(PointId));
-        points[i] = newPointId3D(i % 2 == 0 ? 0 : 100, (i / 2) % 2 == 0 ? 0 : 100, (i / 4) % 2 == 0 ? 0 : 100);
+        points[i] = newPointId3D(i % 2 == 0 ? 0 : 1100000, (i / 2) % 2 == 0 ? 0 : 1100000, (i / 4) % 2 == 0 ? 0 : 1100000);
         // points[i]->point.x = i%2 == 0 ? 0 : 100;
         // points[i]->point.y = (i/2)%2 == 0 ? 0 : 100;
         // points[i]->point.z = (i/4)%2 == 0 ? 0 : 100;
+        points[i]->mass = 1;
+        insertIntoRedBlackTree(partition->globalVertices, points[i]);
     }
 
 #if DEBUG_TRIANGULATION

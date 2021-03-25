@@ -71,6 +71,7 @@ void createNewSimplexToSearch(Simplex *simplex, Point *point, int hilbertDimensi
 
     memcpy(&simplex->circumcenter, point, sizeof(Point));
     simplex->circumradius = 0;
+    simplex->hilbertDimension = hilbertDimension;
 
     calculateBoxId(simplex);
 }
@@ -648,7 +649,7 @@ void calculateBoxId(Simplex *result)
     {
         coordsMinMax[i] = (double *)malloc(2 * sizeof(double));
         coordsMinMax[i][0] = 0;
-        coordsMinMax[i][1] = 100;
+        coordsMinMax[i][1] = 1000000;
     }
 
     // #if NO_DIM == 2
@@ -676,7 +677,7 @@ void calculateBoxId(Simplex *result)
         }
         // printf("%i, ", result->boxId[i]);
     }
-    // printf("\n");
+    // printf("Hilbert: %i \n", result->hilbertDimension);
 
     for (int i = 0; i < NO_DIM; i++)
     {

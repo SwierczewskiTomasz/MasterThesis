@@ -62,7 +62,7 @@ void testTIPP()
     //     }
     // }
 
-    serialDT(256*256, 256*256, 16, false);
+    serialDT(0, 0, 32, false);
 
     // serialDT(1024*1024*1024, 1024*1024*1024, 32);
 }

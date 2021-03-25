@@ -29,6 +29,8 @@ FILES = \
 	DTFE/MonteCarlo.c\
 	HilbertCurve/hilbertCurve.h\
 	HilbertCurve/hilbertCurve.c\
+	IO/input.c\
+	IO/io.h\
 	Logs/Log.h\
 	Logs/Log.c\
 	edgeOfEdge.h\

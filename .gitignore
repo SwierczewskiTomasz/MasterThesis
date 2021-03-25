@@ -7,4 +7,5 @@
 # Other
 src/out/*
 .vscode/
-
+data/*
+data

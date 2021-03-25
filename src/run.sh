@@ -27,11 +27,12 @@ then
     make main
     valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose out/DT &> out/valgrind.txt
     # gnuplot "generateImages.plt"
+    # gnuplot "generateImages2.plt"
 else
     make main
     out/DT
-    out/DT &> out/output1.txt
-    # gnuplot "generateImages.plt"
+    # out/DT &> out/output1.txt
+    gnuplot "generateImages.plt"
 fi
 
 # make all

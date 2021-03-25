@@ -39,6 +39,10 @@ typedef struct Partition
 #else
     redBlackTree *triangles;
 #endif
+
+    int hilbertDimension;
+
+    PointWithDensity densityMatrix[250][250][250];
 } Partition;
 
 typedef struct DelaunayTriangulation
@@ -76,9 +80,11 @@ void initializePartition(Partition *partition);
 void freePartition(Partition *partition);
 
 Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilbertDimension);
+Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int hilbertDimension);
 // Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int hilbertDimension);
 // Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, int hilbertDimension);
 LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point);
+LinkedList *findTrianglesToModifyPoint(Simplex *simplex, Point *point);
 PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trianglesToModify);
 redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges);
 void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *treeEdgeOfEdges);

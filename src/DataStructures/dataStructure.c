@@ -39,7 +39,7 @@ PointId *newPointId2D(FLOATING_POINT_PRECISION x, FLOATING_POINT_PRECISION y)
     result->count = 0;
     result->density = 0;
     result->mass = (double)rand() / (double)(RAND_MAX)*100;
-
+    printf("newPointMass: %10.4f, %10.4f, %10.4f\n", x, y, result->mass);
     return result;
 }
 
@@ -52,7 +52,9 @@ PointId *newPointId3D(FLOATING_POINT_PRECISION x, FLOATING_POINT_PRECISION y, FL
 
     result->point.coords[0] = x;
     result->point.coords[1] = y;
+#if NO_DIM == 3
     result->point.coords[2] = z;
+#endif
 
     result->count = 0;
     result->density = 0;
@@ -79,6 +81,16 @@ PointId *newPointId(FLOATING_POINT_PRECISION coords[NO_DIM])
     result->density = 0;
     result->mass = (double)rand() / (double)(RAND_MAX)*100;
 
+    return result;
+}
+
+PointId *newEmptyPointId()
+{
+    PointId *result = (PointId *)malloc(sizeof(PointId));
+#if ID == 1
+    result->id = PointIdCount++;
+#endif
+    
     return result;
 }
 
