@@ -649,7 +649,7 @@ void calculateBoxId(Simplex *result)
     {
         coordsMinMax[i] = (double *)malloc(2 * sizeof(double));
         coordsMinMax[i][0] = 0;
-        coordsMinMax[i][1] = 1000000;
+        coordsMinMax[i][1] = 1000;
     }
 
     // #if NO_DIM == 2

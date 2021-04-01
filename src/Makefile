@@ -31,6 +31,8 @@ FILES = \
 	HilbertCurve/hilbertCurve.c\
 	IO/input.c\
 	IO/io.h\
+	IO/userOptions.c\
+	IO/userOptions.h\
 	Logs/Log.h\
 	Logs/Log.c\
 	edgeOfEdge.h\

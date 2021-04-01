@@ -66,8 +66,11 @@ long long serialDT(int k, int n, int hilbertDimension, bool onlyCompute)
 
     // generateInitialMesh(partition, k, hilbertDimension);
     supertriangles(partition, hilbertDimension);
-    asciiLoad("../data/ELEPHANT_F4_R1_out27_f0.001.ascii", partition);
+    // asciiLoad("../data/ELEPHANT_N1_R1_out27_f0.001.ascii", partition);
+    asciiLoad2("../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii", partition);
     // sleep(2);
+    
+    return 0;
 
 #if DEBUG_TRIANGULATION == 1
     printf("Trójkąty: \n");
@@ -240,10 +243,12 @@ long long serialDT(int k, int n, int hilbertDimension, bool onlyCompute)
     {
         for (int j = 0; j < 250; j++)
         {
-            for (int k = 0; k < 250; k++)
-            {
-                fprintf(fp, "%f, %f, %f, %f \n", partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2], partition->densityMatrix[i][j][k].density);
-            }
+            fprintf(fp, "%f, %f, %lf, %f, %e \n", partition->densityMatrix[i][j][100].coords[0], partition->densityMatrix[i][j][100].coords[1], partition->densityMatrix[i][j][100].density, partition->densityMatrix[i][j][100].density * 1000000, partition->densityMatrix[i][j][100].density);
+            // for (int k = 0; k < 10; k++)
+            // {
+            //     // fprintf(fp, "%f, %f, %f, %f \n", partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2], partition->densityMatrix[i][j][k].density);
+            //     fprintf(fp, "%f, %f, %lf, %f, %e \n", partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].density, partition->densityMatrix[i][j][k].density * 1000000, partition->densityMatrix[i][j][k].density);
+            // }
         }
         fprintf(fp, "\n");
     }

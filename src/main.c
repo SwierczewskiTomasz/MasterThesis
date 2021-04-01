@@ -1,10 +1,18 @@
 #include "DT/serialDT.h"
+#include <stdio.h>
+#include "IO/userOptions.h"
 
 int main(int argc, char **argv)
 {
+    UserOptions *options = readUserOptions(argc, argv);
+    printUserOptions(options);
+
     // serialDT();
 
     testTIPP();
+    // printInformationsAboutSizeOfStructures();
+
+    // readInputFile();
 
     // int n = 0;
     // for (int i = 0; i < 100; i++)
@@ -17,7 +25,6 @@ int main(int argc, char **argv)
 
     // testRedBlackTree();
     // testDoubleLinkedList();
-    printInformationsAboutSizeOfStructures();
 
     // printf("int: %i\n", sizeof(int));
     // printf("long: %i\n", sizeof(long));
@@ -38,3 +45,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+

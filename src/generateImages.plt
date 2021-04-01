@@ -1,30 +1,36 @@
 reset
-set terminal png size 2048,2048 enhanced background rgb 'white'
-set output "./out/test.png"
-test
-set output "./out/vertices.png"
-set xrange[-100000:1100000]
-set yrange[-100000:1100000]
+# set terminal png size 2048,2048 enhanced background rgb 'white'
+# set output "./out/test.png"
+# test
+# set output "./out/vertices.png"
+# set xrange[-100000:1100000]
+# set yrange[-100000:1100000]
+set xrange[-100:1100]
+set yrange[-100:1100]
 set xlabel "x"
 set ylabel "y"
-set title "Punkty w 3D"
-plot "./out/outputVertices.txt"
-set output "./out/test_triangles.png"
-plot "./out/test.txt" with lines
+# set title "Punkty w 3D"
+# plot "./out/outputVertices.txt"
+# set output "./out/test_triangles.png"
+# plot "./out/test.txt" with lines
 set output "./out/triangles.png"
-set terminal png size 2048,2048 enhanced background rgb 'white'
-# set view map
+set terminal png size 1250,1250 enhanced background rgb 'white'
+set palette defined (0 'black', 0.25 '#221103', 0.34 '#442206', 0.38 '#663311', 0.4 '#884415', 0.42 '#AA551C', 0.45 '#CC6622', 0.5 '#EE7735', 0.56 '#FFFF77', 1 'white')
+stats './out/outputVerticesDensity.txt' using 5
+set logscale cb
+set cbrange[STATS_min:STATS_max]
+set view map
+# set cbrange[2e-12:2e-11]
+splot "./out/outputVerticesDensity.txt" using 1:2:5 with pm3d palette
+# set view 60,45
+# set sample 5000,5000; set isosample 5000,5000
+# set pm3d depthorder noborder interpolate 2,2
+# # set pm3d noclipcb
+# set style fill transparent solid 0.5
+# # set hidden3d
 # set cbrange[0:50]
-# splot "./out/outputVerticesDensity.txt" using 1:2:4 with pm3d
-set view 60,45
-set sample 5000,5000; set isosample 5000,5000
-set pm3d depthorder noborder interpolate 2,2
-# set pm3d noclipcb
-set style fill transparent solid 0.5
-# set hidden3d
-set cbrange[0:50]
-set cblabel "point density"
-splot "./out/outputVerticesDensity.txt" with pm3d # with points pt 7 ps 0.5 lc palette
+# set cblabel "point density"
+# splot "./out/outputVerticesDensity.txt" with pm3d # with points pt 7 ps 0.5 lc palette
 # plot "./out/outputTriangles.txt" with lines
 # set terminal png size 4096,4096 enhanced background rgb 'white'
 # set view 75,25,1

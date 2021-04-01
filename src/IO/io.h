@@ -4,5 +4,6 @@
 #include "../DT/serialDT.h"
 
 int asciiLoad(char *filename, Partition *partition);
+int asciiLoad2(char *filename, Partition *partition);
 
 #endif

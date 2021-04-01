@@ -28,6 +28,7 @@ typedef struct PointId
     int count;
     double density;
     double mass;
+    FLOATING_POINT_PRECISION velocity[NO_DIM];
 } PointId;
 
 // typedef struct DataStructure

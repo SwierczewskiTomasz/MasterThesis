@@ -26,11 +26,15 @@ long long DTFE(Partition *partition)
     {
         for (int j = 0; j < 250; j++)
         {
-            for (int k = 0; k < 250; k++)
+            for (int k = 100; k < 101; k++)
             {
-                partition->densityMatrix[i][j][k].coords[0] = (double)i * 1000 * 4 + 1;
-                partition->densityMatrix[i][j][k].coords[1] = (double)j * 1000 * 4 + 1;
-                partition->densityMatrix[i][j][k].coords[2] = (double)k * 1000 * 4 + 1;
+                // partition->densityMatrix[i][j][k].coords[0] = (double)i * 1000 * 4 + 1;
+                // partition->densityMatrix[i][j][k].coords[1] = (double)j * 1000 * 4 + 1;
+                // partition->densityMatrix[i][j][k].coords[2] = (double)k * 1000 * 4 + 1;
+
+                partition->densityMatrix[i][j][k].coords[0] = (double)i * 4 + 1;
+                partition->densityMatrix[i][j][k].coords[1] = (double)j * 4 + 1;
+                partition->densityMatrix[i][j][k].coords[2] = (double)k * 4 + 1;
 
                 // printf("%10.4f, %10.4f\n", partition->densityMatrix[i][j].coords[0], partition->densityMatrix[i][j].coords[1]);
 
