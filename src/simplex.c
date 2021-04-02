@@ -10,7 +10,7 @@ Simplex *neighborOfSimplex(Simplex *simplex, int i)
     return simplex->neighbors[i];
 }
 
-void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertDimension)
+void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], UserOptions *options)
 {
     int n = NO_DIM + 1;
 
@@ -22,9 +22,9 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
 
     // calculateCircumcircle(result);
     calculateCircumcircleGSL(result);
-    result->hilbertDimension = hilbertDimension;
+    result->hilbertDimension = options->PHgridSize;
 
-    calculateBoxId(result);
+    calculateBoxId(result, options);
 
     // Funkcjonalność do PeanoHilbert
     double x = 0.0;
@@ -38,7 +38,12 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
     x /= n;
     y /= n;
 
-    result->hilbertId = hilbertCurveDoubleXY2D(hilbertDimension, x, y, 0, 100, 0, 100);
+    result->hilbertId = hilbertCurveDoubleXY2D(options->PHgridSize, x, y, 0, 100, 0, 100);
+
+    for(int i = 0; i < NO_DIM + 1; i++)
+    {
+        result->neighbors[i] = NULL;
+    }
 
     // Funkcjonalność do centroid:
 
@@ -64,16 +69,16 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], int hilbertD
     // #endif
 }
 
-void createNewSimplexToSearch(Simplex *simplex, Point *point, int hilbertDimension)
+void createNewSimplexToSearch(Simplex *simplex, Point *point, UserOptions *options)
 {
     for (int i = 0; i < NO_DIM; i++)
         simplex->vertices[i] = NULL;
 
     memcpy(&simplex->circumcenter, point, sizeof(Point));
     simplex->circumradius = 0;
-    simplex->hilbertDimension = hilbertDimension;
+    simplex->hilbertDimension = options->PHgridSize;
 
-    calculateBoxId(simplex);
+    calculateBoxId(simplex, options);
 }
 
 void freeSimplex(void *s)
@@ -642,29 +647,13 @@ void calculateBoxId2(Simplex *result)
     // printf("\n");
 }
 
-void calculateBoxId(Simplex *result)
+void calculateBoxId(Simplex *result, UserOptions *options)
 {
-    double *coordsMinMax[NO_DIM];
     for (int i = 0; i < NO_DIM; i++)
     {
-        coordsMinMax[i] = (double *)malloc(2 * sizeof(double));
-        coordsMinMax[i][0] = 0;
-        coordsMinMax[i][1] = 1000;
+        result->boxId[i] = (int)((result->circumcenter.coords[i] - options->minMaxCoords[i][0]) / (options->minMaxCoords[i][1] - options->minMaxCoords[i][0]) * result->hilbertDimension);
     }
-
-    // #if NO_DIM == 2
-    //     result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    //     result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
-    // #elif NO_DIM == 3
-    //     result->boxId[0] = (int)((result->circumcenter.x - coordsMinMax[0][0]) / (coordsMinMax[0][1] - coordsMinMax[0][0]) * result->hilbertDimension);
-    //     result->boxId[1] = (int)((result->circumcenter.y - coordsMinMax[1][0]) / (coordsMinMax[1][1] - coordsMinMax[1][0]) * result->hilbertDimension);
-    //     result->boxId[2] = (int)((result->circumcenter.z - coordsMinMax[2][0]) / (coordsMinMax[2][1] - coordsMinMax[2][0]) * result->hilbertDimension);
-    // #else
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        result->boxId[i] = (int)((result->circumcenter.coords[i] - coordsMinMax[i][0]) / (coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
-    }
-    // #endif
+    
     for (int i = 0; i < NO_DIM; i++)
     {
         if (result->boxId[i] >= result->hilbertDimension)
@@ -675,12 +664,5 @@ void calculateBoxId(Simplex *result)
         {
             result->boxId[i] = 0;
         }
-        // printf("%i, ", result->boxId[i]);
-    }
-    // printf("Hilbert: %i \n", result->hilbertDimension);
-
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        free(coordsMinMax[i]);
     }
 }

@@ -18,6 +18,8 @@ typedef struct UserOptions
 
     bool onlyDT;
     bool onlyDTFE;
+
+    double massInSuperpoints;
 } UserOptions;
 
 

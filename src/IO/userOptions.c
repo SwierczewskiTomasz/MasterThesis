@@ -9,6 +9,9 @@ UserOptions *readUserOptions(int argc, char **argv)
 
     result->onlyDT = false;
     result->onlyDTFE = false;
+    result->gridSize = 0;
+    result->PHgridSize = 0;
+    result->massInSuperpoints = 1;
 
     for (int i = 1; i < argc; i++)
     {
@@ -49,6 +52,7 @@ UserOptions *readUserOptions(int argc, char **argv)
                 result->minMaxCoords[j][1] = atof(argv[i + 1]);
                 i += 2;
             }
+            i--;
         }
         else if (!strcmp(argv[i], "--regionMpc"))
         {
@@ -59,6 +63,7 @@ UserOptions *readUserOptions(int argc, char **argv)
                 result->minMaxCoords[j][1] = atof(argv[i + 1]);
                 i += 2;
             }
+            i--;
         }
         else if (!strcmp(argv[i], "--regionkpc"))
         {
@@ -69,6 +74,7 @@ UserOptions *readUserOptions(int argc, char **argv)
                 result->minMaxCoords[j][1] = atof(argv[i + 1]);
                 i += 2;
             }
+            i--;
         }
         else if (!strcmp(argv[i], "--help"))
         {
@@ -76,9 +82,15 @@ UserOptions *readUserOptions(int argc, char **argv)
             free(result);
             return NULL;
         }
+        else if (!strcmp(argv[i], "--massInSuperpoints"))
+        {
+            i++;
+            result->massInSuperpoints = atof(argv[i]);
+            printf("JUhu\n");
+        }
         else
         {
-            printf("Argument not recognized, please read help (use --help). \n");
+            printf("Argument not recognized, please read help (use --help). Argument: %s \n", argv[i]);
         }
     }
 
@@ -125,4 +137,5 @@ void printUserOptions(UserOptions *options)
         printf("[%i]: %f, %f  ", i, options->minMaxCoords[i][0], options->minMaxCoords[i][1]);
     }
     printf("\n");
+    printf("Mass in superpoints: %f\n", options->massInSuperpoints);
 }

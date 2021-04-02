@@ -10,7 +10,7 @@
 
 #include <gsl/gsl_linalg.h>
 
-long long DTFE(Partition *partition)
+long long DTFE(Partition *partition, UserOptions *options)
 {
     double det = CayleyMengerDeterminant(partition->triangles->first->data);
     printf("Pole powierzchni: %12.4f\n", det);
@@ -22,27 +22,27 @@ long long DTFE(Partition *partition)
     calculateVolumeInEachSimplex(partition);
     calculateDensityInEachVertex(partition);
 
-    for (int i = 0; i < 250; i++)
+    for (int i = 0; i < 128; i++)
     {
-        for (int j = 0; j < 250; j++)
+        for (int j = 0; j < 128; j++)
         {
-            for (int k = 100; k < 101; k++)
+            for (int k = 0; k < 128; k++)
             {
                 // partition->densityMatrix[i][j][k].coords[0] = (double)i * 1000 * 4 + 1;
                 // partition->densityMatrix[i][j][k].coords[1] = (double)j * 1000 * 4 + 1;
                 // partition->densityMatrix[i][j][k].coords[2] = (double)k * 1000 * 4 + 1;
 
-                partition->densityMatrix[i][j][k].coords[0] = (double)i * 4 + 1;
-                partition->densityMatrix[i][j][k].coords[1] = (double)j * 4 + 1;
-                partition->densityMatrix[i][j][k].coords[2] = (double)k * 4 + 1;
+                partition->densityMatrix[i][j][k].coords[0] = (double)i * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize - 1);
+                partition->densityMatrix[i][j][k].coords[1] = (double)j * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize - 1);
+                partition->densityMatrix[i][j][k].coords[2] = (double)k * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize - 1);
 
                 // printf("%10.4f, %10.4f\n", partition->densityMatrix[i][j].coords[0], partition->densityMatrix[i][j].coords[1]);
 
-                bool success = calculatePointDensity(partition, &partition->densityMatrix[i][j][k]);
+                bool success = calculatePointDensity(partition, &partition->densityMatrix[i][j][k], options);
 
                 if (!success)
                 {
-                    printf("Error! %i, %i\n", i, j);
+                    printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2]);
                 }
                 // else
                 // {
@@ -51,8 +51,10 @@ long long DTFE(Partition *partition)
                 // }
             }
         }
-        printf("%i\n", i);
+        printf("\rComputed points in DTFE: %i/%i", i, options->gridSize);
+        fflush(stdout);
     }
+    printf("\n");
 
     struct timeval te2;
     gettimeofday(&te2, NULL);
@@ -226,11 +228,23 @@ double interpolation(Simplex *simplex, BarycentricCoordinates *barycentric)
 
 bool checkIfInsideSimplex(BarycentricCoordinates *barycentric)
 {
+    bool print = false;
     for (int i = 0; i < NO_DIM + 1; i++)
     {
-        if (barycentric->coords[i] < 0 || barycentric->coords[i] > 1)
+        if (barycentric->coords[i] < -10e-10 || barycentric->coords[i] > 1 + 10e10)
             return false;
+        // if ((barycentric->coords[i] > -10e-10 || barycentric->coords[i] < 1 + 10e10) && (barycentric->coords[i] < 0 || barycentric->coords[i] > 1))
+        // {
+        //     print = true;
+        // }
     }
+
+    // if (print)
+    // {
+    //     for (int i = 0; i < NO_DIM + 1; i++)
+    //         printf("%e ", barycentric->coords[i]);
+    //     printf("\n");
+    // }
     return true;
 }
 
@@ -275,7 +289,7 @@ BarycentricCoordinates *calculateBarycentricCoordinates(Simplex *simplex, PointW
     return result;
 }
 
-bool calculatePointDensity(Partition *partition, PointWithDensity *point)
+bool calculatePointDensity(Partition *partition, PointWithDensity *point, UserOptions *options)
 {
     Point *pointTemp = (Point *)malloc(sizeof(Point));
 
@@ -284,14 +298,14 @@ bool calculatePointDensity(Partition *partition, PointWithDensity *point)
         pointTemp->coords[i] = point->coords[i];
     }
 
-    Simplex *simplex = findFirstSimplexToModifyPoint(pointTemp, partition, partition->hilbertDimension);
+    Simplex *simplex = findFirstSimplexToModifyPoint(pointTemp, partition, options);
 
     if (simplex == NULL)
-    {    
+    {
+        printf("Didn't found first simplex to anlyze \n");
         free(pointTemp);
         return false;
     }
-        
 
     // saveToLogs((char*)__FILE__, __LINE__, "Founded simplex: ", printLongSimplex, simplex);
     LinkedList *list = findTrianglesToModifyPoint(simplex, pointTemp);
@@ -335,6 +349,7 @@ bool calculatePointDensity(Partition *partition, PointWithDensity *point)
     }
 
     removeLinkedList(list, false);
+    printf("Analyzed %i simplexes, didn't found correct one. \n", c);
     free(pointTemp);
     return false;
 }

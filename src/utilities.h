@@ -2,6 +2,7 @@
 #define UTILITIES_H
 
 #include "constants.h"
+#include "IO/userOptions.h"
 
 int findInPolygonListCount;
 
@@ -39,7 +40,7 @@ long long extern updateAndAddSimplexesTime;
 long long extern NextNodeAfterAddingTime;
 
 int generateNextTestNumberOfPoints(int n);
-void testTIPP();
+void testTIPP(UserOptions *options);
 void testRedBlackTreeUtilities();
 void testDoubleLinkedList();
 void printInformationsAboutSizeOfStructures();

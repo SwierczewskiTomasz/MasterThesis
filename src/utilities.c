@@ -28,7 +28,7 @@ int generateNextTestNumberOfPoints(int n)
     return n + pow(2, (int)floor(log2((double)n)) - 2);
 }
 
-void testTIPP()
+void testTIPP(UserOptions *options)
 {
     // int n = 0;
     // // int hilbertDimension = 16;
@@ -62,7 +62,7 @@ void testTIPP()
     //     }
     // }
 
-    serialDT(0, 0, 32, false);
+    serialDT(options);
 
     // serialDT(1024*1024*1024, 1024*1024*1024, 32);
 }

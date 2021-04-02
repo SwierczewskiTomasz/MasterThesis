@@ -9,3 +9,5 @@ src/out/*
 .vscode/
 data/*
 data
+wyniki/*
+wyniki

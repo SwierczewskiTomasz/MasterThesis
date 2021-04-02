@@ -30,7 +30,7 @@ then
     # gnuplot "generateImages2.plt"
 else
     make main
-    out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_1.txt --grid 256 --PHgrid 32 --regionkpc 0 1000000 0 1000000 0 1000000
+    out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_1.txt --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 7.798537
     # out/DT &> out/output1.txt
     # gnuplot "generateImages.plt"
 fi

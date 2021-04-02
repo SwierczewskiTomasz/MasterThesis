@@ -12,7 +12,7 @@
 #include <math.h>
 #include "serialDT.h"
 
-LinkedList *createSimplexList(PolygonList *edges, PointId *point, int hilbertDimension)
+LinkedList *createSimplexList(PolygonList *edges, PointId *point, UserOptions *options)
 {
     PolygonLinkedListNode *currentEdge = edges->first;
     LinkedList *simplexList = newLinkedList(freeSimplex);
@@ -23,7 +23,7 @@ LinkedList *createSimplexList(PolygonList *edges, PointId *point, int hilbertDim
         PointId *points[NO_DIM + 1]; 
         
         addPointAsFirstToArray(points, currentEdge->edge->points, point, NO_DIM + 1);
-        createNewSimplex(result, points, hilbertDimension);
+        createNewSimplex(result, points, options);
 
         result->neighbors[0] = currentEdge->edge->second;
         if (result->neighbors[0] != NULL)

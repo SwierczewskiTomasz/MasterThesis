@@ -13,10 +13,10 @@
 #include <math.h>
 #include "serialDT.h"
 
-Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilbertDimension)
+Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, UserOptions *options)
 {
     Simplex *forSearch = (Simplex *)malloc(sizeof(Simplex));
-    createNewSimplexToSearch(forSearch, &point->point, hilbertDimension);
+    createNewSimplexToSearch(forSearch, &point->point, options);
 
 #if REDBLACKTREEDLL == 1
     redBlackTreeDLLNode *pointer;
@@ -34,7 +34,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
     int count = 0;
     int radius = 0;
 
-    while (radius < hilbertDimension)
+    while (radius < options->PHgridSize)
     {
         //Przygotuj współrzędne, od których zaczynamy przeszukiwania przy danym radius
         int boxIdCoords[NO_DIM];
@@ -61,7 +61,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
             if (boxIdCoords[k] != forSearch->boxId[k] + radius)
             {
                 boxIdCoords[k] = forSearch->boxId[k] + radius;
-                if (boxIdCoords[k] >= hilbertDimension)
+                if (boxIdCoords[k] >= options->PHgridSize)
                 {
                     boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                     k--;
@@ -83,7 +83,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
                     if (boxIdCoords[k] != forSearch->boxId[k] - radius)
                     {
                         boxIdCoords[k] = forSearch->boxId[k] + radius;
-                        if (boxIdCoords[k] >= hilbertDimension)
+                        if (boxIdCoords[k] >= options->PHgridSize)
                         {
                             boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                             k--;
@@ -242,7 +242,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
                             boxIdCoords[j]++;
                             if (j > k)
                             {
-                                if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+                                if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= options->PHgridSize)
                                 {
                                     boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
                                     j--;
@@ -251,7 +251,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
                             }
                             else
                             {
-                                if (boxIdCoords[j] >= forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+                                if (boxIdCoords[j] >= forSearch->boxId[j] + radius || boxIdCoords[j] >= options->PHgridSize)
                                 {
                                     boxIdCoords[j] = forSearch->boxId[j] - radius + 1 < 0 ? 0 : forSearch->boxId[j] - radius + 1;
                                     j--;
@@ -272,7 +272,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
                     if (boxIdCoords[k] != forSearch->boxId[k] + radius)
                     {
                         boxIdCoords[k] = forSearch->boxId[k] + radius;
-                        if (boxIdCoords[k] >= hilbertDimension)
+                        if (boxIdCoords[k] >= options->PHgridSize)
                         {
                             boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                             k--;
@@ -294,7 +294,7 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
                             if (boxIdCoords[k] != forSearch->boxId[k] - radius)
                             {
                                 boxIdCoords[k] = forSearch->boxId[k] + radius;
-                                if (boxIdCoords[k] >= hilbertDimension)
+                                if (boxIdCoords[k] >= options->PHgridSize)
                                 {
                                     boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                                     k--;
@@ -331,10 +331,10 @@ Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, int hilb
     return simplex;
 }
 
-Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int hilbertDimension)
+Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, UserOptions *options)
 {
     Simplex *forSearch = (Simplex *)malloc(sizeof(Simplex));
-    createNewSimplexToSearch(forSearch, point, hilbertDimension);
+    createNewSimplexToSearch(forSearch, point, options);
 
 #if REDBLACKTREEDLL == 1
     redBlackTreeDLLNode *pointer;
@@ -351,7 +351,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int h
 
     int count = 0;
     int radius = 0;
-    while (radius < hilbertDimension)
+    while (radius < options->PHgridSize)
     {
         //Przygotuj współrzędne, od których zaczynamy przeszukiwania przy danym radius
         int boxIdCoords[NO_DIM];
@@ -378,7 +378,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int h
             if (boxIdCoords[k] != forSearch->boxId[k] + radius)
             {
                 boxIdCoords[k] = forSearch->boxId[k] + radius;
-                if (boxIdCoords[k] >= hilbertDimension)
+                if (boxIdCoords[k] >= options->PHgridSize)
                 {
                     boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                     k--;
@@ -400,7 +400,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int h
                     if (boxIdCoords[k] != forSearch->boxId[k] - radius)
                     {
                         boxIdCoords[k] = forSearch->boxId[k] + radius;
-                        if (boxIdCoords[k] >= hilbertDimension)
+                        if (boxIdCoords[k] >= options->PHgridSize)
                         {
                             boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                             k--;
@@ -538,7 +538,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int h
                             boxIdCoords[j]++;
                             if (j > k)
                             {
-                                if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+                                if (boxIdCoords[j] > forSearch->boxId[j] + radius || boxIdCoords[j] >= options->PHgridSize)
                                 {
                                     boxIdCoords[j] = forSearch->boxId[j] - radius < 0 ? 0 : forSearch->boxId[j] - radius;
                                     j--;
@@ -547,7 +547,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int h
                             }
                             else
                             {
-                                if (boxIdCoords[j] >= forSearch->boxId[j] + radius || boxIdCoords[j] >= hilbertDimension)
+                                if (boxIdCoords[j] >= forSearch->boxId[j] + radius || boxIdCoords[j] >= options->PHgridSize)
                                 {
                                     boxIdCoords[j] = forSearch->boxId[j] - radius + 1 < 0 ? 0 : forSearch->boxId[j] - radius + 1;
                                     j--;
@@ -568,7 +568,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int h
                     if (boxIdCoords[k] != forSearch->boxId[k] + radius)
                     {
                         boxIdCoords[k] = forSearch->boxId[k] + radius;
-                        if (boxIdCoords[k] >= hilbertDimension)
+                        if (boxIdCoords[k] >= options->PHgridSize)
                         {
                             boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                             k--;
@@ -590,7 +590,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, int h
                             if (boxIdCoords[k] != forSearch->boxId[k] - radius)
                             {
                                 boxIdCoords[k] = forSearch->boxId[k] + radius;
-                                if (boxIdCoords[k] >= hilbertDimension)
+                                if (boxIdCoords[k] >= options->PHgridSize)
                                 {
                                     boxIdCoords[k] = forSearch->boxId[k] - radius < 0 ? 0 : forSearch->boxId[k] - radius;
                                     k--;

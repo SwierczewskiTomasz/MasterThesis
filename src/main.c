@@ -2,14 +2,37 @@
 #include <stdio.h>
 #include "IO/userOptions.h"
 
+void podziel2pliki()
+{
+    FILE *fp, *fp2, *fps;
+    fp = fopen("../wyniki/ccg_dtfe_256.a_den", "r");
+    fp2 = fopen("../data/Topolski/test_dtfe256.a_den", "r");
+    fps = fopen("../wyniki/porownanie.a_den", "w+");
+
+    int result = 1;
+    while (result != EOF)
+    {
+        double d1;
+        double d2;
+        result = fscanf(fp, "%lf", &d1);
+        result = fscanf(fp2, "%lf", &d2);
+
+        fprintf(fps, "%e\n", d2/d1);
+    }
+    fclose(fp);
+    fclose(fp2);
+    fclose(fps);
+}
+
 int main(int argc, char **argv)
 {
     UserOptions *options = readUserOptions(argc, argv);
     printUserOptions(options);
 
-    // serialDT();
+    testTIPP(options);
+    // podziel2pliki();
 
-    testTIPP();
+    // serialDT();
     // printInformationsAboutSizeOfStructures();
 
     // readInputFile();

@@ -1,18 +1,18 @@
 #include "supertriangles.h"
 
-void supertriangles(Partition *partition, int hilbertDimension)
+void supertriangles(Partition *partition, UserOptions *options)
 {
-#if NO_DIM == 2
-    supertriangles2D(partition, hilbertDimension);
-#elif NO_DIM == 3
-    supertriangles3D(partition, hilbertDimension);
-#else
-    supertriangles4DAndMore(partition, hilbertDimension);
-#endif
+    #if NO_DIM == 2
+        supertriangles2D(partition, options);
+    #elif NO_DIM == 3
+        supertriangles3D(partition, options);
+    #else
+    supertriangles4DAndMore(partition, options);
+    #endif
 }
 
 #if NO_DIM == 2
-void supertriangles2D(Partition *partition, int hilbertDimension)
+void supertriangles2D(Partition *partition, UserOptions *options)
 {
     PointId *point1 = newPointId2D(0, 0);
     PointId *point2 = newPointId2D(10000000, 0);
@@ -21,11 +21,11 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
 
     PointId *triangle1Points[3] = {point1, point2, point3};
     Simplex *triangle1 = (Simplex *)malloc(sizeof(Simplex));
-    createNewSimplex(triangle1, triangle1Points, hilbertDimension);
+    createNewSimplex(triangle1, triangle1Points, options);
 
     PointId *triangle2Points[3] = {point2, point3, point4};
     Simplex *triangle2 = (Simplex *)malloc(sizeof(Simplex));
-    createNewSimplex(triangle2, triangle2Points, hilbertDimension);
+    createNewSimplex(triangle2, triangle2Points, options-);
 
     // printf("1\n");
     // printRedBlackTreeDLLString(partition->triangles, printShortSimplex);
@@ -58,10 +58,10 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
 
     // printRedBlackTree(partition->triangles);
 
-    point1->mass = 1;
-    point2->mass = 1;
-    point3->mass = 1;
-    point4->mass = 1;
+    point1->mass = options->massInSuperpoints;
+    point2->mass = options->massInSuperpoints;
+    point3->mass = options->massInSuperpoints;
+    point4->mass = options->massInSuperpoints;
 
     insertIntoRedBlackTree(partition->globalVertices, point1);
     insertIntoRedBlackTree(partition->globalVertices, point2);
@@ -73,24 +73,17 @@ void supertriangles2D(Partition *partition, int hilbertDimension)
 #endif
 
 #if NO_DIM == 3
-void supertriangles3D(Partition *partition, int hilbertDimension)
+void supertriangles3D(Partition *partition, UserOptions *options)
 {
-    // printf("1\n");
     int n = (int)pow(2, NO_DIM);
-    // printf("2\n");
     PointId **points = (PointId **)malloc(n * sizeof(PointId *));
-    // printf("3\n");
-
-    // printf("Points: %p\n", points);
 
     for (int i = 0; i < n; i++)
     {
-        points[i] = (PointId *)malloc(sizeof(PointId));
-        points[i] = newPointId3D(i % 2 == 0 ? 0 : 1100000, (i / 2) % 2 == 0 ? 0 : 1100000, (i / 4) % 2 == 0 ? 0 : 1100000);
-        // points[i]->point.x = i%2 == 0 ? 0 : 100;
-        // points[i]->point.y = (i/2)%2 == 0 ? 0 : 100;
-        // points[i]->point.z = (i/4)%2 == 0 ? 0 : 100;
-        points[i]->mass = 1;
+        points[i] = newPointId3D(i % 2 == 0 ? options->minMaxCoords[0][0] : options->minMaxCoords[0][1],
+                                 (i / 2) % 2 == 0 ? options->minMaxCoords[1][0] : options->minMaxCoords[1][1],
+                                 (i / 4) % 2 == 0 ? options->minMaxCoords[2][0] : options->minMaxCoords[2][1]);
+        points[i]->mass = options->massInSuperpoints;
         insertIntoRedBlackTree(partition->globalVertices, points[i]);
     }
 
@@ -141,7 +134,7 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
     for (int i = 0; i < m; i++)
     {
         triangles[i] = (Simplex *)malloc(sizeof(Simplex));
-        createNewSimplex(triangles[i], trianglePoints[i], hilbertDimension);
+        createNewSimplex(triangles[i], trianglePoints[i], options);
 
         // printf("Created new Simplex %14p, circumcenter: x: %10.4f, y: %10.4f, z: %10.4f, circumradius: %10.4f \n", triangles[i], triangles[i]->circumcenter.x, triangles[i]->circumcenter.y, triangles[i]->circumcenter.z, triangles[i]->circumradius);
 
@@ -161,8 +154,6 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
     triangles[4]->neighbors[2] = triangles[0];
     triangles[4]->neighbors[3] = triangles[3];
 
-    // printRedBlackTreeTriangles(partition->triangles);
-
     for (int i = 0; i < m; i++)
     {
         sortPointsInSimplex(triangles[i]);
@@ -171,20 +162,48 @@ void supertriangles3D(Partition *partition, int hilbertDimension)
 #else
         insertIntoRedBlackTree(partition->triangles, triangles[i]);
 #endif
-
-        // printRedBlackTreeTriangles(partition->triangles);
     }
 
 #if DEBUG_TRIANGULATION
     printRedBlackTreeString(partition->triangles, printShortSimplex);
 #endif
-    // printf("1\n");
 }
 #endif
 
-#if NO_DIM > 3
-void supertriangles4DAndMore(Partition *partition, int hilbertDimension)
+// #if NO_DIM > 3
+void supertriangles4DAndMore(Partition *partition, UserOptions *options)
 {
-    fprintf(stderr, "Error in %s line %i: supertriangles4DAndMore function is not implemented \n", (char *)__FILE__, __LINE__);
-}
+    PointId **points = (PointId **)malloc((NO_DIM + 1) * sizeof(PointId *));
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        points[i] = newEmptyPointId();
+        for (int j = 0; j < NO_DIM; j++)
+        {
+            points[i]->point.coords[j] = options->minMaxCoords[j][0];
+        }
+        points[i]->point.coords[i] = options->minMaxCoords[i][1];
+
+        points[i]->mass = options->massInSuperpoints;
+        insertIntoRedBlackTree(partition->globalVertices, points[i]);
+    }
+
+    points[NO_DIM] = newEmptyPointId();
+    for (int j = 0; j < NO_DIM; j++)
+    {
+        points[NO_DIM]->point.coords[j] = options->minMaxCoords[j][0];
+    }
+    insertIntoRedBlackTree(partition->globalVertices, points[NO_DIM]);
+
+    Simplex *triangle = (Simplex *)malloc(sizeof(Simplex));
+    createNewSimplex(triangle, points, options);
+#if REDBLACKTREEDLL == 1
+    insertIntoRedBlackTreeDLL(partition->triangles, triangle);
+#else
+    insertIntoRedBlackTree(partition->triangles, triangle);
 #endif
+
+#if DEBUG_TRIANGULATION
+    printRedBlackTreeString(partition->triangles, printShortSimplex);
+#endif
+}
+// #endif

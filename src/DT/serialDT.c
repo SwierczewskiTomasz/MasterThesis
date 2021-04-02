@@ -58,19 +58,16 @@ long long uploadInformationsAboutNeighborsInEdgesTime = 0;
 long long updateAndAddSimplexesTime = 0;
 long long NextNodeAfterAddingTime = 0;
 
-long long serialDT(int k, int n, int hilbertDimension, bool onlyCompute)
+long long serialDT(UserOptions *options)
 {
     Partition *partition = (Partition *)malloc(sizeof(Partition));
     initializePartition(partition);
-    partition->hilbertDimension = hilbertDimension;
+    partition->hilbertDimension = options->PHgridSize;
 
     // generateInitialMesh(partition, k, hilbertDimension);
-    supertriangles(partition, hilbertDimension);
+    supertriangles(partition, options);
     // asciiLoad("../data/ELEPHANT_N1_R1_out27_f0.001.ascii", partition);
     asciiLoad2("../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii", partition);
-    // sleep(2);
-    
-    return 0;
 
 #if DEBUG_TRIANGULATION == 1
     printf("Trójkąty: \n");
@@ -78,13 +75,12 @@ long long serialDT(int k, int n, int hilbertDimension, bool onlyCompute)
     printf("Wierzchołki: \n");
     printRedBlackTreeString(partition->vertices, printLongPointId);
 #endif
-    // sleep(2);
 
     struct timeval te;
     gettimeofday(&te, NULL);
     long long time1 = te.tv_sec * 1000000LL + te.tv_usec;
 
-    computeDelaunayTriangulation(partition, n, hilbertDimension);
+    computeDelaunayTriangulation(partition, options);
 
     struct timeval te2;
     gettimeofday(&te2, NULL);
@@ -92,19 +88,13 @@ long long serialDT(int k, int n, int hilbertDimension, bool onlyCompute)
 
     printf("%lld\n", time2 - time1);
 
-    long long time3 = DTFE(partition);
-
-    if (onlyCompute)
+    if (options->onlyDT)
     {
-        printf("%lld\n", time2 - time1);
-        printf("%lld\n", time3);
         return time2 - time1;
     }
-    else
-    {
-        printf("%d, %lld\n", n, time2 - time1);
-        printf("%d, %lld\n", n, time3);
-    }
+
+    long long time3 = DTFE(partition, options);
+    printf("%lld\n", time3);
 
     // printf("After DT\n");
     // printf("doubleLinkedListRemoveTime: %lld\n", doubleLinkedListRemoveTime);
@@ -239,18 +229,22 @@ long long serialDT(int k, int n, int hilbertDimension, bool onlyCompute)
     FILE *fp;
     fp = fopen("./out/outputVerticesDensity.txt", "w+");
 
-    for (int i = 0; i < 250; i++)
+    for (int i = 0; i < 128; i++)
     {
-        for (int j = 0; j < 250; j++)
+        for (int j = 0; j < 128; j++)
         {
-            fprintf(fp, "%f, %f, %lf, %f, %e \n", partition->densityMatrix[i][j][100].coords[0], partition->densityMatrix[i][j][100].coords[1], partition->densityMatrix[i][j][100].density, partition->densityMatrix[i][j][100].density * 1000000, partition->densityMatrix[i][j][100].density);
+            for(int k = 0; k < 128; k++)
+            {
+                fprintf(fp, "%e\n", partition->densityMatrix[i][j][k].density * 1000000000);
+            }
+            // fprintf(fp, "%f, %f, %lf, %f, %e \n", partition->densityMatrix[i][j][100].coords[0], partition->densityMatrix[i][j][100].coords[1], partition->densityMatrix[i][j][100].density, partition->densityMatrix[i][j][100].density * 1000000, partition->densityMatrix[i][j][100].density);
             // for (int k = 0; k < 10; k++)
             // {
             //     // fprintf(fp, "%f, %f, %f, %f \n", partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2], partition->densityMatrix[i][j][k].density);
             //     fprintf(fp, "%f, %f, %lf, %f, %e \n", partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].density, partition->densityMatrix[i][j][k].density * 1000000, partition->densityMatrix[i][j][k].density);
             // }
         }
-        fprintf(fp, "\n");
+        // fprintf(fp, "\n");
     }
 
     fclose(fp);
@@ -297,11 +291,11 @@ void chooseRandomlyInitialPoints(Set *partitions, Set *points, Set *initialPoint
     fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: chooseRandomlyInitialPoints function is not implemented \n", (char *)__FILE__, __LINE__);
 }
 
-void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimension)
+void generateInitialMesh(Partition *partition, int nParticles, UserOptions *options)
 {
     srand(0);
 
-    supertriangles(partition, hilbertDimension);
+    supertriangles(partition, options);
 
     if (nParticles == 0)
         return;
@@ -333,7 +327,7 @@ void generateInitialMesh(Partition *partition, int nParticles, int hilbertDimens
     }
 }
 
-void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilbertDimension)
+void computeDelaunayTriangulation(Partition *partition, UserOptions *options)
 {
     redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
 
@@ -344,7 +338,7 @@ void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilb
         c++;
         PointId *point = (PointId *)pointer->data;
 
-        theMostNewInsertPoint(point, partition, hilbertDimension);
+        theMostNewInsertPoint(point, partition, options);
 
 #if MEASURE_TIME == 1
         struct timeval start;
@@ -361,15 +355,19 @@ void computeDelaunayTriangulation(Partition *partition, int stopAtStep, int hilb
         NextNodeAfterAddingTime += endTime - startTime;
 #endif
 
-        if (c == stopAtStep)
-            break;
+        // if(c == 10000)
+        //     break;
 
         if (c % 1000 == 0)
-            printf("%i\n", c);
+        {
+            printf("\rComputed points in DT: %i", c);
+            fflush(stdout);
+        }
     }
+    printf("\n");
 }
 
-void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDimension)
+void theMostNewInsertPoint(PointId *point, Partition *partition, UserOptions *options)
 {
 
 #if DEBUG_TRIANGULATION == 1
@@ -382,7 +380,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     long long startTime = start.tv_sec * 1000000LL + start.tv_usec;
 #endif
 
-    Simplex *simplex = findFirstSimplexToModify(point, partition, hilbertDimension);
+    Simplex *simplex = findFirstSimplexToModify(point, partition, options);
 
 #if MEASURE_TIME == 1
     struct timeval end;
@@ -515,7 +513,7 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, int hilbertDime
     printRedBlackTreeDLLString(partition->triangles, printLongSimplex);
 #endif
 
-    LinkedList *simplexList = createSimplexList(edges, point, hilbertDimension);
+    LinkedList *simplexList = createSimplexList(edges, point, options);
 
 #if DEBUG_TRIANGULATION == 1
     printf("File %s, line %i: theMostNewInsertPoint function.\n", (char *)__FILE__, __LINE__);
