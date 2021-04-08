@@ -568,6 +568,29 @@ void sortPointsInSimplex(Simplex *simplex)
     }
 }
 
+
+void sortPointsInSimplex1(Simplex *simplex)
+{
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        for (int j = 0; j < NO_DIM - i; j++)
+        {
+            if (comparePoints(simplex->vertices[j]->point, simplex->vertices[j + 1]->point) > 0)
+            {
+                printf("1\n");
+                // Nie jestem pewien, czy to będzie dobrze działać, bo pracujemy tak de facto na PointId *, a rzeczywiście są PointId, a ja dałem PointId **array, aby można było ją modyfikować.
+                PointId *copy = simplex->vertices[j];
+                simplex->vertices[j] = simplex->vertices[j + 1];
+                simplex->vertices[j + 1] = copy;
+
+                Simplex *copySimplex = simplex->neighbors[j];
+                simplex->neighbors[j] = simplex->neighbors[j + 1];
+                simplex->neighbors[j + 1] = copySimplex;
+            }
+        }
+    }
+}
+
 double comparePoints(Point p1, Point p2)
 {
     // #if NO_DIM == 2

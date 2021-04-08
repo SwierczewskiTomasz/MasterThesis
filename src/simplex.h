@@ -44,6 +44,7 @@ void freeSimplex(void *s);
 void calculateCircumcircle(Simplex *simplex);
 void calculateCircumcircleGSL(Simplex *simplex);
 void sortPointsInSimplex(Simplex *simplex);
+void sortPointsInSimplex1(Simplex *simplex);
 double comparePoints(Point p1, Point p2);
 double comparePointsVoids(void *p1, void *p2);
 

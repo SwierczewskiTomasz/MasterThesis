@@ -102,6 +102,9 @@ int asciiLoad2(char *filename, Partition *partition)
             if (point->point.coords[i] > minMaxCoords[i][1])
                 minMaxCoords[i][1] = point->point.coords[i];
         }
+
+        // if(count == 10000)
+        //     break;
     }
     fclose(fp);
 
@@ -115,4 +118,83 @@ int asciiLoad2(char *filename, Partition *partition)
     printf("\n");
 
     return count;
+}
+
+int loadDTFormat1(UserOptions *options, Partition *partition)
+{
+    int count = 0;
+    int result = 1;
+
+    FILE *fp = fopen(options->DTinputFilename, "r+");
+    PointId **points = (PointId **)malloc((NO_DIM + 1) * sizeof(PointId *));
+
+    while (result != EOF)
+    {
+        for (int i = 0; i < NO_DIM + 1; i++)
+        {
+            points[i] = newEmptyPointId();
+        }
+
+        for (int i = 0; i < NO_DIM + 1; i++)
+        {
+            for (int j = 0; j < NO_DIM; j++)
+            {
+                result = fscanf(fp, "%le ", &points[i]->point.coords[j]);
+                if (result == EOF)
+                    break;
+            }
+            if (result == EOF)
+                break;
+        }
+
+        if (result == EOF)
+            break;
+
+        for (int i = 0; i < NO_DIM + 1; i++)
+        {
+            redBlackTreeNode *node = getFromRedBlackTree(partition->vertices, points[i]);
+            if (node == NULL)
+            {
+                insertIntoRedBlackTree(partition->vertices, points[i]);
+            }
+            else
+            {
+                free(points[i]);
+                points[i] = (PointId *)node->data;
+            }
+        }
+        Simplex *newSimplex = (Simplex *)malloc(sizeof(Simplex));
+        createNewSimplex(newSimplex, points, options);
+
+        // for (int i = 0; i < NO_DIM + 1; i++)
+        //     for (int j = 0; j < NO_DIM; j++)
+        //         printf("%le ", newSimplex->vertices[i]->point.coords[j]);
+        // printf("\n");
+        sortPointsInSimplex(newSimplex);
+        // for (int i = 0; i < NO_DIM + 1; i++)
+        //     for (int j = 0; j < NO_DIM; j++)
+        //         printf("%le ", newSimplex->vertices[i]->point.coords[j]);
+        // printf("\n");
+        insertIntoRedBlackTreeDLL(partition->triangles, newSimplex);
+
+        count++;
+    }
+
+    free(points);
+
+    return count;
+}
+
+int loadDT(UserOptions *options, Partition *partition)
+{
+    if (options->DTinputFilename == NULL)
+        return 0;
+
+    switch (options->DTinputFormat)
+    {
+    case 1:
+        return loadDTFormat1(options, partition);
+    default:
+        return loadDTFormat1(options, partition);
+    }
 }

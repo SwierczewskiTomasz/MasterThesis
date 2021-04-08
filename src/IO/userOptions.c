@@ -25,6 +25,16 @@ UserOptions *readUserOptions(int argc, char **argv)
             i++;
             result->outputFilename = argv[i];
         }
+        else if (!strcmp(argv[i], "--DTinput"))
+        {
+            i++;
+            result->DTinputFilename = argv[i];
+        }
+        else if (!strcmp(argv[i], "--DToutput"))
+        {
+            i++;
+            result->DToutputFilename = argv[i];
+        }
         else if (!strcmp(argv[i], "--onlyDT"))
         {
             result->onlyDT = true;
@@ -126,11 +136,11 @@ void printUserOptions(UserOptions *options)
     printf("Input filename: %s \n", options->inputFilename);
     printf("Output filename: %s \n", options->outputFilename);
     printf("DT input filename: %s \n", options->DTinputFilename);
-    printf("DT onput filename: %s \n", options->DToutputFilename);
+    printf("DT output filename: %s \n", options->DToutputFilename);
     printf("grid size: %d \n", options->gridSize);
     printf("PH grid size: %d \n", options->PHgridSize);
-    printf("Input filename: %s \n", options->onlyDT ? "True" : "False");
-    printf("Input filename: %s \n", options->onlyDTFE ? "True" : "False");
+    printf("Only DT: %s \n", options->onlyDT ? "True" : "False");
+    printf("Only DTFE: %s \n", options->onlyDTFE ? "True" : "False");
     printf("MinMax Coords: ");
     for(int i = 0; i < NO_DIM; i++)
     {

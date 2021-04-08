@@ -6,4 +6,7 @@
 int asciiLoad(char *filename, Partition *partition);
 int asciiLoad2(char *filename, Partition *partition);
 
+int loadDT(UserOptions *options, Partition *partition);
+int saveDT(UserOptions *options, Partition *partition);
+
 #endif

@@ -27,17 +27,17 @@ void updateAndAddSimplexes(PolygonList *edges, Partition *partition)
         }
         sortPointsInSimplex(result);
 #if REDBLACKTREEDLL == 1
-    insertIntoRedBlackTreeDLL(partition->triangles, result);
+        insertIntoRedBlackTreeDLL(partition->triangles, result);
 #else
-    insertIntoRedBlackTree(partition->triangles, result);
-#endif        
-        
+        insertIntoRedBlackTree(partition->triangles, result);
+#endif
+
 #if DEBUG_TRIANGULATION == 1
         Simplex *simplex = result;
 
         saveToLogs((char *)__FILE__, __LINE__, "Created new simplex: ", printLongSimplex, simplex);
         saveToLogs((char *)__FILE__, __LINE__, "Current Edge: ", printShortEdge, currentEdge->edge);
-        
+
         printf("Triangles tree: \n");
         printRedBlackTreeDLLString(partition->triangles, printLongSimplex);
 #endif

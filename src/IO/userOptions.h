@@ -11,6 +11,11 @@ typedef struct UserOptions
     char *DTinputFilename;
     char *DToutputFilename;
 
+    int inputFormat;
+    int outputFormat;
+    int DTinputFormat;
+    int DToutputFormat;
+
     int gridSize;
     int PHgridSize;
 
@@ -21,7 +26,6 @@ typedef struct UserOptions
 
     double massInSuperpoints;
 } UserOptions;
-
 
 UserOptions *readUserOptions(int argc, char **argv);
 void printHelp();

@@ -65,9 +65,38 @@ long long serialDT(UserOptions *options)
     partition->hilbertDimension = options->PHgridSize;
 
     // generateInitialMesh(partition, k, hilbertDimension);
-    supertriangles(partition, options);
+
     // asciiLoad("../data/ELEPHANT_N1_R1_out27_f0.001.ascii", partition);
-    asciiLoad2("../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii", partition);
+    // asciiLoad2("../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii", partition);
+
+    long long time1 = 0, time2 = 0;
+
+    if (!options->onlyDTFE)
+    {
+        supertriangles(partition, options);
+        asciiLoad2(options->inputFilename, partition);
+
+        struct timeval te;
+        gettimeofday(&te, NULL);
+        time1 = te.tv_sec * 1000000LL + te.tv_usec;
+
+        computeDelaunayTriangulation(partition, options);
+
+        struct timeval te2;
+        gettimeofday(&te2, NULL);
+        time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
+
+        printf("%lld\n", time2 - time1);
+    }
+    else
+    {
+        int loaded = loadDT(options, partition);
+        printf("Loaded: %i \n", loaded);
+        printf("Vertices: %i \n", partition->vertices->count);
+        printf("Triangles: %i \n", partition->triangles->count);
+
+        // sleep(5);
+    }
 
 #if DEBUG_TRIANGULATION == 1
     printf("Trójkąty: \n");
@@ -76,20 +105,10 @@ long long serialDT(UserOptions *options)
     printRedBlackTreeString(partition->vertices, printLongPointId);
 #endif
 
-    struct timeval te;
-    gettimeofday(&te, NULL);
-    long long time1 = te.tv_sec * 1000000LL + te.tv_usec;
-
-    computeDelaunayTriangulation(partition, options);
-
-    struct timeval te2;
-    gettimeofday(&te2, NULL);
-    long long time2 = te2.tv_sec * 1000000LL + te2.tv_usec;
-
-    printf("%lld\n", time2 - time1);
-
     if (options->onlyDT)
-    {
+    {        
+        int count = saveDT(options, partition);
+        printf("Saved %i triangles\n", count);
         return time2 - time1;
     }
 
@@ -233,7 +252,7 @@ long long serialDT(UserOptions *options)
     {
         for (int j = 0; j < 128; j++)
         {
-            for(int k = 0; k < 128; k++)
+            for (int k = 0; k < 128; k++)
             {
                 fprintf(fp, "%e\n", partition->densityMatrix[i][j][k].density * 1000000000);
             }
