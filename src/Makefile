@@ -6,14 +6,16 @@ FILES = \
 	constants.h\
 	DataStructures/dataStructure.h\
 	DataStructures/dataStructure.c\
+	DataStructures/doubleLinkedList.h\
+	DataStructures/doubleLinkedList.c\
+	DataStructures/hashTable.h\
+	DataStructures/hashTable.c\
+	DataStructures/linkedList.h\
+	DataStructures/linkedList.c\
 	DataStructures/redBlackTree.h\
 	DataStructures/redBlackTree.c\
 	DataStructures/redBlackTreeDLL.h\
 	DataStructures/redBlackTreeDLL.c\
-	DataStructures/doubleLinkedList.h\
-	DataStructures/doubleLinkedList.c\
-	DataStructures/linkedList.h\
-	DataStructures/linkedList.c\
 	DT/createSimplexList.c\
 	DT/createTreeOfEdgeOfEdges.c\
 	DT/findAllSimplexesToModify.c\
@@ -26,7 +28,7 @@ FILES = \
 	DTFE/densityOfTriangles.c\
 	DTFE/DTFE.c\
 	DTFE/DTFE.h\
-	DTFE/MonteCarlo.c\
+	DTFE/monteCarlo.c\
 	HilbertCurve/hilbertCurve.h\
 	HilbertCurve/hilbertCurve.c\
 	IO/input.c\

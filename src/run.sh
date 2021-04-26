@@ -30,10 +30,18 @@ then
     # gnuplot "generateImages2.plt"
 else
     make main
-    out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_1.txt --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 0 --onlyDT --DToutput out/DT_output_3.txt
+    # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_test_2021_04_13_1.txt --grid 128 --PHgrid 32 --regionkpc 0 1000000 0 1000000 0 1000000 --massInSuperpoints 7.798537
+    # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output ../wyniki/DTFE_test_2_2021_04_14_128.a_den --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 7.798537
+    # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_test_2021_04_13_256.txt --grid 256 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 7.798537 --monteCarlo --nMonteCarlo 100
+    out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output ../wyniki/DTFE_test_2_2021_04_22_128_6.a_den --grid 128 --PHgrid 32 --regionkpc 0 1 0 1 0 1 --massInSuperpoints 7.798537 --monteCarlo --nMonteCarlo 100
+
+
+    # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_test_2021_04_08_3.txt --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 7.798537
     # out/DT --output out/DTFE_1.txt --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 0 --onlyDTFE --DTinput out/DT_output_3.txt
     # out/DT --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 0 --onlyDTFE --onlyDT --DTinput ../data/CGAL/output_triangulation_dla_mojego_kodu --DToutput out/CGAL_DT_output_2.txt
     # out/DT --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 0 --onlyDTFE --onlyDT --DTinput out/DT_output.txt --DToutput out/DT_output_2.txt
+
+    # out/DT --output out/DTFE_test_2021_04_08_1.txt --grid 4 --PHgrid 4 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 1
     
     # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_1.txt --grid 128 --PHgrid 32 --regionkpc 0 100 0 100 0 100 --massInSuperpoints 0 --onlyDT 
     # out/DT &> out/output1.txt

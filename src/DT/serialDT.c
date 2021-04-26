@@ -74,7 +74,7 @@ long long serialDT(UserOptions *options)
     if (!options->onlyDTFE)
     {
         supertriangles(partition, options);
-        asciiLoad2(options->inputFilename, partition);
+        asciiLoad2(options->inputFilename, partition, options);
 
         struct timeval te;
         gettimeofday(&te, NULL);
@@ -246,15 +246,24 @@ long long serialDT(UserOptions *options)
     //     fclose(fp);
 
     FILE *fp;
-    fp = fopen("./out/outputVerticesDensity.txt", "w+");
+    fp = fopen(options->outputFilename, "w+");
 
-    for (int i = 0; i < 128; i++)
+    // double scalar = 1;
+    // for(int i = 0; i < NO_DIM; i++)
+    // {
+    //     scalar *= options->minMaxCoords[i][1] - options->minMaxCoords[i][0];
+    //     scalar /= options->gridSize;
+    // }
+
+    for (int i = 0; i < options->gridSize; i++)
     {
-        for (int j = 0; j < 128; j++)
+        for (int j = 0; j < options->gridSize; j++)
         {
-            for (int k = 0; k < 128; k++)
+            for (int k = 0; k < options->gridSize; k++)
             {
-                fprintf(fp, "%e\n", partition->densityMatrix[i][j][k].density * 1000000000);
+                // fprintf(fp, "%e\n", partition->densityMatrix[k][j][i].density * scalar);
+                // fprintf(fp, "%e\n", partition->densityMatrix[i][j][k].density * 1000000000);
+                fprintf(fp, "%e\n", partition->densityMatrix[i][j][k].density);
             }
             // fprintf(fp, "%f, %f, %lf, %f, %e \n", partition->densityMatrix[i][j][100].coords[0], partition->densityMatrix[i][j][100].coords[1], partition->densityMatrix[i][j][100].density, partition->densityMatrix[i][j][100].density * 1000000, partition->densityMatrix[i][j][100].density);
             // for (int k = 0; k < 10; k++)

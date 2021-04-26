@@ -2,6 +2,7 @@
 #include "string.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 UserOptions *readUserOptions(int argc, char **argv)
 {
@@ -9,6 +10,8 @@ UserOptions *readUserOptions(int argc, char **argv)
 
     result->onlyDT = false;
     result->onlyDTFE = false;
+    result->MonteCarlo = false;
+    result->nMonteCarlo = 100;
     result->gridSize = 0;
     result->PHgridSize = 0;
     result->massInSuperpoints = 1;
@@ -96,13 +99,31 @@ UserOptions *readUserOptions(int argc, char **argv)
         {
             i++;
             result->massInSuperpoints = atof(argv[i]);
-            printf("JUhu\n");
+        }
+        else if (!strcmp(argv[i], "--monteCarlo"))
+        {
+            result->MonteCarlo = true;
+        }
+        else if (!strcmp(argv[i], "--nMonteCarlo"))
+        {
+            i++;
+            result->nMonteCarlo = atoi(argv[i]);
         }
         else
         {
             printf("Argument not recognized, please read help (use --help). Argument: %s \n", argv[i]);
         }
     }
+
+    result->diameterOfGrid = 0;
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        double temp = (result->minMaxCoords[i][1] - result->minMaxCoords[i][0]) / result->gridSize / 2;
+        result->diameterOfGrid += temp * temp;
+    }
+
+    result->diameterOfGrid = pow(result->diameterOfGrid, 0.5);
 
     return result;
 }
@@ -142,10 +163,13 @@ void printUserOptions(UserOptions *options)
     printf("Only DT: %s \n", options->onlyDT ? "True" : "False");
     printf("Only DTFE: %s \n", options->onlyDTFE ? "True" : "False");
     printf("MinMax Coords: ");
-    for(int i = 0; i < NO_DIM; i++)
+    for (int i = 0; i < NO_DIM; i++)
     {
         printf("[%i]: %f, %f  ", i, options->minMaxCoords[i][0], options->minMaxCoords[i][1]);
     }
     printf("\n");
     printf("Mass in superpoints: %f\n", options->massInSuperpoints);
+    printf("Monte Carlo: %s \n", options->MonteCarlo ? "True" : "False");
+    printf("n samples in Monte Carlo: %i \n", options->nMonteCarlo);
+    printf("Diameter of grid: %f\n", options->diameterOfGrid);
 }

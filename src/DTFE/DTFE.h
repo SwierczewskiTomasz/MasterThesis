@@ -18,5 +18,6 @@ double interpolation(Simplex *simplex, BarycentricCoordinates *barycentric);
 bool checkIfInsideSimplex(BarycentricCoordinates *barycentric);
 BarycentricCoordinates* calculateBarycentricCoordinates(Simplex *simplex, PointWithDensity *point);
 bool calculatePointDensity(Partition *partition, PointWithDensity *point, UserOptions *options);
+bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *point, UserOptions *options);
 
 #endif

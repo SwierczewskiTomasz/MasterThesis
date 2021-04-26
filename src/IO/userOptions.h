@@ -25,6 +25,10 @@ typedef struct UserOptions
     bool onlyDTFE;
 
     double massInSuperpoints;
+    int nMonteCarlo;
+    bool MonteCarlo;
+
+    double diameterOfGrid;
 } UserOptions;
 
 UserOptions *readUserOptions(int argc, char **argv);

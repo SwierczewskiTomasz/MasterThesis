@@ -9,6 +9,7 @@
 #include <string.h>
 #include "../polygon.h"
 #include "../DataStructures/dataStructure.h"
+#include "../DataStructures/hashTable.h"
 #include "../DataStructures/redBlackTree.h"
 #include "../DataStructures/redBlackTreeDLL.h"
 #include "../myMath.h"
@@ -17,6 +18,7 @@
 #include "../edgeOfEdge.h"
 #include "../HilbertCurve/hilbertCurve.h"
 #include "../Logs/Log.h"
+
 
 
 typedef struct Set
@@ -86,6 +88,7 @@ Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, UserO
 // Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, int hilbertDimension);
 LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point);
 LinkedList *findTrianglesToModifyPoint(Simplex *simplex, Point *point);
+LinkedList *findTrianglesToModifyPointMonteCarlo(Simplex *simplex, Point *point, UserOptions *options);
 PolygonList *findPolygon(PointId *point, Partition *partition, LinkedList *trianglesToModify);
 redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges);
 void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *treeEdgeOfEdges);

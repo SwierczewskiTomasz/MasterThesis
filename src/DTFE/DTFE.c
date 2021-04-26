@@ -10,8 +10,72 @@
 
 #include <gsl/gsl_linalg.h>
 
+void circumcenterInsideSimplex(Partition *partition)
+{
+    int count1 = 0;
+    int count2 = 0;
+
+    redBlackTreeDLLNode *pointer = minimumInRedBlackSubTreeDLL(partition->triangles->first);
+
+    BarycentricCoordinates *result = (BarycentricCoordinates *)malloc(sizeof(BarycentricCoordinates));
+
+    int n = NO_DIM + 1;
+
+    while (pointer != NULL)
+    {
+        double *matrix = (double *)malloc(n * n * sizeof(double));
+        double *bVector = (double *)malloc(n * sizeof(double));
+
+        Simplex *simplex = (Simplex *)pointer->data;
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < NO_DIM; j++)
+            {
+                matrix[j * n + i] = simplex->vertices[i]->point.coords[j];
+            }
+            matrix[(n - 1) * n + i] = 1;
+        }
+
+        for (int i = 0; i < NO_DIM; i++)
+            bVector[i] = simplex->circumcenter.coords[i];
+
+        bVector[NO_DIM] = 1;
+
+        gsl_permutation *p = gsl_permutation_alloc(n);
+        gsl_matrix_view A = gsl_matrix_view_array(matrix, n, n);
+        gsl_vector_view b = gsl_vector_view_array(bVector, n);
+        gsl_vector *x = gsl_vector_alloc(n);
+        int s = 1;
+        gsl_linalg_LU_decomp(&A.matrix, p, &s);
+        gsl_linalg_LU_solve(&A.matrix, p, &b.vector, x);
+        gsl_permutation_free(p);
+
+        for (int i = 0; i < n; i++)
+            result->coords[i] = x->data[i];
+
+        gsl_vector_free(x);
+
+        if (checkIfInsideSimplex(result))
+            count2++;
+
+        count1++;
+
+        free(matrix);
+        free(bVector);
+
+        pointer = getNextNodeFromRedBlackTreeDLL(partition->triangles, pointer);
+    }
+
+    free(result);
+
+    printf("Analyzed %i simplexes, %i have circumcenter inside simplex. \n", count1, count2);
+}
+
 long long DTFE(Partition *partition, UserOptions *options)
 {
+    circumcenterInsideSimplex(partition);
+
     double det = CayleyMengerDeterminant(partition->triangles->first->data);
     printf("Pole powierzchni: %12.4f\n", det);
 
@@ -22,33 +86,42 @@ long long DTFE(Partition *partition, UserOptions *options)
     calculateVolumeInEachSimplex(partition);
     calculateDensityInEachVertex(partition);
 
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < options->gridSize; i++)
     {
-        for (int j = 0; j < 128; j++)
+        for (int j = 0; j < options->gridSize; j++)
         {
-            for (int k = 0; k < 128; k++)
+            for (int k = 0; k < options->gridSize; k++)
             {
-                // partition->densityMatrix[i][j][k].coords[0] = (double)i * 1000 * 4 + 1;
-                // partition->densityMatrix[i][j][k].coords[1] = (double)j * 1000 * 4 + 1;
-                // partition->densityMatrix[i][j][k].coords[2] = (double)k * 1000 * 4 + 1;
-
-                partition->densityMatrix[i][j][k].coords[0] = (double)i * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize - 1);
-                partition->densityMatrix[i][j][k].coords[1] = (double)j * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize - 1);
-                partition->densityMatrix[i][j][k].coords[2] = (double)k * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize - 1);
-
-                // printf("%10.4f, %10.4f\n", partition->densityMatrix[i][j].coords[0], partition->densityMatrix[i][j].coords[1]);
-
-                bool success = calculatePointDensity(partition, &partition->densityMatrix[i][j][k], options);
-
-                if (!success)
+                if (options->MonteCarlo)
                 {
-                    printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2]);
+                    partition->densityMatrix[i][j][k].coords[0] = (double)(i + 0.5) * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize);
+                    partition->densityMatrix[i][j][k].coords[1] = (double)(j + 0.5) * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize);
+                    partition->densityMatrix[i][j][k].coords[2] = (double)(k + 0.5) * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize);
+
+                    bool success = calculatePointDensityMonteCarlo(partition, &partition->densityMatrix[i][j][k], options);
+
+                    if (!success)
+                    {
+                        printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2]);
+                    }
                 }
-                // else
-                // {
-                //     // printf("Success! %i, %i\n", i, j);
-                //     printf("%10.4f\n", partition->densityMatrix[i][j].density);
-                // }
+                else
+                {
+                    partition->densityMatrix[i][j][k].coords[0] = (double)i * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize - 1);
+                    partition->densityMatrix[i][j][k].coords[1] = (double)j * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize - 1);
+                    partition->densityMatrix[i][j][k].coords[2] = (double)k * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize - 1);
+
+                    // partition->densityMatrix[i][j][k].coords[0] = (double)(i + 0.5) * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize);
+                    // partition->densityMatrix[i][j][k].coords[1] = (double)(j + 0.5) * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize);
+                    // partition->densityMatrix[i][j][k].coords[2] = (double)(k + 0.5) * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize);
+
+                    bool success = calculatePointDensity(partition, &partition->densityMatrix[i][j][k], options);
+
+                    if (!success)
+                    {
+                        printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2]);
+                    }
+                }
             }
         }
         printf("\rComputed points in DTFE: %i/%i", i, options->gridSize);
@@ -67,11 +140,41 @@ void calculateDensityInEachVertex(Partition *partition)
 {
     redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->vertices->first);
 
+    double totalMass = 0;
+
+    while (pointer != NULL)
+    {
+        PointId *point = (PointId *)pointer->data;
+        totalMass += point->mass;
+
+        pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
+    }
+
+    pointer = minimumInRedBlackSubTree(partition->globalVertices->first);
+
+    while (pointer != NULL)
+    {
+        PointId *point = (PointId *)pointer->data;
+        totalMass += point->mass;
+
+        pointer = getNextNodeFromRedBlackTree(partition->globalVertices, pointer);
+    }
+
+    double avgMass = totalMass / (partition->globalVertices->count + partition->vertices->count);
+
+    printf("Total mass: %e \n", totalMass);
+
+    double avgSimplexVolume = 1.0 / partition->triangles->count;
+
+    printf("Number of triangles: %i, expected avg simplex volume: %e\n", partition->triangles->count, avgSimplexVolume);
+
+    pointer = minimumInRedBlackSubTree(partition->vertices->first);
+
     while (pointer != NULL)
     {
         PointId *point = (PointId *)pointer->data;
 
-        point->density = point->mass * point->count / point->density;
+        point->density = point->mass * point->count / (point->density / avgSimplexVolume) / avgMass;
         // printf("Denisty: %10.4f, %10.4f, %10.4f\n", point->point.coords[0], point->point.coords[1], point->density);
 
         pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
@@ -83,10 +186,10 @@ void calculateDensityInEachVertex(Partition *partition)
     {
         PointId *point = (PointId *)pointer->data;
 
-        point->density = point->mass * point->count / point->density;
-        // printf("Denisty: %10.4f, %10.4f, %10.4f\n", point->point.coords[0], point->point.coords[1], point->density);
+        point->density = point->mass * point->count / (point->density / avgSimplexVolume) / avgMass;
+        printf("Denisty: %10.4f, %10.4f, %10.4f, %e\n", point->point.coords[0], point->point.coords[1], point->point.coords[2], point->density);
 
-        pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
+        pointer = getNextNodeFromRedBlackTree(partition->globalVertices, pointer);
     }
 }
 
@@ -107,6 +210,8 @@ void calculateVolumeInEachSimplex(Partition *partition)
 void addVolumeToEachVertexInSimplex(Simplex *simplex)
 {
     double volume = CayleyMengerDeterminant2(simplex);
+
+    // printf("Simplex: %i, volume: %10.5f\n", simplex->id, volume);
 
     for (int i = 0; i < NO_DIM + 1; i++)
     {

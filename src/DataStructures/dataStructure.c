@@ -87,6 +87,7 @@ PointId *newPointId(FLOATING_POINT_PRECISION coords[NO_DIM])
 PointId *newEmptyPointId()
 {
     PointId *result = (PointId *)malloc(sizeof(PointId));
+    result->count = 0;
 #if ID == 1
     result->id = PointIdCount++;
 #endif
