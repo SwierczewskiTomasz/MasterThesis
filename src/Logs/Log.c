@@ -1,6 +1,8 @@
 #include "Log.h"
 #include <stdarg.h>
 
+#include "../oneHeaderToRuleThemAll.h"
+
 char *printLongPoint(void *data)
 {
     Point *point = (Point *)data;

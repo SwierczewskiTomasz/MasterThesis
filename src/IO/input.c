@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "io.h"
 #include <limits.h>
 // #include "../DT/serialDT.h"
@@ -124,8 +126,8 @@ int asciiLoad3(char *filename, Partition *partition, UserOptions *options)
                 minMaxCoords[i][1] = point->point.coords[i];
         }
 
-        // if(count == 10000)
-        //     break;
+        if (count == 1000)
+            break;
     }
     fclose(fp);
 
@@ -180,7 +182,7 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
 
         // printf("%lf %lf %lf,\t%lf %lf %lf,\t%f\n", point->point.coords[0], point->point.coords[1], point->point.coords[2], point->velocity[0], point->velocity[1], point->velocity[2], point->mass);
 
-        for(int i = 0; i < NO_DIM; i++)
+        for (int i = 0; i < NO_DIM; i++)
         {
             point->point.coords[i] /= 1024000;
         }
@@ -230,8 +232,8 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
                 minMaxCoords[i][1] = point->point.coords[i];
         }
 
-        // if(count == 10000)
-        //     break;
+        if(count == 100)
+            break;
     }
     fclose(fp);
 
@@ -291,7 +293,12 @@ int loadDTFormat1(UserOptions *options, Partition *partition)
             }
         }
         Simplex *newSimplex = (Simplex *)malloc(sizeof(Simplex));
+
+#if REDBLACKTREEDLL == 2
+        createNewSimplex(newSimplex, points, options, partition->triangles->LUT);
+#else
         createNewSimplex(newSimplex, points, options);
+#endif
 
         // for (int i = 0; i < NO_DIM + 1; i++)
         //     for (int j = 0; j < NO_DIM; j++)
@@ -302,7 +309,13 @@ int loadDTFormat1(UserOptions *options, Partition *partition)
         //     for (int j = 0; j < NO_DIM; j++)
         //         printf("%le ", newSimplex->vertices[i]->point.coords[j]);
         // printf("\n");
+#if REDBLACKTREEDLL == 1
         insertIntoRedBlackTreeDLL(partition->triangles, newSimplex);
+#elif REDBLACKTREEDLL == 2
+        insertIntoLUTRBTDLL(partition->triangles, newSimplex);
+#else
+        insertIntoRedBlackTree(partition->triangles, newSimplex);
+#endif
 
         count++;
     }

@@ -1,7 +1,7 @@
 #ifndef DTFE_H
 #define DTFE_H
 
-#include "../DT/serialDT.h"
+#include "../DT/standardDT/serialDT.h"
 
 typedef struct BarycentricCoordinates
 {

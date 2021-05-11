@@ -1,7 +1,6 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include "../DT/serialDT.h"
 #include <stdio.h>
 
 char *printLongPoint(void *data);

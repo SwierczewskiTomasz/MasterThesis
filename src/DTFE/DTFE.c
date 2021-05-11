@@ -9,14 +9,20 @@
 #endif
 
 #include <gsl/gsl_linalg.h>
+#include "../Utilities/myMath.h"
 
 void circumcenterInsideSimplex(Partition *partition)
 {
     int count1 = 0;
     int count2 = 0;
 
+#if REDBLACKTREEDLL == 1
     redBlackTreeDLLNode *pointer = minimumInRedBlackSubTreeDLL(partition->triangles->first);
+#elif REDBLACKTREEDLL == 2
+    LUTRBTDLLNode *pointer = getFirstOfZCurveIndex(partition->triangles, 0);
+#else
 
+#endif
     BarycentricCoordinates *result = (BarycentricCoordinates *)malloc(sizeof(BarycentricCoordinates));
 
     int n = NO_DIM + 1;
@@ -64,7 +70,13 @@ void circumcenterInsideSimplex(Partition *partition)
         free(matrix);
         free(bVector);
 
+#if REDBLACKTREEDLL == 1
         pointer = getNextNodeFromRedBlackTreeDLL(partition->triangles, pointer);
+#elif REDBLACKTREEDLL == 2
+        pointer = getNextNodeFromLUTRBTDLL(pointer);
+#else
+        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+#endif
     }
 
     free(result);
@@ -195,7 +207,13 @@ void calculateDensityInEachVertex(Partition *partition)
 
 void calculateVolumeInEachSimplex(Partition *partition)
 {
+#if REDBLACKTREEDLL == 1
     redBlackTreeDLLNode *pointer = minimumInRedBlackSubTreeDLL(partition->triangles->first);
+#elif REDBLACKTREEDLL == 2
+    LUTRBTDLLNode *pointer = getFirstOfZCurveIndex(partition->triangles, 0);
+#else
+    redBlackTreeNode *pointer = minimumInRedBlackSubTree(partition->triangles->first);
+#endif
 
     while (pointer != NULL)
     {
@@ -203,7 +221,13 @@ void calculateVolumeInEachSimplex(Partition *partition)
 
         addVolumeToEachVertexInSimplex(simplex);
 
+#if REDBLACKTREEDLL == 1
         pointer = getNextNodeFromRedBlackTreeDLL(partition->triangles, pointer);
+#elif REDBLACKTREEDLL == 2
+        pointer = getNextNodeFromLUTRBTDLL(pointer);
+#else
+        pointer = getNextNodeFromRedBlackTree(partition->triangles, pointer);
+#endif
     }
 }
 
@@ -333,23 +357,12 @@ double interpolation(Simplex *simplex, BarycentricCoordinates *barycentric)
 
 bool checkIfInsideSimplex(BarycentricCoordinates *barycentric)
 {
-    bool print = false;
     for (int i = 0; i < NO_DIM + 1; i++)
     {
         if (barycentric->coords[i] < -10e-10 || barycentric->coords[i] > 1 + 10e10)
             return false;
-        // if ((barycentric->coords[i] > -10e-10 || barycentric->coords[i] < 1 + 10e10) && (barycentric->coords[i] < 0 || barycentric->coords[i] > 1))
-        // {
-        //     print = true;
-        // }
     }
 
-    // if (print)
-    // {
-    //     for (int i = 0; i < NO_DIM + 1; i++)
-    //         printf("%e ", barycentric->coords[i]);
-    //     printf("\n");
-    // }
     return true;
 }
 

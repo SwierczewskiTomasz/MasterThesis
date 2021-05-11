@@ -41,24 +41,13 @@ void calculateBarycentricCoordinatesV2(BarycentricCoordinates *result, Simplex *
 /**
  * Return pointer to simplex, which one contain searching point, if not found return NULL.
  */
-Simplex *densityInPointMonteCarlo(Partition *partition, PointWithDensity *point, LinkedList *list, Simplex *lastSimplex)
+Simplex *densityInPointMonteCarlo(Partition *partition, PointWithDensity *point, LinkedList *list)
 {
+    LinkedListNode *prev = NULL;
     LinkedListNode *current = list->first;
     Simplex *simplex;
 
     BarycentricCoordinates *coords = (BarycentricCoordinates *)malloc(sizeof(BarycentricCoordinates));
-
-    if (lastSimplex != NULL)
-    {
-        calculateBarycentricCoordinatesV2(coords, lastSimplex, point);
-
-        if (checkIfInsideSimplex(coords))
-        {
-            point->density = interpolation(lastSimplex, coords);
-            free(coords);
-            return lastSimplex;
-        }
-    }
 
     while (current != NULL)
     {
@@ -70,9 +59,17 @@ Simplex *densityInPointMonteCarlo(Partition *partition, PointWithDensity *point,
         {
             point->density = interpolation(simplex, coords);
             free(coords);
+
+            if (prev != NULL)
+            {
+                prev->next = current->next;
+                current->next = list->first;
+                list->first = current;
+            }
             return simplex;
         }
 
+        prev = current;
         current = current->next;
     }
 
@@ -99,7 +96,7 @@ bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *poi
 
     LinkedList *list = findTrianglesToModifyPointMonteCarlo(simplex, pointTemp, options);
 
-    printf("%i\n", list->count);
+    // printf("%i\n", list->count);
 
     PointWithDensity *randomPoint = (PointWithDensity *)malloc(sizeof(PointWithDensity));
 
@@ -117,7 +114,7 @@ bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *poi
 
         randomPoint->density = 0;
 
-        lastSimplex = densityInPointMonteCarlo(partition, randomPoint, list, lastSimplex);
+        lastSimplex = densityInPointMonteCarlo(partition, randomPoint, list);
         if (lastSimplex == NULL)
         {
             for (int j = 0; j < NO_DIM; j++)
@@ -134,7 +131,7 @@ bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *poi
             printf("Number of triangles on list of founded triangles: %i \n", list->count);
 
             printf("Error - didn't found simplex, that sample is inside simplex. \n");
-            sleep(1);
+            // sleep(1);
         }
         else if (randomPoint->density <= 0)
         {
@@ -151,5 +148,6 @@ bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *poi
     removeLinkedList(list, false);
 
     free(pointTemp);
+    free(randomPoint);
     return true;
 }

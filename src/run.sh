@@ -25,7 +25,9 @@ then
 elif [ $valgrind == 1 ];
 then
     make main
-    valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose out/DT &> out/valgrind.txt
+    # valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose out/DT &> out/valgrind.txt
+    valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output ../wyniki/DTFE_test_2_2021_04_27_128_1.a_den --grid 16 --PHgrid 4 --regionkpc 0 1 0 1 0 1 --massInSuperpoints 7.798537 --monteCarlo --nMonteCarlo 100 &> out/valgrind.txt
+    valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output ../wyniki/DTFE_test_2_2021_05_06_128_1.a_den --grid 128 --PHgrid 32 --regionkpc 0 1 0 1 0 1 --massInSuperpoints 7.798537 --monteCarlo --nMonteCarlo 10 &> out/valgrind2.txt
     # gnuplot "generateImages.plt"
     # gnuplot "generateImages2.plt"
 else
@@ -33,7 +35,7 @@ else
     # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_test_2021_04_13_1.txt --grid 128 --PHgrid 32 --regionkpc 0 1000000 0 1000000 0 1000000 --massInSuperpoints 7.798537
     # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output ../wyniki/DTFE_test_2_2021_04_14_128.a_den --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 7.798537
     # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_test_2021_04_13_256.txt --grid 256 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 7.798537 --monteCarlo --nMonteCarlo 100
-    out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output ../wyniki/DTFE_test_2_2021_04_22_128_6.a_den --grid 128 --PHgrid 32 --regionkpc 0 1 0 1 0 1 --massInSuperpoints 7.798537 --monteCarlo --nMonteCarlo 100
+    out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output ../wyniki/DTFE_test_2_2021_05_06_128_1.a_den --grid 128 --PHgrid 32 --regionkpc 0 1 0 1 0 1 --massInSuperpoints 7.798537 --monteCarlo --nMonteCarlo 10
 
 
     # out/DT --input ../data/Hellwing/ELEPHANT_GR_R1_out38_f0.001.ascii --output out/DTFE_test_2021_04_08_3.txt --grid 128 --PHgrid 32 --regionkpc 0 1024000 0 1024000 0 1024000 --massInSuperpoints 7.798537

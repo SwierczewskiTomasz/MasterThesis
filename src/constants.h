@@ -31,8 +31,36 @@
 #define ID_TYPE int
 #endif
 
+
+
 #ifndef REDBLACKTREEDLL
-#define REDBLACKTREEDLL 1
+/** Choose structure you would like to store simplexes:
+ * RedBlackTree - 0
+ * RedBlackTreeDLL - 1
+ * LUTRBTDLL - 2 
+ */
+#define REDBLACKTREEDLL 2
+#endif
+
+#ifndef DIVIDEWHEN
+#define DIVIDEWHEN 32
+#endif
+
+#ifndef BLOCK_SIZE
+/** Block size for array. Instead storing n-dimensional array it is using 2 arrays - 
+ * one storing blocks, and second storing data in one block.
+ */
+#define BLOCK_SIZE 1024
+#endif
+
+#ifndef BLOCK_TYPE
+/** Type for storing id's of place in block array. 
+ */
+#define BLOCK_TYPE int
+#endif
+
+#ifndef DT_EPSILON
+#define DT_EPSILON 1e-15
 #endif
 
 #endif

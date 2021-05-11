@@ -2,7 +2,7 @@
 #define TESTREDBLACKTREE_H
 
 #include "mainTests.h"
-#include "../DataStructures/redBlackTree.h"
+#include "../DataStructures/Trees/redBlackTree.h"
 
 typedef struct PointForRedBlackTreeTests{
     int x;
