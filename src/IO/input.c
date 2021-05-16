@@ -180,6 +180,9 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
         result = fscanf(fp, "%i\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%i\t%lf\t%lf\t%lf\t%lf", &messInt[0], &point->point.coords[0], &point->point.coords[1], &point->point.coords[2],
                         &point->velocity[0], &point->velocity[1], &point->velocity[2], &point->mass, &messInt[1], &mess[2], &mess[3], &mess[4], &mess[5]);
 
+        if(result == EOF)
+            break;
+
         // printf("%lf %lf %lf,\t%lf %lf %lf,\t%f\n", point->point.coords[0], point->point.coords[1], point->point.coords[2], point->velocity[0], point->velocity[1], point->velocity[2], point->mass);
 
         for (int i = 0; i < NO_DIM; i++)
@@ -202,6 +205,17 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
 
             redBlackTreeNode *result = NULL;
 
+            // bool allZero = true;
+            // for (int j = 0; j < NO_DIM; j++)
+            // {
+            //     if(point->point.coords[j] != 0)
+            //     {
+            //         allZero = false;
+            //         break;
+            //     }
+            // }
+
+            // if (insideGrid && !allZero)
             if (insideGrid)
             {
                 result = insertIntoRedBlackTree(partition->vertices, point);
@@ -216,6 +230,13 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
                     count2++;
                 }
             }
+
+            // if(allZero)
+            // {
+            //     printf("All zero! \n");
+            //     printf("%i\t%lf %lf %lf,\t%lf %lf %lf,\t%f\n", messInt[0], point->point.coords[0], point->point.coords[1], point->point.coords[2], point->velocity[0], point->velocity[1], point->velocity[2], point->mass);
+            //     printf("Count: %i \n", count);
+            // }
         }
 
         // sleep(1);
@@ -232,8 +253,8 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
                 minMaxCoords[i][1] = point->point.coords[i];
         }
 
-        if(count == 100)
-            break;
+        // if(count == 100)
+        //     break;
     }
     fclose(fp);
 

@@ -1,7 +1,8 @@
 #ifndef DTFE_H
 #define DTFE_H
 
-#include "../DT/standardDT/serialDT.h"
+// #include "../DT/standardDT/serialDT.h"
+#include "../DT/DTUsingLUT/LUTDT.h"
 
 typedef struct BarycentricCoordinates
 {
@@ -19,5 +20,8 @@ bool checkIfInsideSimplex(BarycentricCoordinates *barycentric);
 BarycentricCoordinates* calculateBarycentricCoordinates(Simplex *simplex, PointWithDensity *point);
 bool calculatePointDensity(Partition *partition, PointWithDensity *point, UserOptions *options);
 bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *point, UserOptions *options);
+
+Simplex *findFirstSimplexToModifyLUTPointTest(Point *point, Partition *partition, UserOptions *options);
+bool calculatePointDensityTest(Partition *partition, PointWithDensity *point, UserOptions *options);
 
 #endif

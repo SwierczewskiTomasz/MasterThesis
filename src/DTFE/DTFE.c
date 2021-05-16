@@ -128,6 +128,7 @@ long long DTFE(Partition *partition, UserOptions *options)
                     // partition->densityMatrix[i][j][k].coords[2] = (double)(k + 0.5) * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize);
 
                     bool success = calculatePointDensity(partition, &partition->densityMatrix[i][j][k], options);
+                    // bool success = calculatePointDensityTest(partition, &partition->densityMatrix[i][j][k], options);
 
                     if (!success)
                     {
@@ -186,7 +187,8 @@ void calculateDensityInEachVertex(Partition *partition)
     {
         PointId *point = (PointId *)pointer->data;
 
-        point->density = point->mass * point->count / (point->density / avgSimplexVolume) / avgMass;
+        // point->density = point->mass * point->count / (point->density / avgSimplexVolume) / avgMass;
+        point->density = point->mass * (NO_DIM + 1) / point->density / totalMass;
         // printf("Denisty: %10.4f, %10.4f, %10.4f\n", point->point.coords[0], point->point.coords[1], point->density);
 
         pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
@@ -416,7 +418,12 @@ bool calculatePointDensity(Partition *partition, PointWithDensity *point, UserOp
         pointTemp->coords[i] = point->coords[i];
     }
 
+#if REDBLACKTREEDLL == 1
     Simplex *simplex = findFirstSimplexToModifyPoint(pointTemp, partition, options);
+#elif REDBLACKTREEDLL == 2
+
+    Simplex *simplex = findFirstSimplexToModifyLUTPoint(pointTemp, partition, options);
+#endif
 
     if (simplex == NULL)
     {
@@ -471,3 +478,35 @@ bool calculatePointDensity(Partition *partition, PointWithDensity *point, UserOp
     free(pointTemp);
     return false;
 }
+
+#if REDBLACKTREEDLL == 2
+bool calculatePointDensityTest(Partition *partition, PointWithDensity *point, UserOptions *options)
+{
+    Point *pointTemp = (Point *)malloc(sizeof(Point));
+
+    for (int i = 0; i < NO_DIM; i++)
+    {
+        pointTemp->coords[i] = point->coords[i];
+    }
+
+    Simplex *simplex = findFirstSimplexToModifyLUTPointTest(pointTemp, partition, options);
+
+    if (simplex == NULL)
+    {
+        printf("Didn't found first simplex to anlyze \n");
+        free(pointTemp);
+        return false;
+    }
+
+    BarycentricCoordinates *coords = calculateBarycentricCoordinates(simplex, point);
+
+    point->density = interpolation(simplex, coords);
+
+    free(pointTemp);
+    return true;
+
+    free(coords);
+    free(pointTemp);
+    return false;
+}
+#endif

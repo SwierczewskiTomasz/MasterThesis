@@ -55,7 +55,7 @@ redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges)
             }
             else
             {
-                freeEdgeOfEdge(e);
+
                 if (fromTree->second == NULL)
                 {
                     fromTree->second = currentEdge->edge;
@@ -67,9 +67,18 @@ redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges)
                 }
                 else
                 {
-                    fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - founded more than 2 edges for one edge of edges. Should be only 2 edges. \n", (char *)__FILE__, __LINE__);
-                    saveToLogs((char *)__FILE__, __LINE__, "Edge of Edge fromTree which one caused the error: ", printLongEdgeOfEdge, fromTree);
+                    if (compareTwoEdgesOfEdges(e, fromTree) != 0)
+                    {
+                        fromTree->second = currentEdge->edge;
+                        currentEdge->edge->neighbors[i] = fromTree->first;
+                    }
+                    else
+                    {
+                        fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - founded more than 2 edges for one edge of edges. Should be only 2 edges. \n", (char *)__FILE__, __LINE__);
+                        saveToLogs((char *)__FILE__, __LINE__, "Edge of Edge fromTree which one caused the error: ", printLongEdgeOfEdge, fromTree);
+                    }
                 }
+                freeEdgeOfEdge(e);
             }
         }
 

@@ -20,6 +20,8 @@ double pointsArrayEquals(PointId **array1, PointId **array2, int n)
     {
         PointId *p1 = array1[i];
         PointId *p2 = array2[i];
+        if(p1->id - p2->id != 0)
+            return (double)(p1->id - p2->id);
         double result = comparePoints(p1->point, p2->point);
         if (result != 0)
             return result;

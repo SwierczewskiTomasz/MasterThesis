@@ -80,9 +80,9 @@ void supertriangles3D(Partition *partition, UserOptions *options)
 
     for (int i = 0; i < n; i++)
     {
-        points[i] = newPointId3D(i % 2 == 0 ? options->minMaxCoords[0][0] : options->minMaxCoords[0][1],
-                                 (i / 2) % 2 == 0 ? options->minMaxCoords[1][0] : options->minMaxCoords[1][1],
-                                 (i / 4) % 2 == 0 ? options->minMaxCoords[2][0] : options->minMaxCoords[2][1]);
+        points[i] = newPointId3D(i % 2 == 0 ? options->minMaxCoords[0][0] - 1 : options->minMaxCoords[0][1] + 1,
+                                 (i / 2) % 2 == 0 ? options->minMaxCoords[1][0] -1 : options->minMaxCoords[1][1] + 1,
+                                 (i / 4) % 2 == 0 ? options->minMaxCoords[2][0] -1 : options->minMaxCoords[2][1] + 1);
         points[i]->mass = options->massInSuperpoints;
         insertIntoRedBlackTree(partition->globalVertices, points[i]);
     }

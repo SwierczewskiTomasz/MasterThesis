@@ -31,18 +31,35 @@ void createNewSimplex(Simplex *result, PointId *points[NO_DIM + 1], UserOptions 
     calculateCircumcircleGSL(result);
     result->hilbertDimension = options->PHgridSize;
 
-    calculateBoxId(result, options);
+    for(int i = 0; i < NO_DIM; i++)
+    {
+        result->centroid.coords[i] = 0;
+        for(int j = 0; j < NO_DIM + 1; j++)
+        {
+            result->centroid.coords[i] += result->vertices[j]->point.coords[i];
+        }
 
+        result->centroid.coords[i] /= NO_DIM + 1;
+    }
+
+    calculateBoxId2(result, options);
+
+    // calculateBoxId(result, options);
+
+#if REDBLACKTREEDLL == 2
     result->ZCurveId = 0;
     for(int i = 0; i < NO_DIM; i++)
     {
         result->ZCurveId += LUT->data[i][result->boxId[i]];
     }
+#endif
 
     for (int i = 0; i < NO_DIM + 1; i++)
     {
         result->neighbors[i] = NULL;
     }
+
+    
 }
 
 void createNewSimplexToSearch(Simplex *simplex, Point *point, UserOptions *options)
@@ -327,19 +344,11 @@ void sortPointsInSimplex1(Simplex *simplex)
     }
 }
 
-void calculateBoxId2(Simplex *result)
+void calculateBoxId2(Simplex *result, UserOptions *options)
 {
-    double *coordsMinMax[NO_DIM];
-    for (int i = 0; i < NO_DIM; i++)
+for (int i = 0; i < NO_DIM; i++)
     {
-        coordsMinMax[i] = (double *)malloc(2 * sizeof(double));
-        coordsMinMax[i][0] = 0;
-        coordsMinMax[i][1] = 100;
-    }
-
-    for (int i = 0; i < NO_DIM; i++)
-    {
-        result->boxId[i] = (int)((result->centroid.coords[i] - coordsMinMax[i][0]) / (coordsMinMax[i][1] - coordsMinMax[i][0]) * result->hilbertDimension);
+        result->boxId[i] = (int)((result->centroid.coords[i] - options->minMaxCoords[i][0]) / (options->minMaxCoords[i][1] - options->minMaxCoords[i][0]) * result->hilbertDimension);
     }
 
     for (int i = 0; i < NO_DIM; i++)

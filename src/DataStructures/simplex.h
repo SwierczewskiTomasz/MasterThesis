@@ -49,6 +49,7 @@ void calculateCircumcircleGSL(Simplex *simplex);
 void sortPointsInSimplex(Simplex *simplex);
 void sortPointsInSimplex1(Simplex *simplex);
 
+void calculateBoxId2(Simplex *result, UserOptions *options);
 void calculateBoxId(Simplex *result, UserOptions *options);
 
 #endif

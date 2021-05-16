@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O1 -Wall -ggdb3
+CFLAGS = -O3 -Wall -ggdb3
 LIBS = -lm -lgsl -lgslcblas
 
 FILES = \
@@ -47,6 +47,7 @@ FILES = \
 	DTFE/DTFE.c\
 	DTFE/DTFE.h\
 	DTFE/monteCarlo.c\
+	DTFE/smallTest.c\
 	HilbertCurve/hilbertCurve.h\
 	HilbertCurve/hilbertCurve.c\
 	IO/input.c\

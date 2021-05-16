@@ -61,7 +61,11 @@ double comparePointsVoids(void *p1, void *p2)
 {
     PointId *point1 = (PointId *)p1;
     PointId *point2 = (PointId *)p2;
-    return comparePoints(point1->point, point2->point);
+    int id1 = point1->id % 1024;
+    int id2 = point2->id % 1024;
+    if(id1 - id2 == 0)
+        return comparePoints(point1->point, point2->point);
+    return (double)(id1-id2);
 }
 
 double comparePositionOfTwoTrianglesZCurve(void *a, void *b)
@@ -76,7 +80,9 @@ double comparePositionOfTwoTrianglesZCurve(void *a, void *b)
     if (result != 0)
         return result;
 
-    result = s1->circumcenter.coords[0] + s1->circumradius - (s2->circumcenter.coords[0] + s2->circumradius);
+    // result = s1->circumcenter.coords[0] + s1->circumradius - (s2->circumcenter.coords[0] + s2->circumradius);
+
+    result = comparePoints(s1->centroid, s2->centroid);
 
     if (result == 0)
         result = comparePoints(s1->circumcenter, s2->circumcenter);

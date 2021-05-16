@@ -401,7 +401,9 @@ void theMostNewInsertPoint(PointId *point, Partition *partition, UserOptions *op
     if (simplex == NULL)
     {
         fprintf(stderr, "\x1B[31mError\x1B[0m in %s line %i: Something very weird - We didn't found simplex to modify. \n\n", (char *)__FILE__, __LINE__);
+#if REDBLACKTREEDLL == 2
         Simplex *simplex = findFirstSimplexToModifyLUT(point, partition, options);
+#endif
         return;
     }
 

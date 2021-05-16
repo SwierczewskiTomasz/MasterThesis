@@ -412,7 +412,7 @@ void removeFromLUTRBTDLLTree(LUTRBTDLL *tree, LUTRBTDLLNode *node)
 
     removeWhenOneChildFromLUTRBTDLLNode(tree, node);
 
-    // free(node);
+    free(node);
     tree->count--;
 }
 

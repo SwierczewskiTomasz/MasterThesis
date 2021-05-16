@@ -127,12 +127,12 @@ LinkedList *findTrianglesToModifyPointMonteCarlo(Simplex *simplex, Point *point,
         bool inside = true;
         if (squareDistance <= squareRadius)
         {
-            for(int i = 0; i < NO_DIM; i++)
+            for (int i = 0; i < NO_DIM; i++)
             {
                 bool allBelow = true;
                 bool allAbove = true;
 
-                for(int j = 0; j < NO_DIM + 1; j++)
+                for (int j = 0; j < NO_DIM + 1; j++)
                 {
                     if (simplex->vertices[j]->point.coords[i] > point->coords[i] - options->diameterOfGrid)
                     {
@@ -141,7 +141,7 @@ LinkedList *findTrianglesToModifyPointMonteCarlo(Simplex *simplex, Point *point,
                     }
                 }
 
-                for(int j = 0; j < NO_DIM + 1; j++)
+                for (int j = 0; j < NO_DIM + 1; j++)
                 {
                     if (simplex->vertices[j]->point.coords[i] < point->coords[i] + options->diameterOfGrid)
                     {
@@ -150,8 +150,8 @@ LinkedList *findTrianglesToModifyPointMonteCarlo(Simplex *simplex, Point *point,
                     }
                 }
 
-                if(allBelow || allAbove)
-                {    
+                if (allBelow || allAbove)
+                {
                     inside = false;
                     break;
                 }
@@ -160,7 +160,7 @@ LinkedList *findTrianglesToModifyPointMonteCarlo(Simplex *simplex, Point *point,
 
         if (squareDistance <= squareRadius)
         {
-            if(inside)
+            if (inside)
                 pushToLinkedList(trianglesToModify, simplex);
 
 #if DEBUG_TRIANGULATION == 1
@@ -241,12 +241,12 @@ LinkedList *findTrianglesToModifyPointMonteCarlo2(Simplex *simplex, Point *point
         bool inside = true;
         if (squareDistance <= squareRadius)
         {
-            for(int i = 0; i < NO_DIM; i++)
+            for (int i = 0; i < NO_DIM; i++)
             {
                 bool allBelow = true;
                 bool allAbove = true;
 
-                for(int j = 0; j < NO_DIM + 1; j++)
+                for (int j = 0; j < NO_DIM + 1; j++)
                 {
                     if (simplex->vertices[j]->point.coords[i] > point->coords[i] - options->diameterOfGrid)
                     {
@@ -255,7 +255,7 @@ LinkedList *findTrianglesToModifyPointMonteCarlo2(Simplex *simplex, Point *point
                     }
                 }
 
-                for(int j = 0; j < NO_DIM + 1; j++)
+                for (int j = 0; j < NO_DIM + 1; j++)
                 {
                     if (simplex->vertices[j]->point.coords[i] < point->coords[i] + options->diameterOfGrid)
                     {
@@ -264,8 +264,8 @@ LinkedList *findTrianglesToModifyPointMonteCarlo2(Simplex *simplex, Point *point
                     }
                 }
 
-                if(allBelow || allAbove)
-                {    
+                if (allBelow || allAbove)
+                {
                     inside = false;
                     break;
                 }
@@ -274,7 +274,7 @@ LinkedList *findTrianglesToModifyPointMonteCarlo2(Simplex *simplex, Point *point
 
         if (squareDistance <= squareRadius)
         {
-            if(inside)
+            if (inside)
                 pushToLinkedList(trianglesToModify, simplex);
 
 #if DEBUG_TRIANGULATION == 1

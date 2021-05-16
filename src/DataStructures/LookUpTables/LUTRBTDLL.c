@@ -95,6 +95,7 @@ void divideLUTRBTDLL(LUTRBTDLL *result)
     }
 
     result->currentBitShift -= NO_DIM;
+    result->currentBitShiftOneDimension--;
     result->currentCapacity <<= NO_DIM;
     result->currentSize++;
 
@@ -129,7 +130,7 @@ void removeLUTRBTDLLOnlyNode(void *node)
 
 void removeFromLUTRBTDLL(LUTRBTDLL *table, LUTRBTDLLNode *node, bool freeData)
 {
-    BLOCK_TYPE id = node->data->ZCurveId << table->currentBitShift >> table->currentBitShift;
+    BLOCK_TYPE id = node->data->ZCurveId >> table->currentBitShift << table->currentBitShift;
     LUTRBTDLLNode *previousNode = getDataFromBlockSizeArray(table->array, id);
     while (previousNode == node)
     {
@@ -141,6 +142,20 @@ void removeFromLUTRBTDLL(LUTRBTDLL *table, LUTRBTDLLNode *node, bool freeData)
     }
 
     removeFromLUTRBTDLLTree(table, node);
+    // printLUT(table);
+}
+
+void compareCounts(LUTRBTDLL *table)
+{
+    printf("Table->count: %i\n", table->count);
+    int count = 0;
+    LUTRBTDLLNode *pointer = minimumInSubTreeLUTRBTDLL(table->first);
+    while (pointer != NULL)
+    {
+        count++;
+        pointer = getNextNodeFromLUTRBTDLL(pointer);
+    }
+    printf("From tree: %i\n\n", count);
 }
 
 LUTRBTDLLNode *insertIntoLUTRBTDLL(LUTRBTDLL *table, Simplex *simplex)
@@ -157,6 +172,8 @@ LUTRBTDLLNode *insertIntoLUTRBTDLL(LUTRBTDLL *table, Simplex *simplex)
     // printLUT(table);
 
     LUTRBTDLLNode *previousNode = getDataFromBlockSizeArray(table->array, id);
+    // if (previousNode != NULL)
+    //     printf("%p\n", previousNode->data);
 
     double compare = 0;
     if (previousNode != NULL)
@@ -176,8 +193,10 @@ LUTRBTDLLNode *insertIntoLUTRBTDLL(LUTRBTDLL *table, Simplex *simplex)
     table->count++;
     if (table->count == table->currentCapacity * DIVIDEWHEN)
     {
-        printf("Dividing LUTRBTDLL table. Current capacity: %i, count: %i\n", table->currentCapacity, table->count);
+        printf("\nDividing LUTRBTDLL table. Current capacity: %i, count: %i\n", table->currentCapacity, table->count);
+        // compareCounts(table);
         divideLUTRBTDLL(table);
+        // compareCounts(table);
     }
 
     // printLUT(table);

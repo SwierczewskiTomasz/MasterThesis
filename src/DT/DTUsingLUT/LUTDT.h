@@ -8,5 +8,6 @@
 
 BLOCK_TYPE calculateZCurveId(ZCurveLUT *LUT, Point *point, UserOptions *options);
 Simplex *findFirstSimplexToModifyLUT(PointId *point, Partition *partition, UserOptions *options);
+Simplex *findFirstSimplexToModifyLUTPoint(Point *point, Partition *partition, UserOptions *options);
 
 #endif

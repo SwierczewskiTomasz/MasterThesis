@@ -53,20 +53,66 @@ Simplex *densityInPointMonteCarlo(Partition *partition, PointWithDensity *point,
     {
         simplex = (Simplex *)current->data;
 
-        calculateBarycentricCoordinatesV2(coords, simplex, point);
-
-        if (checkIfInsideSimplex(coords))
+        double squareDistance = 0;
+        for (int i = 0; i < NO_DIM; i++)
         {
-            point->density = interpolation(simplex, coords);
-            free(coords);
+            double d = simplex->circumcenter.coords[i] - point->coords[i];
+            squareDistance += d * d;
+        }
 
-            if (prev != NULL)
+        double squareRadius = simplex->circumradius * simplex->circumradius;
+
+        bool inside = true;
+        if (squareDistance <= squareRadius)
+        {
+            for (int i = 0; i < NO_DIM; i++)
             {
-                prev->next = current->next;
-                current->next = list->first;
-                list->first = current;
+                bool allBelow = true;
+                bool allAbove = true;
+
+                for (int j = 0; j < NO_DIM + 1; j++)
+                {
+                    if (simplex->vertices[j]->point.coords[i] > point->coords[i])
+                    {
+                        allBelow = false;
+                        break;
+                    }
+                }
+
+                for (int j = 0; j < NO_DIM + 1; j++)
+                {
+                    if (simplex->vertices[j]->point.coords[i] < point->coords[i])
+                    {
+                        allAbove = false;
+                        break;
+                    }
+                }
+
+                if (allBelow || allAbove)
+                {
+                    inside = false;
+                    break;
+                }
             }
-            return simplex;
+
+            if (inside)
+            {
+                calculateBarycentricCoordinatesV2(coords, simplex, point);
+
+                if (checkIfInsideSimplex(coords))
+                {
+                    point->density = interpolation(simplex, coords);
+                    free(coords);
+
+                    if (prev != NULL)
+                    {
+                        prev->next = current->next;
+                        current->next = list->first;
+                        list->first = current;
+                    }
+                    return simplex;
+                }
+            }
         }
 
         prev = current;
@@ -85,7 +131,11 @@ bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *poi
         pointTemp->coords[i] = point->coords[i];
     }
 
+#if REDBLACKTREEDLL == 1
     Simplex *simplex = findFirstSimplexToModifyPoint(pointTemp, partition, options);
+#elif REDBLACKTREEDLL == 2
+    Simplex *simplex = findFirstSimplexToModifyLUTPoint(pointTemp, partition, options);
+#endif
 
     if (simplex == NULL)
     {
