@@ -21,11 +21,23 @@
 
 typedef struct Partition
 {
-    Point minCoordinates;
-    Point maxCoordinates;
+    // Point minCoordinates;
+    // Point maxCoordinates;
 
+    /**
+     * Structure to store vertices. Currently are stored in RBT because of computational complexity testing depending on data sorting.
+     * To save memory, replace e.g. with BlockSizeArray, but you need to know size of this array. 
+     */
     redBlackTree *vertices;
+
+    /**
+     * Structure to store global Verices, so artificially created for initial condition of triangulation.
+     */
     redBlackTree *globalVertices;
+
+    /**
+     * Main structure for storing simplexes. It depends on the option selected in file constants.h
+     */
 #if REDBLACKTREEDLL == 1
     redBlackTreeDLL *triangles;
 #elif REDBLACKTREEDLL == 2
@@ -36,14 +48,24 @@ typedef struct Partition
 
     int hilbertDimension;
 
-    PointWithDensity densityMatrix[256][256][256];
+    /**
+     * Pointer to gridMatrix. 
+     * With gridMatrix[0]... is density matrix
+     * Next aren't current implemented
+     * In gridMatrix[n] is matrix, which one have logically NO_DIM dimensions. But physically have 2 dimension and is implemented by BlockSizeArray structure. 
+     */ 
+    BlockSizeArrayDouble **gridMatrix;
+
+    /** 
+     * Table used to count statistics about number of triangles on list in Monte-Carlo method.
+     */
+    // int MCMatrix[512][512][512];
 } Partition;
 
 typedef struct DelaunayTriangulation
 {
     Partition *partitions;
 } DelaunayTriangulation;
-
 
 long long serialDT(UserOptions *options);
 void computeDelaunayTriangulation(Partition *partition, UserOptions *options);
@@ -72,8 +94,6 @@ void freePartition(Partition *partition);
 
 Simplex *findFirstSimplexToModify(PointId *point, Partition *partition, UserOptions *options);
 Simplex *findFirstSimplexToModifyPoint(Point *point, Partition *partition, UserOptions *options);
-// Simplex *findFirstSimplexToModifyBoxId(PointId *point, Partition *partition, int hilbertDimension);
-// Simplex *findFirstSimplexToModifyBoxId2(PointId *point, Partition *partition, int hilbertDimension);
 LinkedList *findTrianglesToModify(Simplex *simplex, PointId *point);
 LinkedList *findTrianglesToModifyPoint(Simplex *simplex, Point *point);
 LinkedList *findTrianglesToModifyPointMonteCarlo(Simplex *simplex, Point *point, UserOptions *options);
@@ -83,5 +103,6 @@ redBlackTree *createTreeOfEdgeOfEdges(PolygonList *edges);
 void uploadInformationsAboutNeighborsInEdges(PolygonList *edges, redBlackTree *treeEdgeOfEdges);
 LinkedList *createSimplexList(PolygonList *edges, PointId *point, UserOptions *options, Partition *partition);
 void updateAndAddSimplexes(PolygonList *edges, Partition *partition);
+void randData(Partition *partition, UserOptions *options);
 
 #endif

@@ -103,6 +103,7 @@ Simplex *densityInPointMonteCarlo(Partition *partition, PointWithDensity *point,
                 {
                     point->density = interpolation(simplex, coords);
                     free(coords);
+                    current->n++;
 
                     if (prev != NULL)
                     {
@@ -148,6 +149,9 @@ bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *poi
 
     // printf("%i\n", list->count);
 
+    // Statistics about monte-carlo method
+    // point->onList = list->count;
+
     PointWithDensity *randomPoint = (PointWithDensity *)malloc(sizeof(PointWithDensity));
 
     Simplex *lastSimplex = NULL;
@@ -192,6 +196,18 @@ bool calculatePointDensityMonteCarlo(Partition *partition, PointWithDensity *poi
             result += randomPoint->density;
         }
     }
+
+    LinkedListNode *current = list->first;
+    int count = 0;
+    while(current != NULL)
+    {
+        if(current->n != 0)
+            count++;
+        current = current->next;
+    }
+
+    // Statistics about monte-carlo method.
+    // point->onListNoneZero = count;
 
     point->density = result / options->nMonteCarlo;
 

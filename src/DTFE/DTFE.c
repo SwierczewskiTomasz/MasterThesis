@@ -81,15 +81,12 @@ void circumcenterInsideSimplex(Partition *partition)
 
     free(result);
 
-    printf("Analyzed %i simplexes, %i have circumcenter inside simplex. \n", count1, count2);
+    printf("\nAnalyzed %i simplexes, %i have circumcenter inside simplex. \n", count1, count2);
 }
 
 long long DTFE(Partition *partition, UserOptions *options)
 {
     circumcenterInsideSimplex(partition);
-
-    double det = CayleyMengerDeterminant(partition->triangles->first->data);
-    printf("Pole powierzchni: %12.4f\n", det);
 
     struct timeval te;
     gettimeofday(&te, NULL);
@@ -98,48 +95,99 @@ long long DTFE(Partition *partition, UserOptions *options)
     calculateVolumeInEachSimplex(partition);
     calculateDensityInEachVertex(partition);
 
-    for (int i = 0; i < options->gridSize; i++)
+    PointWithDensity point;
+
+    for (int i = 0; i < INTERPOLATED_FIELDS; i++)
     {
-        for (int j = 0; j < options->gridSize; j++)
+        for (BLOCK_TYPE j = 0; j < partition->gridMatrix[i]->size; j++)
         {
-            for (int k = 0; k < options->gridSize; k++)
+            BLOCK_TYPE c = j;
+            for (int k = NO_DIM - 1; k >= 0; k--)
             {
-                if (options->MonteCarlo)
-                {
-                    partition->densityMatrix[i][j][k].coords[0] = (double)(i + 0.5) * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize);
-                    partition->densityMatrix[i][j][k].coords[1] = (double)(j + 0.5) * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize);
-                    partition->densityMatrix[i][j][k].coords[2] = (double)(k + 0.5) * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize);
-
-                    bool success = calculatePointDensityMonteCarlo(partition, &partition->densityMatrix[i][j][k], options);
-
-                    if (!success)
-                    {
-                        printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2]);
-                    }
-                }
+                int mod = c % options->gridSize;
+                if(options->MonteCarlo)
+                    point.coords[k] = (double)(mod + 0.5) * (options->minMaxCoords[k][1] - options->minMaxCoords[k][0]) / (options->gridSize);
                 else
+                    point.coords[k] = (double)mod * (options->minMaxCoords[k][1] - options->minMaxCoords[k][0]) / (options->gridSize - 1);
+
+                c /= options->gridSize;
+            }
+
+            bool success;
+            
+            if(options->MonteCarlo)
+                success = calculatePointDensityMonteCarlo(partition, &point, options);
+            else
+                success = calculatePointDensity(partition, &point, options);
+
+            if (!success)
+            {
+                printf("Error when calculating density ");
+                for(int k = 0; k < NO_DIM; k++)
                 {
-                    partition->densityMatrix[i][j][k].coords[0] = (double)i * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize - 1);
-                    partition->densityMatrix[i][j][k].coords[1] = (double)j * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize - 1);
-                    partition->densityMatrix[i][j][k].coords[2] = (double)k * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize - 1);
-
-                    // partition->densityMatrix[i][j][k].coords[0] = (double)(i + 0.5) * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize);
-                    // partition->densityMatrix[i][j][k].coords[1] = (double)(j + 0.5) * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize);
-                    // partition->densityMatrix[i][j][k].coords[2] = (double)(k + 0.5) * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize);
-
-                    bool success = calculatePointDensity(partition, &partition->densityMatrix[i][j][k], options);
-                    // bool success = calculatePointDensityTest(partition, &partition->densityMatrix[i][j][k], options);
-
-                    if (!success)
-                    {
-                        printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->densityMatrix[i][j][k].coords[0], partition->densityMatrix[i][j][k].coords[1], partition->densityMatrix[i][j][k].coords[2]);
-                    }
+                    printf("%f ", point.coords[k]);
                 }
+                printf("\n");
+            }
+
+            if (!putDataToBlockSizeArrayDouble(partition->gridMatrix[i], j, point.density))
+            {
+                printf("Failed to put data into BlockSizeArray\n");
+            }
+
+            if(j%1000 == 0)
+            {
+                printf("\rField: %i, Computed points in DTFE: %i/%i", i, j, partition->gridMatrix[i]->size);
+                fflush(stdout);
             }
         }
-        printf("\rComputed points in DTFE: %i/%i", i, options->gridSize);
-        fflush(stdout);
     }
+
+    // Below old version optimised from 3 dimensions
+
+    // for (int i = 0; i < options->gridSize; i++)
+    // {
+    //     for (int j = 0; j < options->gridSize; j++)
+    //     {
+    //         for (int k = 0; k < options->gridSize; k++)
+    //         {
+    //             if (options->MonteCarlo)
+    //             {
+    //                 partition->gridMatrix[i][j][k].coords[0] = (double)(i + 0.5) * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize);
+    //                 partition->gridMatrix[i][j][k].coords[1] = (double)(j + 0.5) * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize);
+    //                 partition->gridMatrix[i][j][k].coords[2] = (double)(k + 0.5) * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize);
+
+    //                 bool success = calculatePointDensityMonteCarlo(partition, &partition->gridMatrix[i][j][k], options);
+
+    //                 if (!success)
+    //                 {
+    //                     printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->gridMatrix[i][j][k].coords[0], partition->gridMatrix[i][j][k].coords[1], partition->gridMatrix[i][j][k].coords[2]);
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 partition->gridMatrix[i][j][k].coords[0] = (double)i * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize - 1);
+    //                 partition->gridMatrix[i][j][k].coords[1] = (double)j * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize - 1);
+    //                 partition->gridMatrix[i][j][k].coords[2] = (double)k * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize - 1);
+
+    //                 // partition->gridMatrix[i][j][k].coords[0] = (double)(i + 0.5) * (options->minMaxCoords[0][1] - options->minMaxCoords[0][0]) / (options->gridSize);
+    //                 // partition->gridMatrix[i][j][k].coords[1] = (double)(j + 0.5) * (options->minMaxCoords[1][1] - options->minMaxCoords[1][0]) / (options->gridSize);
+    //                 // partition->gridMatrix[i][j][k].coords[2] = (double)(k + 0.5) * (options->minMaxCoords[2][1] - options->minMaxCoords[2][0]) / (options->gridSize);
+
+    //                 bool success = calculatePointDensity(partition, &partition->gridMatrix[i][j][k], options);
+    //                 // bool success = calculatePointDensityTest(partition, &partition->gridMatrix[i][j][k], options);
+
+    //                 if (!success)
+    //                 {
+    //                     printf("Error! %i, %i, %i, %f, %f, %f \n", i, j, k, partition->gridMatrix[i][j][k].coords[0], partition->gridMatrix[i][j][k].coords[1], partition->gridMatrix[i][j][k].coords[2]);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     printf("\rComputed points in DTFE: %i/%i", i, options->gridSize);
+    //     fflush(stdout);
+    // }
+
     printf("\n");
 
     struct timeval te2;
@@ -173,9 +221,9 @@ void calculateDensityInEachVertex(Partition *partition)
         pointer = getNextNodeFromRedBlackTree(partition->globalVertices, pointer);
     }
 
-    double avgMass = totalMass / (partition->globalVertices->count + partition->vertices->count);
+    // double avgMass = totalMass / (partition->globalVertices->count + partition->vertices->count);
 
-    printf("Total mass: %e \n", totalMass);
+    // printf("Total mass: %e \n", totalMass);
 
     double avgSimplexVolume = 1.0 / partition->triangles->count;
 
@@ -194,17 +242,17 @@ void calculateDensityInEachVertex(Partition *partition)
         pointer = getNextNodeFromRedBlackTree(partition->vertices, pointer);
     }
 
-    pointer = minimumInRedBlackSubTree(partition->globalVertices->first);
+    // pointer = minimumInRedBlackSubTree(partition->globalVertices->first);
 
-    while (pointer != NULL)
-    {
-        PointId *point = (PointId *)pointer->data;
+    // while (pointer != NULL)
+    // {
+    //     PointId *point = (PointId *)pointer->data;
 
-        point->density = point->mass * point->count / (point->density / avgSimplexVolume) / avgMass;
-        printf("Denisty: %10.4f, %10.4f, %10.4f, %e\n", point->point.coords[0], point->point.coords[1], point->point.coords[2], point->density);
+    //     point->density = point->mass * point->count / (point->density / avgSimplexVolume) / avgMass;
+    //     printf("Denisty: %10.4f, %10.4f, %10.4f, %e\n", point->point.coords[0], point->point.coords[1], point->point.coords[2], point->density);
 
-        pointer = getNextNodeFromRedBlackTree(partition->globalVertices, pointer);
-    }
+    //     pointer = getNextNodeFromRedBlackTree(partition->globalVertices, pointer);
+    // }
 }
 
 void calculateVolumeInEachSimplex(Partition *partition)

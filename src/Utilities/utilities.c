@@ -171,6 +171,19 @@ void printInformationsAboutSizeOfStructures()
 {
     printf("Size of structures: \n\n");
 
+    printf("int: %li\n", sizeof(int));
+    printf("long: %li\n", sizeof(long));
+    printf("double: %li\n", sizeof(double));
+    printf("float: %li\n", sizeof(float));
+    printf("void*: %li\n", sizeof(void*));
+    printf("Point: %li\n", sizeof(Point));
+    printf("int[3]: %li\n", sizeof(int[3]));
+    printf("Simplex: %li\n", sizeof(Simplex));
+    printf("PointId: %li\n", sizeof(PointId));
+    printf("LinkedListNode: %li\n", sizeof(LinkedListNode));
+    printf("RedBlackTree: %li\n", sizeof(redBlackTreeNode));
+    printf("RedBlackTreeDLL: %li\n", sizeof(redBlackTreeDLLNode));
+
     printf("redBlackTree:          %4ld \n", sizeof(redBlackTree));
     printf("redBlackTreeNode:      %4ld \n", sizeof(redBlackTreeNode));
     printf("redBlackTreeDLL:       %4ld \n", sizeof(redBlackTreeDLL));

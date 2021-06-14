@@ -16,6 +16,10 @@ typedef struct PointWithDensity
 {
     FLOATING_POINT_PRECISION coords[NO_DIM];
     FLOATING_POINT_PRECISION density;
+
+    // Below variables for counting statistics for Monte-Carlo method.
+    // int onList;
+    // int onListNoneZero;
 } PointWithDensity;
 
 typedef struct PointId

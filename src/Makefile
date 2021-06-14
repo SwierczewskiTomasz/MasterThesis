@@ -9,6 +9,7 @@ FILES = \
 	DataStructures/Lists/linkedList.c\
 	DataStructures/LookUpTables/blockSizeArray.h\
 	DataStructures/LookUpTables/blockSizeArray.c\
+	DataStructures/LookUpTables/blockSizeArrayDouble.c\
 	DataStructures/LookUpTables/LUTRBTDLL.h\
 	DataStructures/LookUpTables/LUTRBTDLL_part_2.c\
 	DataStructures/LookUpTables/LUTRBTDLL.c\
@@ -79,11 +80,12 @@ TESTS = \
 MAIN_FILE = \
 	main.c
 
-OUT = out/DT
+OUT = build/DTFE
 
 all: main
 
 main: 
+	if ! [ -d "build" ]; then mkdir build; fi
 	$(CC) $(FILES) $(MAIN_FILE) $(CFLAGS) $(LIBS) -o $(OUT)
 
 debug:
@@ -93,5 +95,5 @@ test:
 	$(CC) $(FILES) $(TESTS) $(CFLAGS) $(LIBS) -o $(OUT)
 
 clean: 
-	rm -f out/DT
-	rm -f out/*.o
+	rm -f build/DT
+	rm -f build/*.o

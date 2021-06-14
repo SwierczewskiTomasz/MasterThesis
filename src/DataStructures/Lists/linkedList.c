@@ -33,6 +33,7 @@ void pushToLinkedList(LinkedList *list, void *data)
 
     node->data = data;
     node->next = list->first;
+    node->n = 0;
     list->first = node;
     list->count++;
 }

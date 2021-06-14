@@ -11,5 +11,6 @@ int loadDT(UserOptions *options, Partition *partition);
 int saveDT(UserOptions *options, Partition *partition);
 void saveDTFEToTextFile(UserOptions *options, Partition *partition);
 void saveDTFEToBinaryFile(UserOptions *options, Partition *partition);
+void saveStatisticsToTextFile(UserOptions *options, Partition *partition);
 
 #endif

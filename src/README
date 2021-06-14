@@ -1,0 +1,11 @@
+This project is result of master thesis with title ,,Implementations and 
+applications of Delaunay triangulation and DTFE algorithms for N-dimesional 
+data sets".
+
+Author: inż. Tomasz Świerczewski
+Supervisor: dr hab., prof. CFT PAN Wojciech Andrzej Hellwing
+Date: June 2021
+
+To compile this project you should build by writing ,,make'' in console. 
+Makefile will create directory build, where will be file DTFE. You can write
+,,build/DTFE --help'' to see more options how to run this software.

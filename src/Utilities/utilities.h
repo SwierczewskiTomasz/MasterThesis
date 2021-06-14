@@ -53,4 +53,5 @@ void testDoubleLinkedList();
 void printInformationsAboutSizeOfStructures();
 void printHilbertCurve(int n, char *filename);
 
+
 #endif

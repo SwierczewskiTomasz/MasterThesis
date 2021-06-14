@@ -14,18 +14,26 @@ void supertriangles(Partition *partition, UserOptions *options)
 #if NO_DIM == 2
 void supertriangles2D(Partition *partition, UserOptions *options)
 {
-    PointId *point1 = newPointId2D(0, 0);
-    PointId *point2 = newPointId2D(10000000, 0);
-    PointId *point3 = newPointId2D(0, 10000000);
-    PointId *point4 = newPointId2D(10000000, 10000000);
+    PointId *point1 = newPointId2D(options->minMaxCoords[0][0], options->minMaxCoords[1][0]);
+    PointId *point2 = newPointId2D(options->minMaxCoords[0][0], options->minMaxCoords[1][1]);
+    PointId *point3 = newPointId2D(options->minMaxCoords[0][1], options->minMaxCoords[1][0]);
+    PointId *point4 = newPointId2D(options->minMaxCoords[0][1], options->minMaxCoords[1][1]);
 
     PointId *triangle1Points[3] = {point1, point2, point3};
     Simplex *triangle1 = (Simplex *)malloc(sizeof(Simplex));
+#if REDBLACKTREEDLL == 2
+    createNewSimplex(triangle1, triangle1Points, options, partition->triangles->LUT);
+#else
     createNewSimplex(triangle1, triangle1Points, options);
+#endif
 
     PointId *triangle2Points[3] = {point2, point3, point4};
     Simplex *triangle2 = (Simplex *)malloc(sizeof(Simplex));
-    createNewSimplex(triangle2, triangle2Points, options -);
+#if REDBLACKTREEDLL == 2
+    createNewSimplex(triangle2, triangle2Points, options, partition->triangles->LUT);
+#else
+    createNewSimplex(triangle2, triangle2Points, options);
+#endif
 
     // printf("1\n");
     // printRedBlackTreeDLLString(partition->triangles, printShortSimplex);
@@ -45,6 +53,8 @@ void supertriangles2D(Partition *partition, UserOptions *options)
 // printRedBlackTree(partition->triangles);
 #if REDBLACKTREEDLL == 1
     insertIntoRedBlackTreeDLL(partition->triangles, triangle1);
+#elif REDBLACKTREEDLL == 2
+    insertIntoLUTRBTDLL(partition->triangles, triangle1);
 #else
     insertIntoRedBlackTree(partition->triangles, triangle1);
 #endif
@@ -52,7 +62,10 @@ void supertriangles2D(Partition *partition, UserOptions *options)
     // printRedBlackTree(partition->triangles);
 #if REDBLACKTREEDLL == 1
     insertIntoRedBlackTreeDLL(partition->triangles, triangle2);
+#elif REDBLACKTREEDLL == 2
+    insertIntoLUTRBTDLL(partition->triangles, triangle2);
 #else
+
     insertIntoRedBlackTree(partition->triangles, triangle2);
 #endif
 
@@ -81,8 +94,8 @@ void supertriangles3D(Partition *partition, UserOptions *options)
     for (int i = 0; i < n; i++)
     {
         points[i] = newPointId3D(i % 2 == 0 ? options->minMaxCoords[0][0] - 1 : options->minMaxCoords[0][1] + 1,
-                                 (i / 2) % 2 == 0 ? options->minMaxCoords[1][0] -1 : options->minMaxCoords[1][1] + 1,
-                                 (i / 4) % 2 == 0 ? options->minMaxCoords[2][0] -1 : options->minMaxCoords[2][1] + 1);
+                                 (i / 2) % 2 == 0 ? options->minMaxCoords[1][0] - 1 : options->minMaxCoords[1][1] + 1,
+                                 (i / 4) % 2 == 0 ? options->minMaxCoords[2][0] - 1 : options->minMaxCoords[2][1] + 1);
         points[i]->mass = options->massInSuperpoints;
         insertIntoRedBlackTree(partition->globalVertices, points[i]);
     }
@@ -183,11 +196,11 @@ void supertriangles4DAndMore(Partition *partition, UserOptions *options)
     for (int i = 0; i < NO_DIM; i++)
     {
         points[i] = newEmptyPointId();
-        for (int j = 0; j < NO_DIM; j++)
+        for (int j = 1; j < NO_DIM; j++)
         {
-            points[i]->point.coords[j] = options->minMaxCoords[j][0];
+            points[i]->point.coords[j] = options->minMaxCoords[j][0] - 10;
         }
-        points[i]->point.coords[i] = options->minMaxCoords[i][1];
+        points[i]->point.coords[i] = options->minMaxCoords[i][1] + 1000;
 
         points[i]->mass = options->massInSuperpoints;
         insertIntoRedBlackTree(partition->globalVertices, points[i]);
@@ -196,8 +209,11 @@ void supertriangles4DAndMore(Partition *partition, UserOptions *options)
     points[NO_DIM] = newEmptyPointId();
     for (int j = 0; j < NO_DIM; j++)
     {
-        points[NO_DIM]->point.coords[j] = options->minMaxCoords[j][0];
+        points[NO_DIM]->point.coords[j] = options->minMaxCoords[j][0] + 0.5;
     }
+
+    points[NO_DIM]->point.coords[NO_DIM - 1] = options->minMaxCoords[NO_DIM - 1][0] + 1000;
+
     insertIntoRedBlackTree(partition->globalVertices, points[NO_DIM]);
 
     Simplex *triangle = (Simplex *)malloc(sizeof(Simplex));
@@ -206,7 +222,7 @@ void supertriangles4DAndMore(Partition *partition, UserOptions *options)
 #else
     createNewSimplex(triangle, points, options);
 #endif
-    
+
 #if REDBLACKTREEDLL == 1
     insertIntoRedBlackTreeDLL(partition->triangles, triangle);
 #elif REDBLACKTREEDLL == 2

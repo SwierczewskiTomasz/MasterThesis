@@ -28,6 +28,12 @@ typedef struct UserOptions
     int nMonteCarlo;
     bool MonteCarlo;
 
+    int points;
+    bool printSizeOfStructures;
+
+    // When 0 - binary, when 1 - text
+    int saveFileType;
+
     double diameterOfGrid;
 } UserOptions;
 

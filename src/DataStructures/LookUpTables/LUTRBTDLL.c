@@ -116,7 +116,7 @@ void removeLUTRBTDLL(LUTRBTDLL *table, bool freeData)
  */
 void removeLUTRBTDLLNode(void *node, bool freeData)
 {
-#warning Skoro to jest do prywatnego użytku, to przenieść do headera priv.
+// #warning Skoro to jest do prywatnego użytku, to przenieść do headera priv.
     if (freeData)
         freeSimplex(((LUTRBTDLLNode *)node)->data);
     free(node);

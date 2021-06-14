@@ -4,6 +4,7 @@
 #include <limits.h>
 // #include "../DT/serialDT.h"
 
+#if NO_DIM == 3
 int asciiLoad(char *filename, Partition *partition)
 {
     FILE *fp = fopen(filename, "r+");
@@ -142,10 +143,18 @@ int asciiLoad3(char *filename, Partition *partition, UserOptions *options)
 
     return count;
 }
+#else
+#warning Not implemented reading real data from file in different dimension than 3! See 83 line in serialDT.c file to edit method of reading data.
+#endif
 
 int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
 {
     FILE *fp = fopen(filename, "r+");
+
+    if(fp == NULL)
+    {
+        printf("Unable to read this file!\n%s\n", filename);
+    }
 
     int count = 0;
     int count2 = 0;
@@ -161,16 +170,22 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
 
     char c[1000];
     char *temp;
-    temp = fgets(c, 1000, fp);
-    if (temp != NULL)
-        printf("%s", c);
-    temp = fgets(c, 1000, fp);
-    if (temp != NULL)
-        printf("%s", c);
-    temp = fgets(c, 1000, fp);
-    if (temp != NULL)
-        printf("%s", c);
 
+
+    // Reading three lines with headers
+    temp = fgets(c, 1000, fp);
+    // if (temp != NULL)
+    //     printf("%s", c);
+    temp = fgets(c, 1000, fp);
+    // if (temp != NULL)
+        // printf("%s", c);
+    temp = fgets(c, 1000, fp);
+    if (temp != NULL)
+    {
+    //     printf("%s", c);
+    }
+
+    
     while (result != EOF)
     {
         double *mess = (double *)malloc(6 * sizeof(double));
@@ -180,7 +195,7 @@ int asciiLoad2(char *filename, Partition *partition, UserOptions *options)
         result = fscanf(fp, "%i\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%i\t%lf\t%lf\t%lf\t%lf", &messInt[0], &point->point.coords[0], &point->point.coords[1], &point->point.coords[2],
                         &point->velocity[0], &point->velocity[1], &point->velocity[2], &point->mass, &messInt[1], &mess[2], &mess[3], &mess[4], &mess[5]);
 
-        if(result == EOF)
+        if (result == EOF)
             break;
 
         // printf("%lf %lf %lf,\t%lf %lf %lf,\t%f\n", point->point.coords[0], point->point.coords[1], point->point.coords[2], point->velocity[0], point->velocity[1], point->velocity[2], point->mass);

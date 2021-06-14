@@ -67,15 +67,30 @@ void saveDTFEToTextFile(UserOptions *options, Partition *partition)
     FILE *fp;
     fp = fopen(options->outputFilename, "w+");
 
-    for (int i = 0; i < options->gridSize; i++)
+    // for (int i = 0; i < options->gridSize; i++)
+    // {
+    //     for (int j = 0; j < options->gridSize; j++)
+    //     {
+    //         for (int k = 0; k < options->gridSize; k++)
+    //         {
+    //             fprintf(fp, "%e\n", partition->gridMatrix[i][j][k].density);
+    //         }
+    //     }
+    // }
+
+    int gridMatrixSize = 0;
+    if (INTERPOLATED_FIELDS > 0)
+        gridMatrixSize = partition->gridMatrix[0]->size;
+
+    for (BLOCK_TYPE j = 0; j < gridMatrixSize; j++)
     {
-        for (int j = 0; j < options->gridSize; j++)
+        for (int i = 0; i < INTERPOLATED_FIELDS; i++)
         {
-            for (int k = 0; k < options->gridSize; k++)
-            {
-                fprintf(fp, "%e\n", partition->densityMatrix[i][j][k].density);
-            }
+            double data = getDataFromBlockSizeArrayDouble(partition->gridMatrix[i], j);
+            // printf("%f %f %f %e \n", point->coords[0], point->coords[1], point->coords[2], point->density);
+            fprintf(fp, "%e", data);
         }
+        fprintf(fp, "\n");
     }
 
     fclose(fp);
@@ -86,17 +101,65 @@ void saveDTFEToBinaryFile(UserOptions *options, Partition *partition)
     FILE *fp;
     fp = fopen(options->outputFilename, "wb+");
 
-    for (int i = 0; i < options->gridSize; i++)
+    // for (int i = 0; i < options->gridSize; i++)
+    // {
+    //     for (int j = 0; j < options->gridSize; j++)
+    //     {
+    //         for (int k = 0; k < options->gridSize; k++)
+    //         {
+    //             float temp = (float)(partition->gridMatrix[i][j][k].density);
+    //             fwrite(&temp, sizeof(float), 1, fp);
+    //         }
+    //     }
+    // }
+
+    int gridMatrixSize = 0;
+    if (INTERPOLATED_FIELDS > 0)
+        gridMatrixSize = partition->gridMatrix[0]->size;
+
+    for (BLOCK_TYPE j = 0; j < gridMatrixSize; j++)
     {
-        for (int j = 0; j < options->gridSize; j++)
+        for (int i = 0; i < INTERPOLATED_FIELDS; i++)
         {
-            for (int k = 0; k < options->gridSize; k++)
-            {
-                float temp = (float)(partition->densityMatrix[i][j][k].density);
-                fwrite( &temp, sizeof(float), 1, fp);
-            }
+            float temp = (float)getDataFromBlockSizeArrayDouble(partition->gridMatrix[i], j);
+            fwrite(&temp, sizeof(float), 1, fp);
         }
+        fprintf(fp, "\n");
     }
 
     fclose(fp);
 }
+
+// void saveStatisticsToTextFile(UserOptions *options, Partition *partition)
+// {
+//     FILE *fp;
+//     fp = fopen("test_1.txt", "w+");
+
+//     for (int i = 0; i < options->gridSize; i++)
+//     {
+//         for (int j = 0; j < options->gridSize; j++)
+//         {
+//             for (int k = 0; k < options->gridSize; k++)
+//             {
+//                 fprintf(fp, "%i\n", partition->gridMatrix[i][j][k].onList);
+//             }
+//         }
+//     }
+
+//     fclose(fp);
+
+//     fp = fopen("test_2.txt", "w+");
+
+//     for (int i = 0; i < options->gridSize; i++)
+//     {
+//         for (int j = 0; j < options->gridSize; j++)
+//         {
+//             for (int k = 0; k < options->gridSize; k++)
+//             {
+//                 fprintf(fp, "%i\n", partition->gridMatrix[i][j][k].onListNoneZero);
+//             }
+//         }
+//     }
+
+//     fclose(fp);
+// }

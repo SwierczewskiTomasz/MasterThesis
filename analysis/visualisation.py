@@ -16,7 +16,7 @@ from matplotlib.ticker import LogLocator
 
 cwd = os.getcwd() #get the current working directory
 #name_den= "test_dtfe128_option111_mpcunit1000.a_den"#the name of the density file interpolated on a grid
-name_den = "SUBSAMPLING/SAMPLE512"
+name_den = "SUBSAMPLING2/SAMPLE512"
 name_vel= "fields.a_vel"#the name of the velocity file interpolated on a grid 
 name_veldiv="fields.a_velDiv" #the name of the velocity divergence file interpolated on a grid 
 path_den=cwd+"/"+name_den

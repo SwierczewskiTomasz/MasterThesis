@@ -59,7 +59,7 @@ PointId *newPointId(FLOATING_POINT_PRECISION coords[NO_DIM])
     result->id = PointIdCount++;
 #endif
     
-#warning Instead of making it in for loop, better will be using memcpy
+// #warning Instead of making it in for loop, better will be using memcpy
 
     for(int i = 0; i < NO_DIM; i++)
     {

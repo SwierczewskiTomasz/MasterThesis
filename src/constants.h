@@ -31,7 +31,12 @@
 #define ID_TYPE int
 #endif
 
-
+/** 
+ * Number of interpolated fields - currently only density.
+ */
+#ifndef INTERPOLATED_FIELDS
+#define INTERPOLATED_FIELDS 1
+#endif
 
 #ifndef REDBLACKTREEDLL
 /** Choose structure you would like to store simplexes:
@@ -39,7 +44,7 @@
  * RedBlackTreeDLL - 1
  * LUTRBTDLL - 2 
  */
-#define REDBLACKTREEDLL 2
+#define REDBLACKTREEDLL 1
 #endif
 
 #ifndef DIVIDEWHEN

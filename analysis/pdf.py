@@ -27,12 +27,16 @@ def createFigure(dir1, dir2, outputDir, nbins):
                          )
 
     fig, ax = plt.subplots(figsize=(10, 10), dpi=200)
-    p1 = ax.loglog(data_x, data_y1 - data_y2, label="Difference")
+    # p1 = ax.loglog(data_x, data_y1 - data_y2, label="Difference")
     # p2 = ax.loglog(data_x, data_y2, label = "Tomasz")
-    # p1 = ax.semilogx(data_x, data_y1, label = "Marius")
-    # p2 = ax.semilogx(data_x, data_y2, label = "Tomasz")
-    ax.set_title("Tomasz - DTFE using Monte Carlo, 100 subsamples in one grid cell\nMarius - DTFE using Monte Carlo, 100 subsamples in one grid cell\n1024Mpc, NGRID = 128, R = 5, NBINS = 1000, H0 = 1")
+    p1 = ax.semilogx(data_x, data_y1, label = "DTFE_M")
+    p2 = ax.semilogx(data_x, data_y2, label = "DTFE_T")
+    # p1 = ax.loglog(data_x, data_y1, label = "DTFE_M")
+    # p2 = ax.loglog(data_x, data_y2, label = "DTFE_T")
+    # Tomasz - DTFE z Monte Carlo, 100 próbek na każdą komórkę siatki\nMarius - DTFE z Monte Carlo, 100 próbek na każdą komórkę siatki\n
+    ax.set_title("1024Mpc, NGRID = 128, R = 5, NBINS = 1000, H0 = 1")
     ax.legend()
+    plt.tight_layout()
     plt.savefig(outputDir)
 
 # def plot_tetrahedron(ax, tetrahedron):
@@ -292,11 +296,11 @@ dir2 = "PDF1000-DTFE-128-top-hat-R5.00-DTFE_test_2_2021_05_14_128_2.a_den"
 path1 = cwd + "/" + dir1
 path2 = cwd + "/" + dir2
 # outputPath = cwd + "/" + "DTFE_loglog_128_2.png"
-outputPath = cwd + "/do_latexa/" + "Triangulation_2D_2021_05_15_6.png"
+outputPath = cwd + "/do_latexa/" + "2021_06_09_01.png"
 
 NBINS = 1000
 
-# createFigure(path1, path2, outputPath, NBINS)
-plot_triangulation_2D(outputPath)
+createFigure(path1, path2, outputPath, NBINS)
+# plot_triangulation_2D(outputPath)
 # przyklad_z_neta()
 

@@ -21,3 +21,7 @@ analysis/figure*
 analysis/Triangulation*
 analysis/do_latexa/*
 analysis/do_latexa
+analysis
+analysis/*
+build
+build/*
