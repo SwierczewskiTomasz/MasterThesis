@@ -72,10 +72,10 @@ FILES = \
 	oneHeaderToRuleThemAll.h\
 
 TESTS = \
-	tests/mainTests.c\
-	tests/mainTests.h\
-	tests/testRedBlackTree.c\
-	tests/testRedBlackTree.h\
+	Tests/mainTests.c\
+	Tests/mainTests.h\
+	Tests/testRedBlackTree.c\
+	Tests/testRedBlackTree.h\
 
 MAIN_FILE = \
 	main.c
